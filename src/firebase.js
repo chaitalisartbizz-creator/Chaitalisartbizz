@@ -30,7 +30,10 @@ const firebaseConfig = {
 // Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
-// Auth export — always available
+// Auth export - always available
+import { GoogleAuthProvider } from 'firebase/auth';
+
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
 export default app;

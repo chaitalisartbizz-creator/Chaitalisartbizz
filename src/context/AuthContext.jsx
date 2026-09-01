@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth } from '../firebase';
+import { auth, googleProvider } from '../firebase';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  signInWithPopup,
   signOut 
 } from 'firebase/auth';
 import axios from 'axios';
@@ -46,6 +47,37 @@ export function AuthProvider({ children }) {
     return userCredential.user;
   };
 
+  const loginWithGoogle = async () => {
+    const result = await signInWithPopup(auth, googleProvider);
+    const token = await result.user.getIdToken();
+    
+    // Check if user exists, if not, create them in backend
+    try {
+      const response = await axios.post('/api/auth/me', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.data || !response.data.user) {
+        // First time login, register them
+        await axios.post('/api/auth/register', { 
+          name: result.user.displayName || 'User', 
+          email: result.user.email 
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+    } catch (e) {
+      // If /me fails with 404, register them
+      await axios.post('/api/auth/register', { 
+        name: result.user.displayName || 'User', 
+        email: result.user.email 
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    }
+
+    return result.user;
+  };
+
   const register = async (name, email, password) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const token = await userCredential.user.getIdToken();
@@ -76,6 +108,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ 
       user, 
       login, 
+      loginWithGoogle,
       register, 
       logout,
       checkUserExists,
