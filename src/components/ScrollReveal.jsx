@@ -86,6 +86,7 @@ export default function ScrollReveal({ children, className = "", delay = 0, anim
       viewport={{ once, margin: "-50px" }}
       variants={getVariants()}
       transition={getTransition()}
+      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </motion.div>

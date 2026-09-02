@@ -315,30 +315,31 @@ export default function LiveBackground({ theme = 'gold-mesh', className = '' }) 
   if (theme === 'kintsugi-fluid') {
     return (
       <div className={`${cn} bg-[#111111]`}>
-        {/* Swirling Smoke / Marble fluid base */}
+        {/* Swirling Smoke / Marble fluid base using hardware-accelerated radial gradients instead of expensive CSS blurs */}
         <motion.div
           animate={{ x: [0, 50, -30, 0], y: [0, -40, 20, 0], scale: [1, 1.3, 1], rotate: [0, 45, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-[#2A2A2A]/80 rounded-[40%_60%_70%_30%] blur-[120px] origin-center"
+          className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full origin-center"
+          style={{ background: 'radial-gradient(circle, rgba(42,42,42,0.8) 0%, rgba(17,17,17,0) 70%)', willChange: 'transform' }}
         />
         <motion.div
           animate={{ x: [0, -60, 40, 0], y: [0, 50, -30, 0], scale: [1, 1.4, 1], rotate: [0, -30, 0] }}
           transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-          className="absolute top-[20%] -right-[20%] w-[80vw] h-[60vw] bg-[#1A1A1A]/90 rounded-[50%_50%_30%_70%] blur-[140px] origin-center"
+          className="absolute top-[20%] -right-[20%] w-[80vw] h-[60vw] rounded-full origin-center"
+          style={{ background: 'radial-gradient(circle, rgba(26,26,26,0.9) 0%, rgba(17,17,17,0) 70%)', willChange: 'transform' }}
         />
         <motion.div
           animate={{ x: [0, 40, -50, 0], y: [0, -60, 40, 0], scale: [1, 1.5, 1], rotate: [0, 90, 0] }}
           transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
-          className="absolute -bottom-[30%] left-[10%] w-[90vw] h-[70vw] bg-[#333333]/60 rounded-[60%_40%_50%_50%] blur-[150px] origin-center"
+          className="absolute -bottom-[30%] left-[10%] w-[90vw] h-[70vw] rounded-full origin-center"
+          style={{ background: 'radial-gradient(circle, rgba(51,51,51,0.6) 0%, rgba(17,17,17,0) 70%)', willChange: 'transform' }}
         />
         <motion.div
           animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] bg-[#404040]/40 rounded-full blur-[100px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(64,64,64,0.4) 0%, rgba(17,17,17,0) 70%)', willChange: 'transform, opacity' }}
         />
-
-        {/* Fractal Noise Overlay for Marble Texture */}
-        <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 400 400%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.01%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E")' }}></div>
 
         {/* Vibrant Gold Kintsugi Veins SVG */}
         <svg className="absolute inset-0 w-full h-full opacity-95 pointer-events-none" viewBox="0 0 1600 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -351,21 +352,15 @@ export default function LiveBackground({ theme = 'gold-mesh', className = '' }) 
               <stop offset="100%" stopColor="#C9A84C" stopOpacity="0.8" />
             </linearGradient>
             <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feGaussianBlur stdDeviation="4" result="blur"/>
               <feMerge>
-                <feMergeNode in="blur"/>
                 <feMergeNode in="blur"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
-            <filter id="displacement">
-              <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise"/>
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G"/>
-            </filter>
           </defs>
           
           <g filter="url(#gold-glow)">
-            <g filter="url(#displacement)">
               {/* Main diagonal crack */}
               <motion.path
                 d="M -100 100 Q 200 300 400 250 T 800 400 T 1200 350 T 1700 700"
@@ -415,7 +410,6 @@ export default function LiveBackground({ theme = 'gold-mesh', className = '' }) 
                 animate={{ pathLength: [0, 1, 1, 0.5, 0], opacity: [0, 1, 1, 0.6, 0] }}
                 transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
               />
-            </g>
           </g>
         </svg>
 
