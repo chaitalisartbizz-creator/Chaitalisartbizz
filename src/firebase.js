@@ -17,14 +17,14 @@ if (missing.length > 0) {
 }
 
 const firebaseConfig = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY || "mock-api-key-for-dev",
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mock-domain.firebaseapp.com",
   databaseURL:       import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId:             import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID || "mock-project-id",
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mock-bucket.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:mockappid",
+  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-MOCKID",
 };
 
 // Initialize Firebase app
@@ -32,17 +32,24 @@ const app = initializeApp(firebaseConfig);
 
 // Auth export - always available
 import { GoogleAuthProvider } from 'firebase/auth';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
 
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-export const messaging = typeof window !== 'undefined' && firebaseConfig.messagingSenderId 
-  ? getMessaging(app) 
-  : null;
+export let messaging = null;
+if (typeof window !== 'undefined' && firebaseConfig.messagingSenderId) {
+  isSupported().then((supported) => {
+    if (supported) {
+      messaging = getMessaging(app);
+    } else {
+      console.warn('Firebase Messaging not supported (e.g. Capacitor WebView).');
+    }
+  }).catch((e) => console.warn('isSupported() failed:', e));
+}
 
 export const requestNotificationPermission = async () => {
-  if (!messaging) return null;
+  if (!messaging || typeof Notification === 'undefined') return null;
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
@@ -71,3 +78,4 @@ export const onMessageListener = () =>
   });
 
 export default app;
+console.log('FIREBASE.JS LOADED');

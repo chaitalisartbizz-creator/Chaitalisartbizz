@@ -11,3 +11,4 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>,
 )
+console.log('MAIN.JSX LOADED');
