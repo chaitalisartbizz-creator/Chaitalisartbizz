@@ -69,6 +69,7 @@ function HeroCarousel() {
 /* ── SITE HERO BANNERS ── */
 function SiteHeroBannersSection() {
   const { banners } = useData();
+  const navigate = useNavigate();
   if (!banners || banners.length === 0) return null;
   return (
     <section className="relative z-10 max-w-[1600px] mx-auto w-full px-4 md:px-6 mb-8">

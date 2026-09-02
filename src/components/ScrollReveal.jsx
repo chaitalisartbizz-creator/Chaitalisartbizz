@@ -83,7 +83,7 @@ export default function ScrollReveal({ children, className = "", delay = 0, anim
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, margin: "-50px" }}
+      viewport={{ once, margin: "0px" }}
       variants={getVariants()}
       transition={getTransition()}
       style={{ willChange: "transform, opacity" }}

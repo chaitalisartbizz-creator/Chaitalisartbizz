@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { getMessaging, getToken } from 'firebase/messaging';
-import { auth } from '../firebase'; // get auth and the initialized app
 
 export const DataContext = createContext(null);
 
