@@ -37,19 +37,14 @@ export function DataProvider({ children }) {
       if (!('Notification' in window)) return;
       
       try {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-          const messaging = getMessaging();
-          // We need to pass the VAPID key in a real prod app if configured, but for now we try without it if Firebase auto-provisions or if they set one.
-          // In Vite, we'd inject it via env. Let's just try getToken.
-          const token = await getToken(messaging, { 
-            vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || undefined 
-          });
-          if (token) {
-            setFcmToken(token);
-            // Optionally, resend a log activity just to update the token immediately
-            axios.post('/api/analytics/track', { type: 'interaction', visitorId, action: 'Push Enabled', fcmToken: token }).catch(console.error);
-          }
+        // We defer to the exported function in firebase.js which registers the SW properly
+        const { requestNotificationPermission } = await import('../firebase');
+        const token = await requestNotificationPermission();
+        
+        if (token) {
+          setFcmToken(token);
+          // Optionally, resend a log activity just to update the token immediately
+          axios.post('/api/analytics/track', { type: 'interaction', visitorId, action: 'Push Enabled', fcmToken: token }).catch(console.error);
         }
       } catch (error) {
         console.error("Failed to get push token:", error);

@@ -198,13 +198,14 @@ export default function OffersPage() {
 
           {/* Flash Deals */}
           <ScrollReveal delay={100}>
-            <section className="mt-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Zap size={18} className="text-[#C9A84C]" />
-                  <h2 className="text-[#2C2C2C] font-cinzel font-bold text-xl">⚡ Limited Flash Art Deals</h2>
+              <section className="mt-10 bg-gradient-to-r from-[#C9A84C]/10 via-transparent to-[#C9A84C]/5 p-4 rounded-xl border border-[#C9A84C]/20 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A84C] opacity-10 blur-3xl rounded-full" />
+                <div className="flex items-center justify-between mb-4 relative z-10">
+                  <div className="flex items-center gap-2">
+                    <Zap size={22} className="text-[#C9A84C] drop-shadow-[0_0_8px_rgba(201,168,76,0.8)] animate-pulse" />
+                    <h2 className="bg-gradient-to-r from-[#C9A84C] via-[#A8873A] to-[#C9A84C] bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent font-cinzel font-black text-2xl tracking-wide drop-shadow-sm">⚡ Limited Flash Art Deals</h2>
+                  </div>
                 </div>
-              </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {FLASH_PRODUCTS.map((p, idx) => (
                   <ScrollReveal key={p.id} delay={(idx % 6) * 80} className="h-full">

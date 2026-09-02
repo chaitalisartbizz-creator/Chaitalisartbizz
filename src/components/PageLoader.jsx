@@ -70,13 +70,31 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     };
   }, [hasEntered, skip, onFinish]);
 
-  const handleEnter = (e) => {
+  const handleEnter = async (e) => {
     if (e) e.stopPropagation();
     setHasEntered(true);
     // Silently attempt to play audio after user interaction to satisfy browser autoplay policies
     const audioEl = document.getElementById('site-bg-audio');
     if (audioEl) {
       audioEl.play().catch(e => console.log("Audio autoplay prevented", e));
+    }
+    
+    // Request notification permissions now that we have a user gesture
+    if ('Notification' in window) {
+      try {
+        const { requestNotificationPermission } = await import('../firebase');
+        const token = await requestNotificationPermission();
+        if (token) {
+          const visitorId = localStorage.getItem('chaitali-artbizz-vid');
+          if (visitorId) {
+            import('axios').then(({ default: axios }) => {
+              axios.post('/api/analytics/track', { type: 'interaction', visitorId, action: 'Push Enabled', fcmToken: token }).catch(console.error);
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to setup notifications:", err);
+      }
     }
   };
 

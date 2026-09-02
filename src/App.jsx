@@ -39,6 +39,7 @@ const AdminPayment = lazy(() => import('./pages/admin/AdminPayment'));
 const AdminMusic = lazy(() => import('./pages/admin/AdminMusic'));
 const AdminLive = lazy(() => import('./pages/admin/AdminLive'));
 const AdminRetention = lazy(() => import('./pages/admin/AdminRetention'));
+const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
 
 // Protected Admin Route Component
 const ProtectedAdminRoute = ({ children }) => {
@@ -123,6 +124,7 @@ function AppInner() {
                   <Route path="music" element={<AdminMusic />} />
                   <Route path="settings" element={<AdminSettings />} />
                   <Route path="retention" element={<AdminRetention />} />
+                  <Route path="notifications" element={<AdminNotifications />} />
                 </Route>
               </Routes>
             </Suspense>

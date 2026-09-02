@@ -858,8 +858,8 @@ export default function HomePage() {
             <div>
               <h4 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Quick Links</h4>
               <ul className="space-y-2 text-sm">
-                {['Home', 'Art Catalogue', 'Deals & Offers', 'Creative Hub', 'My Account'].map(l => (
-                  <li key={l}><button onClick={() => navigate(l === 'Home' ? '/' : l === 'Art Catalogue' ? '/category' : l === 'Deals & Offers' ? '/offers' : l === 'Creative Hub' ? '/hub' : '/account')} className="text-stone-400 hover:text-[#C9A84C] transition-colors">{l}</button></li>
+                {['Home', 'Art Catalogue', 'Deals & Offers', 'Training Program', 'My Account'].map(l => (
+                  <li key={l}><button onClick={() => navigate(l === 'Home' ? '/' : l === 'Art Catalogue' ? '/category' : l === 'Deals & Offers' ? '/offers' : l === 'Training Program' ? '/hub' : '/account')} className="text-stone-400 hover:text-[#C9A84C] transition-colors">{l}</button></li>
                 ))}
               </ul>
             </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Image, Percent,
-  Menu, X, Settings, Users, ShoppingBag, CreditCard, Music2, Activity, Palette
+  Menu, X, Settings, Users, ShoppingBag, CreditCard, Music2, Activity, Palette, Bell
 } from 'lucide-react';
 import LiveBackground from '../components/LiveBackground';
 
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { path: '/admin/orders', label: 'Orders', icon: ShoppingBag },
   { path: '/admin/customers', label: 'Customers', icon: Users },
   { path: '/admin/retention', label: 'Analytics', icon: Activity },
+  { path: '/admin/notifications', label: 'Push Notifications', icon: Bell },
   { path: '/admin/payment', label: 'Payment Config', icon: CreditCard },
   { path: '/admin/music', label: 'Studio Music', icon: Music2 },
   { path: '/admin/settings', label: 'Store Settings', icon: Settings },

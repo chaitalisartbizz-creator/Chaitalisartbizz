@@ -7,8 +7,8 @@ const NAV_ITEMS = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Grid, label: 'Catalogue', path: '/category' },
   { icon: Tag, label: 'Deals', path: '/offers' },
-  { icon: Palette, label: 'Hub', path: '/hub' },
-  { icon: User, label: 'Account', path: '/account' },
+  { icon: Palette, label: 'Training', path: '/hub' },
+  { icon: User, label: 'Profile', path: '/account' },
 ];
 
 export default function BottomNav() {

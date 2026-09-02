@@ -1,47 +1,45 @@
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-firebase.initializeApp({
-  apiKey: "AIzaSyCyO01EXRKi40Y3TejTul-oszWEVkMNeH8",
-  authDomain: "primepets-75a7f.firebaseapp.com",
-  databaseURL: "https://primepets-75a7f-default-rtdb.firebaseio.com",
-  projectId: "primepets-75a7f",
-  storageBucket: "primepets-75a7f.firebasestorage.app",
-  messagingSenderId: "191407799627",
-  appId: "1:191407799627:web:51d2e4eebc73248282bcce"
-});
+const params = new URL(location).searchParams;
 
-const messaging = firebase.messaging();
+if (params.get('apiKey')) {
+  firebase.initializeApp({
+    apiKey: params.get('apiKey'),
+    projectId: params.get('projectId'),
+    messagingSenderId: params.get('messagingSenderId'),
+    appId: params.get('appId')
+  });
 
-messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  
-  const notificationTitle = payload.notification?.title || 'Prime Pets';
-  const notificationOptions = {
-    body: payload.notification?.body || '',
-    icon: '/vite.svg',
-    data: payload.data
-  };
+  const messaging = firebase.messaging();
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+  messaging.onBackgroundMessage(function(payload) {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+      body: payload.notification.body,
+      icon: payload.notification.image || '/logo.jpg',
+      image: payload.notification.image,
+      data: { url: payload.data?.url || '/' }
+    };
 
-self.addEventListener('notificationclick', (event) => {
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+}
+
+self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  
-  const urlToOpen = event.notification.data?.url || '/';
+  const urlToOpen = event.notification.data.url;
   
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((windowClients) => {
-      // Check if there is already a window/tab open with the target URL
-      for (let i = 0; i < windowClients.length; i++) {
-        const client = windowClients[i];
-        // If so, just focus it.
-        if (client.url.includes(urlToOpen) && 'focus' in client) {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url === urlToOpen && 'focus' in client) {
           return client.focus();
         }
       }
-      // If not, open a new window
       if (clients.openWindow) {
         return clients.openWindow(urlToOpen);
       }

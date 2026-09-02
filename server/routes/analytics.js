@@ -300,6 +300,50 @@ router.get('/retention', async (req, res) => {
     console.error('Error fetching retention analytics:', error);
     res.status(500).json({ error: 'Failed to fetch retention analytics' });
   }
+// POST /api/analytics/broadcast
+router.post('/broadcast', async (req, res) => {
+  try {
+    const { title, body, url, image } = req.body;
+    
+    // We must require adminMessaging locally since it's injected inside db? 
+    // Wait, let's see how they do it in /notify
+    const { adminMessaging } = require('../firebaseAdmin');
+
+    if (!adminMessaging) {
+      return res.status(500).json({ error: "Firebase Push notifications are not configured on the server." });
+    }
+
+    const { db } = require('../db');
+
+    // Get all visitors with an FCM token
+    const visitors = await db.visitor.findMany({
+      where: { fcmToken: { not: null } },
+      select: { fcmToken: true }
+    });
+
+    const tokens = visitors.map(v => v.fcmToken).filter(Boolean);
+
+    if (tokens.length === 0) {
+      return res.json({ success: true, count: 0, message: "No subscribers found" });
+    }
+
+    const message = {
+      notification: { title, body, imageUrl: image },
+      data: { url: url || '/' },
+      tokens: Array.from(new Set(tokens))
+    };
+
+    const response = await adminMessaging.sendEachForMulticast(message);
+    res.json({ 
+      success: true, 
+      count: response.successCount, 
+      failedCount: response.failureCount,
+      response 
+    });
+  } catch (error) {
+    console.error("Error broadcasting push notification:", error);
+    res.status(500).json({ error: "Failed to broadcast notification" });
+  }
 });
 
 module.exports = router;
