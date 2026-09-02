@@ -296,10 +296,12 @@ router.get('/retention', async (req, res) => {
       totalRevenue,
       topCustomers: customerList.slice(0, 50)
     });
-  } catch (error) {
-    console.error('Error fetching retention analytics:', error);
-    res.status(500).json({ error: 'Failed to fetch retention analytics' });
-  }
+    } catch (error) {
+      console.error('Error fetching retention analytics:', error);
+      res.status(500).json({ error: 'Failed to fetch retention analytics' });
+    }
+});
+
 // POST /api/analytics/broadcast
 router.post('/broadcast', async (req, res) => {
   try {
