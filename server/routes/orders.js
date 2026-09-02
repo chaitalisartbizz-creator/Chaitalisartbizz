@@ -61,8 +61,10 @@ router.post('/', async (req, res) => {
       }).catch(e => console.error("Error linking visitor to order:", e.message));
     }
 
+    let emailAttempted = false;
     // --- GMAIL ORDER ALERT LOGIC ---
     if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+      emailAttempted = true;
       try {
         const transporter = nodemailer.createTransport({
           host: 'smtp.gmail.com',
@@ -244,7 +246,7 @@ router.post('/', async (req, res) => {
       }
     }
 
-    res.status(201).json(order);
+    res.status(201).json({ ...order, emailAttempted });
   } catch (error) {
     console.error('Error creating order:', error);
     res.status(500).json({ error: 'Failed to create order' });
