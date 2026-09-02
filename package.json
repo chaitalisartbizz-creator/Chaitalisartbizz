@@ -9,14 +9,14 @@
     "preview": "vite preview",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "postinstall": "cd server && npm install && cd .. && npx prisma generate --schema=server/prisma/schema.prisma"
+    "postinstall": "cd server && npm install"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.1",
     "@capacitor/core": "^8.5.1",
-    "@libsql/client": "^0.17.4",
-    "@prisma/adapter-libsql": "^7.10.0",
-    "@prisma/client": "^7.10.0",
+    "@libsql/client": "^0.8.1",
+    "@prisma/adapter-libsql": "^5.22.0",
+    "@prisma/client": "^5.22.0",
     "axios": "^1.19.0",
     "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
