@@ -30,8 +30,6 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
-  overscroll-behavior: none;
 }
 
 body {
@@ -41,8 +39,7 @@ body {
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  overscroll-behavior: none;
+  overscroll-behavior-y: none;
 }
 
 /* Scrollbar styling */
