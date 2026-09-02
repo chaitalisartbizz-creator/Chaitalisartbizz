@@ -7,7 +7,21 @@ router.get('/', async (req, res) => {
     const slides = await prisma.slide.findMany();
     const categories = await prisma.category.findMany();
     const deals = await prisma.deal.findMany();
-    const products = await prisma.product.findMany();
+    const productsRaw = await prisma.product.findMany();
+    const products = productsRaw.map(p => {
+      let parsedImages = [];
+      try { parsedImages = p.images ? JSON.parse(p.images) : []; } catch(e) {}
+      let parsedFeatures = [];
+      try { parsedFeatures = p.features ? JSON.parse(p.features) : []; } catch(e) {}
+      
+      return {
+        ...p,
+        images: parsedImages,
+        features: parsedFeatures,
+        img: parsedImages.length > 0 ? parsedImages[0] : null
+      };
+    });
+
     const settings = await prisma.frontendSetting.findFirst();
     const banners = await prisma.banner.findMany();
 

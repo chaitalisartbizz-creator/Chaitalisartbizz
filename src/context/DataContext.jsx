@@ -28,33 +28,6 @@ export function DataProvider({ children }) {
 
   const [activityLog, setActivityLog] = useState([]);
 
-  // Request Notification Permission
-  useEffect(() => {
-    const requestPermission = async () => {
-      if (hasRequestedPermission.current) return;
-      hasRequestedPermission.current = true;
-      
-      if (!('Notification' in window)) return;
-      
-      try {
-        // We defer to the exported function in firebase.js which registers the SW properly
-        const { requestNotificationPermission } = await import('../firebase');
-        const token = await requestNotificationPermission();
-        
-        if (token) {
-          setFcmToken(token);
-          // Optionally, resend a log activity just to update the token immediately
-          axios.post('/api/analytics/track', { type: 'interaction', visitorId, action: 'Push Enabled', fcmToken: token }).catch(console.error);
-        }
-      } catch (error) {
-        console.error("Failed to get push token:", error);
-      }
-    };
-    
-    // Slight delay so it doesn't block immediate rendering
-    setTimeout(requestPermission, 2000);
-  }, [visitorId]);
-
   const logActivity = (action, details = '') => {
     const type = action === 'Page View' ? 'pageview' : 'interaction';
     
