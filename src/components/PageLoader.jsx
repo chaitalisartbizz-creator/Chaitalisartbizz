@@ -63,8 +63,8 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
       if (onFinish) onFinish();
     };
 
-    // Give at least 1.8s for opening luxury branding presentation
-    const minTimer = setTimeout(dismiss, 1800);
+    // Give exactly 6s for opening luxury branding presentation as requested
+    const minTimer = setTimeout(dismiss, 6000);
 
     return () => {
       clearInterval(quoteTimer);
