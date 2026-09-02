@@ -826,9 +826,9 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen mesh-bg">
+    <div className="flex flex-col min-h-screen mesh-bg">
       <Header />
-      <main className="pb-24 md:pb-8 space-y-4 md:space-y-6 pt-2">
+      <main className="flex-1 pb-24 md:pb-8 space-y-4 md:space-y-6 pt-2">
         <HeroCarousel />
         <DealsTicker />
         <TrustBadges />

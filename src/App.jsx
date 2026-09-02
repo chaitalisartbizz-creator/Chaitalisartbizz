@@ -146,6 +146,7 @@ function AppInner() {
         loop
         preload="none"
         muted={isMuted}
+        className="hidden"
       />
       
       <button
