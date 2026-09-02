@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function LiveBackground({ theme = 'gold-mesh', className = '' }) {
-  const cn = "absolute inset-0 overflow-hidden pointer-events-none -z-10 " + className;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const cn = "fixed inset-0 pointer-events-none -z-10 overflow-hidden " + className;
+
+  if (isMobile) {
+    return (
+      <div className={`${cn} bg-[#1A1A1A]`}>
+        <div className="absolute top-0 left-0 w-full h-[40vh] bg-gradient-to-br from-[#C9A84C]/10 to-transparent" />
+        <div className="absolute bottom-0 right-0 w-full h-[40vh] bg-gradient-to-tl from-[#8B5E7A]/10 to-transparent" />
+      </div>
+    );
+  }
   
   if (theme === 'gold-mesh') {
     return (

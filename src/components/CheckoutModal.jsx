@@ -268,9 +268,8 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       await new Promise(r => setTimeout(r, 500));
       goTo(2);
       onOrderSuccess && onOrderSuccess(orderId);
-      const phone   = (frontendSettings?.whatsappOrderNumber || '919876543210').replace(/\D/g, '');
-      const message = buildWhatsAppMessage(orderId, form, cartItems, grandTotal(cartTotal), 'COD');
-      window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+      // Removed automatic window.open to prevent mobile popup blockers.
+      // The user can click the "Track Order via WhatsApp" button on the success screen.
     } catch (err) {
       showToast(err?.response?.data?.message || 'Failed to place order. Please try again.');
     } finally {
