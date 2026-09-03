@@ -22,7 +22,7 @@ export default function AdminProducts() {
   const [galleryProgress, setGalleryProgress] = useState(0);
 
   const defaultProduct = {
-    name: '', brand: '', petType: 'Dogs', category: '', price: '', mrp: '', rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: ''
+    name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: ''
   };
 
   const uniqueBrands = [...new Set((products || []).map(p => p.brand).filter(Boolean))];
@@ -167,7 +167,7 @@ export default function AdminProducts() {
           <thead>
             <tr className="bg-gray-50/50 text-gray-500 text-sm border-b border-gray-100">
               <th className="p-4 font-semibold pl-6">Product</th>
-              <th className="p-4 font-semibold">Brand</th>
+              <th className="p-4 font-semibold">Collection</th>
               <th className="p-4 font-semibold">Price</th>
               <th className="p-4 font-semibold">Status/Badge</th>
               <th className="p-4 font-semibold text-right pr-6">Actions</th>
@@ -361,26 +361,27 @@ export default function AdminProducts() {
                   </div>
                   
                   <div>
-                    <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Brand <span className="text-red-500">*</span></label>
-                    <input id="brand" list="brand-list" required type="text" placeholder="Select or type brand" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Art Style / Collection <span className="text-red-500">*</span></label>
+                    <input id="brand" list="brand-list" required type="text" placeholder="Select or type collection" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="brand-list">
                       {uniqueBrands.map(b => <option key={b} value={b} />)}
                     </datalist>
                   </div>
 
                   <div>
-                    <label htmlFor="petType" className="block text-sm font-bold text-gray-700 mb-1">Pet Type <span className="text-red-500">*</span></label>
-                    <select id="petType" required value={editing.petType || 'Dogs'} onChange={e => setEditing({...editing, petType: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm">
-                      <option value="Dogs">Dogs</option>
-                      <option value="Cats">Cats</option>
-                      <option value="Small Pets">Small Pets</option>
-                      <option value="Birds">Birds</option>
+                    <label htmlFor="petType" className="block text-sm font-bold text-gray-700 mb-1">Art Medium <span className="text-red-500">*</span></label>
+                    <select id="petType" required value={editing.petType || 'Resin Art'} onChange={e => setEditing({...editing, petType: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm">
+                      <option value="Resin Art">Resin Art</option>
+                      <option value="Acrylic">Acrylic</option>
+                      <option value="MDF Board">MDF Board</option>
+                      <option value="Digital Portrait">Digital Portrait</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
 
                   <div className="md:col-span-2">
                     <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-1">Sub Category</label>
-                    <input id="category" list="category-list" type="text" placeholder="Select or type sub category (e.g. Dog Bowls)" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <input id="category" list="category-list" type="text" placeholder="Select or type sub category (e.g. Wall Clocks, Name Plates)" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="category-list">
                       {categories.map(c => <option key={c.label} value={c.label} />)}
                     </datalist>
