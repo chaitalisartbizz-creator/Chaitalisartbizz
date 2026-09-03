@@ -25,13 +25,13 @@ router.post('/', async (req, res) => {
     const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description } = req.body;
     
     // Upload main image to Cloudinary if it's base64
-    const uploadedImg = await uploadToCloudinary(img, 'prime_pets/products');
+    const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
     
     // Upload additional images
     const uploadedImages = [];
     if (images && Array.isArray(images)) {
         for (const image of images) {
-            const up = await uploadToCloudinary(image, 'prime_pets/products');
+            const up = await uploadToCloudinary(image, 'artbizz_media/products');
             if (up) uploadedImages.push(up);
         }
     }
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
         tag,
         badge,
         category: category || '',
-        petType: petType || 'Dogs',
+        petType: petType || 'Resin Art',
         description
       }
     });
@@ -69,13 +69,13 @@ router.put('/:id', async (req, res) => {
     const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description } = req.body;
     
     // Upload main image if it's base64 (newly uploaded)
-    const uploadedImg = await uploadToCloudinary(img, 'prime_pets/products');
+    const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
     
     // Upload additional images if any are base64
     const uploadedImages = [];
     if (images && Array.isArray(images)) {
         for (const image of images) {
-            const up = await uploadToCloudinary(image, 'prime_pets/products');
+            const up = await uploadToCloudinary(image, 'artbizz_media/products');
             if (up) uploadedImages.push(up);
         }
     }
@@ -94,7 +94,7 @@ router.put('/:id', async (req, res) => {
         tag,
         badge,
         category: category || '',
-        petType: petType || 'Dogs',
+        petType: petType || 'Resin Art',
         description
       }
     });

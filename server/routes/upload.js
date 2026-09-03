@@ -14,7 +14,7 @@ cloudinary.config({
 });
 
 // Setup multer for temporary local storage before uploading to Cloudinary
-const tempDir = path.join(os.tmpdir(), 'primepets_uploads');
+const tempDir = path.join(os.tmpdir(), 'artbizz_uploads');
 if (!fs.existsSync(tempDir)){
   fs.mkdirSync(tempDir, { recursive: true });
 }
@@ -39,7 +39,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     if (req.body && req.body.file && typeof req.body.file === 'string') {
       const result = await cloudinary.uploader.upload(req.body.file, {
         resource_type: 'auto',
-        folder: 'primepets_media'
+        folder: 'artbizz_media'
       });
       return res.json({ url: result.secure_url, type: result.resource_type });
     }
@@ -52,7 +52,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     // Determine resource type automatically (image or video)
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: 'auto', 
-      folder: 'primepets_media'
+      folder: 'artbizz_media'
     });
 
     // Cleanup local temp file

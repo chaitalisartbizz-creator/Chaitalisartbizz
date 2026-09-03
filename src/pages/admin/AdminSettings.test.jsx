@@ -64,7 +64,7 @@ describe('AdminSettings', () => {
   it('renders store name input field', () => {
     render(<BrowserRouter><AdminSettings /></BrowserRouter>);
     // There should be a text input for store name
-    const storeNameInput = screen.getByPlaceholderText(/prime pets/i);
+    const storeNameInput = screen.getByPlaceholderText(/chaitali/i);
     expect(storeNameInput).toBeInTheDocument();
   });
 

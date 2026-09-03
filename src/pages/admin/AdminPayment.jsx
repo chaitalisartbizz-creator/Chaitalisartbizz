@@ -162,7 +162,7 @@ export default function AdminPayment() {
               <Zap size={20} className="text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-800 mb-1">How Razorpay works in Prime Pets</h3>
+              <h3 className="font-bold text-gray-800 mb-1">How Razorpay works in Chaitali's Artbizz</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 When a customer places an order, the Razorpay checkout opens in a secure popup.
                 After successful payment, the order is created on your server with a payment

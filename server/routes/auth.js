@@ -106,12 +106,12 @@ router.post('/register', verifyToken, async (req, res) => {
 // Requires a secret key set in server/.env as ADMIN_PROMOTE_SECRET
 // Usage: curl -X POST http://localhost:3001/api/auth/promote-admin \
 //        -H "Content-Type: application/json" \
-//        -d '{"email":"you@example.com","secretKey":"primepets_admin_2024"}'
+//        -d '{"email":"you@example.com","secretKey":"artbizz_admin_2024"}'
 router.post('/promote-admin', async (req, res) => {
   try {
     const { email, secretKey } = req.body;
 
-    const adminSecret = process.env.ADMIN_PROMOTE_SECRET || 'primepets_admin_2024';
+    const adminSecret = process.env.ADMIN_PROMOTE_SECRET || 'artbizz_admin_2024';
     if (!secretKey || secretKey !== adminSecret) {
       return res.status(403).json({ error: 'Invalid secret key' });
     }

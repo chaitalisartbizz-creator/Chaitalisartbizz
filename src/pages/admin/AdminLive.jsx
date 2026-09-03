@@ -34,7 +34,7 @@ export default function AdminLive() {
     try {
       await axios.post('/api/analytics/notify', {
         fcmToken: notifyState.token,
-        title: notifyState.title || 'Hello from Prime Pets',
+        title: notifyState.title || "Hello from Chaitali's Artbizz",
         body: notifyState.body,
         url: notifyState.url || window.location.origin
       });

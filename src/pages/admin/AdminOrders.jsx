@@ -49,12 +49,12 @@ function buildWhatsAppUrl(order) {
   const items = parseItems(order.items);
   const itemList = items.map(i => `• ${i.name || i.productName || 'Item'} x${i.qty || i.quantity || 1}`).join('\n');
   const text = encodeURIComponent(
-    `Hello ${order.customerName || order.name || 'Customer'}! 🐾\n\n` +
-    `Your Prime Pets order *#${String(order.id).slice(-6).toUpperCase()}* update:\n\n` +
+    `Hello ${order.customerName || order.name || 'Customer'}! 🎨\n\n` +
+    `Your Chaitali's Artbizz order *#${String(order.id).slice(-6).toUpperCase()}* update:\n\n` +
     `${itemList || '(see order details)'}\n\n` +
     `Total: ₹${order.total || order.totalAmount || 0}\n` +
     `Status: ${order.status}\n\n` +
-    `Thank you for shopping with us! 🐶🐱`
+    `Thank you for shopping with us! ✨🖼️`
   );
   return `https://wa.me/${cc}?text=${text}`;
 }

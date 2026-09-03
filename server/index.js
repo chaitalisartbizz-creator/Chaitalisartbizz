@@ -13,7 +13,7 @@ app.use(express.json({ limit: '10mb' }));
 
 // Basic health check route
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Fortune Food API is running' });
+  res.json({ status: 'ok', message: "Chaitali's Artbizz API is running" });
 });
 
 // Placeholder for Prisma integration

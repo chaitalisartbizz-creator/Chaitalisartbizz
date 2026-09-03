@@ -210,4 +210,3 @@ export default function App() {
     </ErrorBoundary>
   );
 }
-console.log('APP.JSX LOADED');

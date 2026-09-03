@@ -138,7 +138,7 @@ export default function AdminSettings() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Store Name</label>
                   <input type="text" name="storeName" value={formData.storeName || ''} onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#F2EDE4] transition-all font-medium"
-                    placeholder="e.g. Prime Pets" />
+                    placeholder="e.g. Chaitali's Artbizz" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Store Tagline / Subtitle</label>
@@ -259,7 +259,7 @@ export default function AdminSettings() {
                     </label>
                     <input type="email" name="contactEmail" value={formData.contactEmail || ''} onChange={handleChange}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#F2EDE4] transition-all font-medium"
-                      placeholder="support@primepets.in" />
+                      placeholder="support@chaitalisartbizz.com" />
                   </div>
                 </div>
               </div>
@@ -275,7 +275,7 @@ export default function AdminSettings() {
                     <div>
                       <h3 className="text-lg font-bold text-red-900 mb-2">Clear Local Storage Cache</h3>
                       <p className="text-red-700 text-sm mb-4">
-                        This action will completely wipe all data stored in this browser for Prime Pets,
+                        This action will completely wipe all data stored in this browser for Chaitali's Artbizz,
                         including any custom products, categories, deals, or slides you have created.
                         The application will be reset to its initial default state. Use this if you are
                         experiencing "old cache" issues or want a fresh start.
