@@ -239,7 +239,7 @@ export default function AdminCategories() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-1">Emoji</label>
-                      <input type="text" placeholder="e.g. 🐶" value={editing.emoji || ''} onChange={e => setEditing({...editing, emoji: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                      <input type="text" placeholder="e.g. 🎨" value={editing.emoji || ''} onChange={e => setEditing({...editing, emoji: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-1">Background Color</label>

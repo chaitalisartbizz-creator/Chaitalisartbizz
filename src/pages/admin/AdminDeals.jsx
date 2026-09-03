@@ -205,7 +205,7 @@ export default function AdminDeals() {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Badge</label>
-                    <input type="text" placeholder="e.g. 🐕 Dogs" value={editing.badge || ''} onChange={e => setEditing({...editing, badge: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <input type="text" placeholder="e.g. 🎨 Art" value={editing.badge || ''} onChange={e => setEditing({...editing, badge: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Highlight Tag</label>
