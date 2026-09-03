@@ -85,6 +85,12 @@ function AppInner() {
     return () => window.removeEventListener('audioChanged', handler);
   }, []);
 
+  // Hard fallback: if loader never calls onFinish (e.g. stale closure), force show content after 10s
+  useEffect(() => {
+    const t = setTimeout(() => setLoaderFinished(true), 10000);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="min-h-screen w-full overflow-x-clip mesh-bg text-gray-800 font-sans relative">
       <PageLoader 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { requestNotificationPermission } from '../firebase';
 
@@ -44,226 +44,226 @@ const quotes = [
 export default function PageLoader({ onFinish, skip, dataReady }) {
   const [phase, setPhase] = useState('entry'); // 'entry' | 'loading' | 'done'
   const [quoteIndex, setQuoteIndex] = useState(0);
-  const dismissedRef = useRef(false);
+  const [visible, setVisible] = useState(true);
 
-  const dismiss = () => {
-    if (dismissedRef.current) return;
-    dismissedRef.current = true;
+  // Use ref for onFinish to always have the latest version without stale closures
+  const onFinishRef = useRef(onFinish);
+  useEffect(() => { onFinishRef.current = onFinish; }, [onFinish]);
+
+  const finishRef = useRef(false);
+
+  const finish = useCallback(() => {
+    if (finishRef.current) return;
+    finishRef.current = true;
     setPhase('done');
-    if (onFinish) onFinish();
-  };
+    setVisible(false);
+    // Call onFinish with latest ref — never stale
+    if (onFinishRef.current) onFinishRef.current();
+  }, []);
 
-  // Auto-dismiss timer starts once user has entered
+  // Rotate quotes during loading
   useEffect(() => {
     if (phase !== 'loading') return;
-    const quoteTimer = setInterval(() => {
-      setQuoteIndex(prev => (prev + 1) % quotes.length);
-    }, 2000);
-    // Dismiss after 2s max (1s if data already ready)
-    const waitTime = dataReady ? 1000 : 2500;
-    const timer = setTimeout(dismiss, waitTime);
-    return () => {
-      clearInterval(quoteTimer);
-      clearTimeout(timer);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const t = setInterval(() => setQuoteIndex(p => (p + 1) % quotes.length), 2000);
+    return () => clearInterval(t);
   }, [phase]);
 
-  // If data becomes ready while loading, dismiss early
+  // Auto-dismiss after entering loading phase
   useEffect(() => {
-    if (phase !== 'loading' || !dataReady || dismissedRef.current) return;
-    const timer = setTimeout(dismiss, 500);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataReady, phase]);
+    if (phase !== 'loading') return;
+    // Max wait: 2.5s normally, 800ms if data already here
+    const delay = dataReady ? 800 : 2500;
+    const t = setTimeout(finish, delay);
+    return () => clearTimeout(t);
+  }, [phase, finish]); // NOTE: dataReady intentionally not in deps — we use the value at transition time
+
+  // If data arrives while loading, dismiss quickly
+  useEffect(() => {
+    if (phase !== 'loading' || !dataReady) return;
+    const t = setTimeout(finish, 500);
+    return () => clearTimeout(t);
+  }, [dataReady, phase, finish]);
 
   const handleEnter = () => {
-    // Play audio synchronously (user gesture)
+    // Play audio on user gesture
     try {
       const audio = document.getElementById('site-bg-audio');
-      if (audio && typeof audio.play === 'function') {
-        audio.volume = 0.3;
-        audio.play().catch(() => {});
-      }
+      if (audio?.play) { audio.volume = 0.3; audio.play().catch(() => {}); }
     } catch (_) {}
 
-    // Switch to loading phase immediately — no async, no waiting
     setPhase('loading');
 
-    // Fire Firebase in completely detached task — NEVER block phase transition
+    // Firebase — completely detached, never blocks UI
     setTimeout(() => {
       try {
-        requestNotificationPermission().then((token) => {
+        requestNotificationPermission().then(token => {
           if (!token) return;
-          const visitorId = localStorage.getItem('visitorId');
+          const visitorId = localStorage.getItem('chaitali-artbizz-vid');
           if (visitorId) {
             import('axios').then(({ default: axios }) => {
-              axios.post('/api/analytics/track', {
-                type: 'interaction',
-                visitorId,
-                action: 'Push Enabled',
-                fcmToken: token
-              }).catch(() => {});
+              axios.post('/api/analytics/track', { type: 'interaction', visitorId, action: 'Push Enabled', fcmToken: token }).catch(() => {});
             });
           }
         }).catch(() => {});
       } catch (_) {}
-    }, 200);
+    }, 300);
   };
 
   if (skip) return null;
-  if (phase === 'done') return null;
+  if (!visible) return null;
 
   return (
     <AnimatePresence>
-      <motion.div
-        key="page-loader"
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.6 } }}
-        className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 30%, #3D2E1E 60%, #1A1A1A 100%)'
-        }}
-      >
-        {/* Glowing Artistic Aura */}
-        <div className="absolute inset-0 opacity-25 z-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C9A84C] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#8B5E7A] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
-          <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-[#C0737A] rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
-        </div>
-
-        <GoldenArtDust />
-
-        {phase === 'entry' ? (
-          /* ── ENTRY GATE ── */
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="mb-8"
-            >
-              <div className="w-40 h-40 md:w-56 md:h-56 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#C9A84C]/50 shadow-2xl mb-6 mx-auto">
-                <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" />
-              </div>
-              <h1 className="text-2xl md:text-4xl font-cinzel font-bold tracking-widest text-[#F0DFA0] mb-2 drop-shadow-md">
-                CHAITALI'S ARTBIZZ
-              </h1>
-              <p className="text-sm text-[#C9A84C] tracking-[0.2em] uppercase font-light">
-                Fine Art Gallery
-              </p>
-            </motion.div>
-
-            <motion.button
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="px-10 py-4 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] border-2 border-[#C9A84C] rounded-full text-[#F0DFA0] font-bold tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(201,168,76,0.3)] hover:shadow-[0_0_30px_rgba(201,168,76,0.6)] hover:scale-105 transition-all duration-300 cursor-pointer"
-              onClick={handleEnter}
-              onPointerUp={handleEnter}
-              onTouchEnd={(e) => { e.preventDefault(); handleEnter(); }}
-            >
-              Enter Gallery ✨
-            </motion.button>
+      {phase !== 'done' && (
+        <motion.div
+          key="page-loader"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.5 } }}
+          className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 30%, #3D2E1E 60%, #1A1A1A 100%)'
+          }}
+        >
+          {/* Glowing Artistic Aura */}
+          <div className="absolute inset-0 opacity-25 z-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C9A84C] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#8B5E7A] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+            <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-[#C0737A] rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
           </div>
-        ) : (
-          /* ── LOADER SEQUENCE ── */
-          <div
-            className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full cursor-pointer"
-            onClick={dismiss}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="mb-4"
+
+          <GoldenArtDust />
+
+          {phase === 'entry' ? (
+            /* ── ENTRY GATE ── */
+            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="mb-8"
+              >
+                <div className="w-40 h-40 md:w-56 md:h-56 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#C9A84C]/50 shadow-2xl mb-6 mx-auto">
+                  <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" />
+                </div>
+                <h1 className="text-2xl md:text-4xl font-cinzel font-bold tracking-widest text-[#F0DFA0] mb-2 drop-shadow-md">
+                  CHAITALI'S ARTBIZZ
+                </h1>
+                <p className="text-sm text-[#C9A84C] tracking-[0.2em] uppercase font-light">
+                  Fine Art Gallery
+                </p>
+              </motion.div>
+
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="px-10 py-4 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] border-2 border-[#C9A84C] rounded-full text-[#F0DFA0] font-bold tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(201,168,76,0.3)] hover:shadow-[0_0_30px_rgba(201,168,76,0.6)] hover:scale-105 transition-all duration-300 cursor-pointer"
+                onClick={handleEnter}
+                onPointerUp={handleEnter}
+                onTouchEnd={(e) => { e.preventDefault(); handleEnter(); }}
+              >
+                Enter Gallery ✨
+              </motion.button>
+            </div>
+          ) : (
+            /* ── LOADER SEQUENCE ── */
+            <div
+              className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full cursor-pointer"
+              onClick={finish}
             >
               <motion.div
-                animate={{ scale: [1, 1.03, 1], y: [0, -6, 0] }}
-                transition={{ duration: 3, ease: "easeInOut", repeat: Infinity }}
-                className="w-56 h-56 md:w-80 md:h-80 flex items-center justify-center drop-shadow-[0_0_35px_rgba(201,168,76,0.6)]"
+                initial={{ scale: 0.8, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="mb-4"
               >
-                <div className="relative w-48 h-48 md:w-72 md:h-72 flex items-center justify-center overflow-hidden rounded-full border-4 border-[#C9A84C] shadow-2xl">
-                  <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full relative z-10" />
+                <motion.div
+                  animate={{ scale: [1, 1.03, 1], y: [0, -6, 0] }}
+                  transition={{ duration: 3, ease: "easeInOut", repeat: Infinity }}
+                  className="w-56 h-56 md:w-80 md:h-80 flex items-center justify-center drop-shadow-[0_0_35px_rgba(201,168,76,0.6)]"
+                >
+                  <div className="relative w-48 h-48 md:w-72 md:h-72 flex items-center justify-center overflow-hidden rounded-full border-4 border-[#C9A84C] shadow-2xl">
+                    <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full relative z-10" />
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="text-3xl md:text-5xl font-cinzel font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#F0DFA0] via-[#C9A84C] to-[#F0DFA0] mb-1 drop-shadow-md"
+              >
+                CHAITALI'S
+              </motion.h1>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="text-2xl md:text-4xl font-cinzel font-semibold tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-[#C9A84C] via-[#8B5E7A] to-[#C9A84C] mb-2 drop-shadow-md"
+              >
+                ARTBIZZ
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-xs md:text-sm font-bold tracking-widest text-[#C9A84C] uppercase mb-4"
+              >
+                IMAGINE. WE WILL CREATE.
+              </motion.p>
+
+              {/* Cycling Quotes */}
+              <div className="h-6 mb-8 flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={quoteIndex}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-[#F0DFA0]/80 text-sm md:text-base italic font-medium tracking-wide"
+                  >
+                    &ldquo;{quotes[quoteIndex]}&rdquo;
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+
+              {/* Progress Bar */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="w-48 md:w-64 mb-8"
+              >
+                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative border border-[#C9A84C]/30">
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: dataReady ? "100%" : "85%" }}
+                    transition={dataReady
+                      ? { duration: 0.5, ease: "easeOut" }
+                      : { duration: 2.5, ease: "easeOut" }
+                    }
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#C9A84C] via-[#F0DFA0] to-[#C9A84C] shadow-[0_0_12px_rgba(201,168,76,0.9)]"
+                  />
                 </div>
               </motion.div>
-            </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-3xl md:text-5xl font-cinzel font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#F0DFA0] via-[#C9A84C] to-[#F0DFA0] mb-1 drop-shadow-md"
-            >
-              CHAITALI'S
-            </motion.h1>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-2xl md:text-4xl font-cinzel font-semibold tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-[#C9A84C] via-[#8B5E7A] to-[#C9A84C] mb-2 drop-shadow-md"
-            >
-              ARTBIZZ
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="text-xs md:text-sm font-bold tracking-widest text-[#C9A84C] uppercase mb-4"
-            >
-              IMAGINE. WE WILL CREATE.
-            </motion.p>
-
-            {/* Cycling Quotes */}
-            <div className="h-6 mb-8 flex items-center justify-center">
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={quoteIndex}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.3 }}
-                  className="text-[#F0DFA0]/80 text-sm md:text-base italic font-medium tracking-wide"
-                >
-                  &ldquo;{quotes[quoteIndex]}&rdquo;
-                </motion.p>
-              </AnimatePresence>
+              {/* Skip hint */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
+                transition={{ delay: 1, duration: 1 }}
+                className="text-[#F0DFA0] text-xs tracking-widest uppercase font-light"
+              >
+                Tap anywhere to skip
+              </motion.p>
             </div>
-
-            {/* Progress Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-              className="w-48 md:w-64 mb-8"
-            >
-              <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative border border-[#C9A84C]/30">
-                <motion.div
-                  initial={{ width: "0%" }}
-                  animate={{ width: dataReady ? "100%" : "85%" }}
-                  transition={dataReady
-                    ? { duration: 0.5, ease: "easeOut" }
-                    : { duration: 2.5, ease: "easeOut" }
-                  }
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#C9A84C] via-[#F0DFA0] to-[#C9A84C] shadow-[0_0_12px_rgba(201,168,76,0.9)]"
-                />
-              </div>
-            </motion.div>
-
-            {/* Skip hint */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              transition={{ delay: 1, duration: 1 }}
-              className="text-[#F0DFA0] text-xs tracking-widest uppercase font-light"
-            >
-              Tap anywhere to skip
-            </motion.p>
-          </div>
-        )}
-      </motion.div>
+          )}
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }
