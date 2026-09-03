@@ -32,9 +32,9 @@ function HeroCarousel() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 1, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="relative z-10 max-w-[1600px] mx-auto w-full px-4 md:px-6 mb-4"
     >
       <div
