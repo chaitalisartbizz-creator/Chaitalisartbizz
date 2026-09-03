@@ -99,7 +99,11 @@ function AppInner() {
         <>
           <ActivityTracker />
           <AnimatePresence mode="wait">
-            <Suspense fallback={<PageLoader skip={false} />}>
+            <Suspense fallback={
+              <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#1A1A1A]/80 backdrop-blur-sm">
+                <div className="w-16 h-16 rounded-full border-4 border-[#C9A84C]/30 border-t-[#C9A84C] animate-spin"></div>
+              </div>
+            }>
               <Routes location={location} key={location.pathname}>
                 {/* Storefront Routes */}
                 <Route path="/"         element={<PageTransition><HomePage /></PageTransition>} />
