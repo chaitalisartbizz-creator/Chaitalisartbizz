@@ -84,7 +84,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataReady, hasEntered]);
 
-  const handleEnter = async (e) => {
+  const handleEnter = (e) => {
     if (e) e.stopPropagation();
     setHasEntered(true);
 
@@ -97,23 +97,26 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
       }
     } catch (_) {}
 
-    // Push notification permission — also tied to user gesture so browser allows popup
-    try {
-      const token = await requestNotificationPermission();
-      if (token) {
-        const visitorId = localStorage.getItem('visitorId');
-        if (visitorId) {
-          import('axios').then(({ default: axios }) => {
-            axios.post('/api/analytics/track', {
-              type: 'interaction',
-              visitorId,
-              action: 'Push Enabled',
-              fcmToken: token
-            }).catch(() => {});
-          });
-        }
-      }
-    } catch (_) {}
+    // Push notification — fire-and-forget in a detached task
+    // NEVER await here — this must NOT block setHasEntered or the dismiss timer
+    setTimeout(() => {
+      try {
+        requestNotificationPermission().then((token) => {
+          if (!token) return;
+          const visitorId = localStorage.getItem('visitorId');
+          if (visitorId) {
+            import('axios').then(({ default: axios }) => {
+              axios.post('/api/analytics/track', {
+                type: 'interaction',
+                visitorId,
+                action: 'Push Enabled',
+                fcmToken: token
+              }).catch(() => {});
+            });
+          }
+        }).catch(() => {});
+      } catch (_) {}
+    }, 0);
   };
 
   const handleSkip = (e) => {
