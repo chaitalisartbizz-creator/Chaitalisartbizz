@@ -65,16 +65,16 @@ export default function AdminSiteEditor() {
       case 'hero':
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <h2 className="text-xl font-bold font-cinzel text-[#1A1A1A]">Hero Carousel Editor</h2>
-              <button onClick={handleSaveSlides} disabled={isSaving} className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50">
+              <button onClick={handleSaveSlides} disabled={isSaving} className="w-full sm:w-auto bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50">
                 {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                 Save Changes
               </button>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <div className="space-y-6 bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
                 {localSlides.map((slide, idx) => (
                   <div key={slide.id || idx} className="border border-gray-100 rounded-xl p-4 relative">
                     <h3 className="font-bold mb-4">Slide {idx + 1}</h3>
@@ -108,16 +108,16 @@ export default function AdminSiteEditor() {
       case 'branding':
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <h2 className="text-xl font-bold font-cinzel text-[#1A1A1A]">Global Branding</h2>
-              <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50">
+              <button onClick={handleSaveSettings} disabled={isSaving} className="w-full sm:w-auto bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50">
                 {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                 Save Settings
               </button>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <div className="space-y-6 bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
                 <UploadField 
                   label="Site Logo"
                   value={localSettings.logoBase64}
@@ -130,13 +130,13 @@ export default function AdminSiteEditor() {
               
               <div className="bg-gray-100 rounded-2xl p-4 overflow-hidden h-fit sticky top-24">
                 <h3 className="font-bold text-gray-500 mb-4 flex items-center gap-2"><ExternalLink size={16}/> Live Preview</h3>
-                <div className="w-full bg-white p-4 shadow-lg flex items-center gap-4">
+                <div className="w-full bg-white p-3 sm:p-4 shadow-lg flex items-center gap-3 sm:gap-4 overflow-hidden rounded-xl">
                    {localSettings.logoBase64 ? (
-                     <img src={localSettings.logoBase64} className="h-12 w-12 object-contain rounded-full" alt="Logo" />
+                     <img src={localSettings.logoBase64} className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-full shrink-0" alt="Logo" />
                    ) : (
-                     <div className="h-12 w-12 bg-gray-200 rounded-full" />
+                     <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-200 rounded-full shrink-0" />
                    )}
-                   <div className="font-cinzel font-bold text-xl text-[#1A1A1A]">CHAITALI'S ARTBIZZ</div>
+                   <div className="font-cinzel font-bold text-base sm:text-xl text-[#1A1A1A] truncate">CHAITALI'S ARTBIZZ</div>
                 </div>
               </div>
             </div>

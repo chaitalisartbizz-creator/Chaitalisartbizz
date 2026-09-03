@@ -87,17 +87,17 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
-        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-[#C9A84C]/30 flex items-center px-4 md:px-8 gap-4 sticky top-0 z-30 shadow-sm">
-          <button className="md:hidden p-2 -ml-2 text-stone-700" onClick={toggleSidebar}>
+        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-[#C9A84C]/30 flex items-center px-4 md:px-8 gap-2 md:gap-4 sticky top-0 z-30 shadow-sm">
+          <button className="md:hidden p-2 -ml-2 text-stone-700 shrink-0" onClick={toggleSidebar}>
             <Menu size={24} />
           </button>
-          <h1 className="font-cinzel font-bold text-base md:text-lg text-[#2C2C2C]">
-            {NAV_ITEMS.find(item => item.path === location.pathname)?.label || "Chaitali's Artbizz Admin Portal"}
+          <h1 className="font-cinzel font-bold text-sm md:text-lg text-[#2C2C2C] truncate">
+            {NAV_ITEMS.find(item => item.path === location.pathname)?.label || "Admin Portal"}
           </h1>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-3 shrink-0">
             <span className="text-xs text-stone-500 font-semibold hidden sm:block">Artbizz Studio Admin</span>
-            <Link to="/" className="text-xs font-bold text-[#2C2C2C] bg-gradient-to-r from-[#C9A84C] to-[#A8873A] hover:shadow-md px-4 py-2 rounded-xl transition-all">
-              Live Art Store →
+            <Link to="/" className="text-[10px] md:text-xs font-bold text-[#2C2C2C] bg-gradient-to-r from-[#C9A84C] to-[#A8873A] hover:shadow-md px-3 py-2 rounded-xl transition-all whitespace-nowrap">
+              Live Store →
             </Link>
           </div>
         </header>

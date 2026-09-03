@@ -51,9 +51,12 @@ const ProtectedAdminRoute = ({ children }) => {
 
 // Dramatic entrance animation — triggered by 'artbizz:loader-done' event from PageLoader
 function ContentReveal({ children }) {
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(() => {
+    return sessionStorage.getItem('artbizz-visited') === 'true';
+  });
 
   useEffect(() => {
+    if (revealed) return;
     const handler = () => setRevealed(true);
     window.addEventListener('artbizz:loader-done', handler);
     // Safety fallback: always reveal after 8s no matter what
@@ -62,7 +65,7 @@ function ContentReveal({ children }) {
       window.removeEventListener('artbizz:loader-done', handler);
       clearTimeout(fallback);
     };
-  }, []);
+  }, [revealed]);
 
   return (
     <motion.div

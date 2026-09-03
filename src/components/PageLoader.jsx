@@ -57,6 +57,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     finishRef.current = true;
     setPhase('done');
     setVisible(false);
+    sessionStorage.setItem('artbizz-visited', 'true');
     // Dispatch after the 0.5s exit animation completes
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('artbizz:loader-done'));
@@ -64,6 +65,20 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     // Call onFinish if provided (kept for compatibility)
     if (onFinishRef.current) onFinishRef.current();
   }, []);
+
+  // Check if we should skip the loader completely (e.g. on page refresh)
+  useEffect(() => {
+    if (sessionStorage.getItem('artbizz-visited') === 'true' || skip) {
+      if (!finishRef.current) {
+        finishRef.current = true;
+        setPhase('done');
+        setVisible(false);
+        window.dispatchEvent(new CustomEvent('artbizz:loader-done'));
+        if (onFinishRef.current) onFinishRef.current();
+      }
+    }
+  }, [skip]);
+
 
   // Rotate quotes during loading
   useEffect(() => {
