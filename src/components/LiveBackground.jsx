@@ -11,7 +11,7 @@ export default function LiveBackground({ theme = 'gold-mesh', className = '' }) 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const cn = "fixed inset-0 pointer-events-none -z-10 overflow-hidden " + className;
+  const cn = "absolute inset-0 pointer-events-none -z-10 overflow-hidden " + className;
 
   if (isMobile) {
     return (
