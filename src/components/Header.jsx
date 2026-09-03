@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { label: 'Art Catalogue',  path: '/category', hasDropdown: true },
   { label: 'Deals & Offers', path: '/offers' },
   { label: 'Training Program',   path: '/hub' },
-  { label: 'My Account',     path: '/account' },
 ];
 
 const SHOP_DROPS = [
@@ -158,6 +157,18 @@ export default function Header() {
                 )}
               </div>
             ))}
+            
+            {/* Dynamic Account/Login Link in Desktop Nav */}
+            <button 
+              onClick={() => navigate(isAuthenticated ? '/account' : '/login')}
+              className={`font-cinzel font-bold text-sm lg:text-[15px] tracking-wide transition-all ${
+                isActive(isAuthenticated ? '/account' : '/login') 
+                  ? 'text-[#C9A84C]' 
+                  : 'text-stone-700 hover:text-[#C9A84C]'
+              }`}
+            >
+              {isAuthenticated ? 'My Account' : 'Login / Sign Up'}
+            </button>
           </nav>
 
           {/* Search, Actions & Icons */}
@@ -258,24 +269,6 @@ export default function Header() {
               )}
             </button>
 
-            {/* Account / Login */}
-            {isAuthenticated ? (
-              <button
-                onClick={() => navigate('/account')}
-                className="hidden md:flex items-center gap-2 ml-1 px-2 lg:px-3.5 py-2 bg-[#F2EDE4] hover:bg-[#E8E0D3] text-[#2C2C2C] rounded-xl transition-colors font-bold text-sm border border-[#C9A84C]/40 flex-shrink-0"
-              >
-                <User size={16} />
-                <span className="hidden lg:block">{user?.name?.split(' ')[0] || 'Account'}</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="hidden md:flex items-center gap-2 ml-1 px-2 lg:px-3.5 py-2 bg-[#2C2C2C] hover:bg-[#1A1A1A] text-[#F0DFA0] rounded-xl transition-colors font-bold text-sm shadow-sm flex-shrink-0"
-              >
-                <User size={16} />
-                <span className="hidden lg:block">Sign In</span>
-              </button>
-            )}
 
             {/* Mobile Menu Toggle */}
             <button
