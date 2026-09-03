@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useData } from '../context/DataContext';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { requestNotificationPermission } from '../firebase';
 
 const PARTICLE_COUNT = typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 40;
 const particles = Array.from({ length: PARTICLE_COUNT }).map((_, i) => {
@@ -45,66 +45,85 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
   const [hasEntered, setHasEntered] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [quoteIndex, setQuoteIndex] = useState(0);
+  // Track whether we've already dismissed so we never call onFinish twice
+  const dismissedRef = useRef(false);
 
+  const dismiss = () => {
+    if (dismissedRef.current) return;
+    dismissedRef.current = true;
+    setIsVisible(false);
+    if (onFinish) onFinish();
+  };
+
+  // Phase 1: auto-dismiss with timeout once user has entered
   useEffect(() => {
     if (skip) return;
-    if (!hasEntered) return; // Wait for user interaction
+    if (!hasEntered) return;
 
     const quoteTimer = setInterval(() => {
       setQuoteIndex(prev => (prev + 1) % quotes.length);
     }, 2000);
 
-    let dismissed = false;
-    const dismiss = () => {
-      if (dismissed) return;
-      dismissed = true;
-      setIsVisible(false);
-      if (onFinish) onFinish();
-    };
-
-    const minTimer = setTimeout(dismiss, 6000);
+    // Show loader for 1.5s if data is ready, else max 4s
+    const waitTime = dataReady ? 1500 : 4000;
+    const timer = setTimeout(dismiss, waitTime);
 
     return () => {
       clearInterval(quoteTimer);
-      if (minTimer) clearTimeout(minTimer);
+      clearTimeout(timer);
     };
-  }, [hasEntered, skip, onFinish]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasEntered, skip]);
+
+  // Phase 2: if dataReady flips to true while we're waiting, dismiss early
+  useEffect(() => {
+    if (!hasEntered || !dataReady || dismissedRef.current) return;
+    // Give a 600ms grace period so the progress bar animation can finish
+    const timer = setTimeout(dismiss, 600);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataReady, hasEntered]);
 
   const handleEnter = async (e) => {
     if (e) e.stopPropagation();
     setHasEntered(true);
-    // Silently attempt to play audio after user interaction to satisfy browser autoplay policies
-    const audioEl = document.getElementById('site-bg-audio');
-    if (audioEl) {
-      audioEl.play().catch(e => console.log("Audio autoplay prevented", e));
-    }
-    
-    // Request notification permissions now that we have a user gesture
-    if ('Notification' in window) {
-      try {
-        const { requestNotificationPermission } = await import('../firebase');
-        const token = await requestNotificationPermission();
-        if (token) {
-          const visitorId = localStorage.getItem('chaitali-artbizz-vid');
-          if (visitorId) {
-            import('axios').then(({ default: axios }) => {
-              axios.post('/api/analytics/track', { type: 'interaction', visitorId, action: 'Push Enabled', fcmToken: token }).catch(console.error);
-            });
-          }
-        }
-      } catch (err) {
-        console.error("Failed to setup notifications:", err);
+
+    // Audio — must happen synchronously in the click handler (user gesture required)
+    try {
+      const audio = document.getElementById('site-bg-audio');
+      if (audio && typeof audio.play === 'function') {
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
       }
-    }
+    } catch (_) {}
+
+    // Push notification permission — also tied to user gesture so browser allows popup
+    try {
+      const token = await requestNotificationPermission();
+      if (token) {
+        const visitorId = localStorage.getItem('visitorId');
+        if (visitorId) {
+          import('axios').then(({ default: axios }) => {
+            axios.post('/api/analytics/track', {
+              type: 'interaction',
+              visitorId,
+              action: 'Push Enabled',
+              fcmToken: token
+            }).catch(() => {});
+          });
+        }
+      }
+    } catch (_) {}
   };
 
   const handleSkip = (e) => {
     if (e) e.stopPropagation();
-    setIsVisible(false);
-    if (onFinish) onFinish();
+    dismiss();
   };
 
-  if (skip) return null;  return (
+  if (skip) return null;
+
+  return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
@@ -126,7 +145,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
           <GoldenArtDust />
 
           {!hasEntered ? (
-            // ENTRY GATE
+            // ── ENTRY GATE ──
             <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -144,20 +163,23 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                   Fine Art Gallery
                 </p>
               </motion.div>
-              
-              <motion.button 
+
+              <motion.button
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.8 }}
                 className="px-10 py-4 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] border-2 border-[#C9A84C] rounded-full text-[#F0DFA0] font-bold tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(201,168,76,0.3)] hover:shadow-[0_0_30px_rgba(201,168,76,0.6)] hover:scale-105 transition-all duration-300"
                 onClick={handleEnter}
               >
-                Enter Gallery ✧
+                Enter Gallery ✨
               </motion.button>
             </div>
           ) : (
-            // LOADER SEQUENCE
-            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full cursor-pointer" onClick={handleSkip}>
+            // ── LOADER SEQUENCE ──
+            <div
+              className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full cursor-pointer"
+              onClick={handleSkip}
+            >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -213,7 +235,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                     transition={{ duration: 0.3 }}
                     className="text-[#F0DFA0]/80 text-sm md:text-base italic font-medium tracking-wide"
                   >
-                    "{quotes[quoteIndex]}"
+                    &ldquo;{quotes[quoteIndex]}&rdquo;
                   </motion.p>
                 </AnimatePresence>
               </div>
@@ -229,7 +251,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                   <motion.div
                     initial={{ width: "0%" }}
                     animate={{ width: dataReady ? "100%" : "85%" }}
-                    transition={dataReady 
+                    transition={dataReady
                       ? { duration: 0.5, ease: "easeOut" }
                       : { duration: 4, ease: "easeOut" }
                     }
@@ -238,8 +260,8 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                 </div>
               </motion.div>
 
-              {/* Skip Instruction */}
-              <motion.p 
+              {/* Skip hint */}
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.6 }}
                 transition={{ delay: 2, duration: 1 }}
