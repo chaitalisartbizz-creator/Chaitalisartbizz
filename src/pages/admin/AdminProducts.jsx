@@ -17,7 +17,9 @@ export default function AdminProducts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [isUploadingPrimary, setIsUploadingPrimary] = useState(false);
+  const [primaryProgress, setPrimaryProgress] = useState(0);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [galleryProgress, setGalleryProgress] = useState(0);
 
   const defaultProduct = {
     name: '', brand: '', petType: 'Dogs', category: '', price: '', mrp: '', rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: ''
@@ -268,18 +270,20 @@ export default function AdminProducts() {
                       <input id="img" type="url" placeholder="Paste URL here..." value={editing.img || ''} onChange={e => setEditing({...editing, img: e.target.value})} className="flex-1 p-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                       <span className="text-sm text-gray-500 flex items-center">OR</span>
                       <label className={`cursor-pointer ${isUploadingPrimary ? 'bg-gray-200 opacity-70' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                        {isUploadingPrimary ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload File'}
+                        {isUploadingPrimary ? <><Loader2 className="animate-spin" size={16} /> {primaryProgress}%</> : 'Upload File'}
                         <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploadingPrimary} onChange={async (e) => {
                             if (e.target.files && e.target.files[0]) {
                               setIsUploadingPrimary(true);
+                              setPrimaryProgress(0);
                               try {
-                                const base64 = await handleImageUpload(e.target.files[0]);
+                                const base64 = await handleImageUpload(e.target.files[0], setPrimaryProgress);
                                 setEditing({...editing, img: base64});
                               } catch(err) {
                                 console.error("Upload failed", err);
                                 alert("Image upload failed");
                               } finally {
                                 setIsUploadingPrimary(false);
+                                setPrimaryProgress(0);
                               }
                             }
                         }} />
@@ -313,18 +317,20 @@ export default function AdminProducts() {
                       Add URL
                     </button>
                     <label className={`cursor-pointer ${isUploadingGallery ? 'bg-gray-200 opacity-70' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                      {isUploadingGallery ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload'}
+                      {isUploadingGallery ? <><Loader2 className="animate-spin" size={16} /> {galleryProgress}%</> : 'Upload'}
                       <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploadingGallery} onChange={async (e) => {
                           if (e.target.files && e.target.files[0]) {
                             setIsUploadingGallery(true);
+                            setGalleryProgress(0);
                             try {
-                              const base64 = await handleImageUpload(e.target.files[0]);
+                              const base64 = await handleImageUpload(e.target.files[0], setGalleryProgress);
                               setEditing({ ...editing, images: [...(editing.images || []), base64] });
                             } catch(err) {
                               console.error("Upload failed", err);
                               alert("Image upload failed");
                             } finally {
                               setIsUploadingGallery(false);
+                              setGalleryProgress(0);
                             }
                           }
                       }} />

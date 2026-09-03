@@ -35,6 +35,16 @@ const upload = multer({
 
 router.post('/', upload.single('file'), async (req, res) => {
   try {
+    // If the client sent a base64 string in JSON (bypassing multer issues on Vercel)
+    if (req.body && req.body.file && typeof req.body.file === 'string') {
+      const result = await cloudinary.uploader.upload(req.body.file, {
+        resource_type: 'auto',
+        folder: 'primepets_media'
+      });
+      return res.json({ url: result.secure_url, type: result.resource_type });
+    }
+
+    // Fallback to multer (multipart/form-data)
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -52,7 +62,7 @@ router.post('/', upload.single('file'), async (req, res) => {
   } catch (error) {
     console.error('Upload Error:', error);
     // Cleanup on error
-    if (req.file && fs.existsSync(req.file.path)) {
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
     res.status(500).json({ error: 'Failed to upload file to Cloudinary' });
