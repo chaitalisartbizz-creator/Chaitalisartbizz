@@ -86,7 +86,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen min-w-0">
         <header className="h-16 bg-white/90 backdrop-blur-md border-b border-[#C9A84C]/30 flex items-center px-4 md:px-8 gap-2 md:gap-4 sticky top-0 z-30 shadow-sm">
           <button className="md:hidden p-2 -ml-2 text-stone-700 shrink-0" onClick={toggleSidebar}>
             <Menu size={24} />
