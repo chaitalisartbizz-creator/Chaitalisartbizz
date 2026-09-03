@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * Universal media component to render an image or a video 
  * based on the file extension or the URL contents.
+ * Shows a graceful art-themed placeholder when image is missing or broken.
  */
 function getUnsplashProps(src) {
   if (!src || !src.includes('images.unsplash.com')) return {};
@@ -34,8 +35,26 @@ function getUnsplashProps(src) {
   }
 }
 
+function ArtPlaceholder({ className = '' }) {
+  return (
+    <div
+      className={`flex flex-col items-center justify-center bg-gradient-to-br from-[#F2EDE4] to-[#E8D8C0] ${className}`}
+      aria-label="Image not available"
+    >
+      <span style={{ fontSize: '2rem', lineHeight: 1 }}>🎨</span>
+      <span style={{ fontSize: '10px', color: '#A8873A', fontWeight: 700, marginTop: 4, letterSpacing: '0.05em' }}>
+        No Image
+      </span>
+    </div>
+  );
+}
+
 export default function MediaDisplay({ src, alt = "Media", className = "", loading = "lazy", ...props }) {
-  if (!src) return null;
+  const [hasError, setHasError] = useState(false);
+
+  if (!src || hasError) {
+    return <ArtPlaceholder className={className} />;
+  }
   
   // Check if it's a video based on common extensions or Cloudinary video indicators
   const isVideo = src.match(/\.(mp4|webm|ogg|mov)$/i) || src.includes('/video/upload/');
@@ -62,6 +81,7 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
       alt={alt}
       className={className}
       loading={loading}
+      onError={() => setHasError(true)}
       {...responsiveProps}
       {...props}
     />
