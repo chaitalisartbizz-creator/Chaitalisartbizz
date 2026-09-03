@@ -17,7 +17,7 @@ describe('BottomNav Component Rebranding', () => {
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Catalogue')).toBeInTheDocument();
     expect(screen.getByText('Deals')).toBeInTheDocument();
-    expect(screen.getByText('Hub')).toBeInTheDocument();
-    expect(screen.getByText('Account')).toBeInTheDocument();
+    expect(screen.getByText('Training')).toBeInTheDocument();
+    expect(screen.getByText('Profile')).toBeInTheDocument();
   });
 });

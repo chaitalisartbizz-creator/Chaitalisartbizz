@@ -38,6 +38,7 @@ const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
 const AdminPayment = lazy(() => import('./pages/admin/AdminPayment'));
 const AdminMusic = lazy(() => import('./pages/admin/AdminMusic'));
 const AdminLive = lazy(() => import('./pages/admin/AdminLive'));
+const AdminSiteEditor = lazy(() => import('./pages/admin/AdminSiteEditor'));
 const AdminRetention = lazy(() => import('./pages/admin/AdminRetention'));
 const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
 
@@ -141,6 +142,7 @@ function AppInner() {
               <Route path="/admin" element={<PageTransition><ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute></PageTransition>}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="live" element={<AdminLive />} />
+                <Route path="site-editor" element={<AdminSiteEditor />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="slides" element={<AdminSlides />} />

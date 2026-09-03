@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Image, Percent,
-  Menu, X, Settings, Users, ShoppingBag, CreditCard, Music2, Activity, Palette, Bell
+  Menu, X, Settings, Users, ShoppingBag, CreditCard, Music2, Activity, Palette, Bell, Layout
 } from 'lucide-react';
 import LiveBackground from '../components/LiveBackground';
 
 const NAV_ITEMS = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/live', label: 'Live Website', icon: Activity },
+  { path: '/admin/site-editor', label: 'Site Editor', icon: Layout },
   { path: '/admin/products', label: 'Art Catalogue', icon: Palette },
   { path: '/admin/categories', label: 'Art Categories', icon: Image },
   { path: '/admin/slides', label: 'Hero Slides', icon: Image },
