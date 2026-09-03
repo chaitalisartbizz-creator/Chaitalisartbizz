@@ -100,8 +100,8 @@ function AppInner() {
           <ActivityTracker />
           <AnimatePresence mode="wait">
             <Suspense fallback={
-              <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#1A1A1A]/80 backdrop-blur-sm">
-                <div className="w-16 h-16 rounded-full border-4 border-[#C9A84C]/30 border-t-[#C9A84C] animate-spin"></div>
+              <div className="fixed top-0 left-0 right-0 z-[999] h-1 bg-[#C9A84C]/30">
+                <div className="h-full w-1/2 bg-[#C9A84C] animate-pulse" />
               </div>
             }>
               <Routes location={location} key={location.pathname}>
