@@ -52,6 +52,10 @@ export default function CategoryPage() {
     filteredProducts = filteredProducts.filter(p => p.category === activeCategory);
   }
 
+  if (activeBrand !== 'All') {
+    filteredProducts = filteredProducts.filter(p => p.brand === activeBrand);
+  }
+
   if (searchQuery.trim() !== '') {
     const terms = getSynonymQuery(searchQuery);
     const searchFiltered = filteredProducts.filter(p => {
@@ -84,11 +88,13 @@ export default function CategoryPage() {
   
   // Sorting logic
   if (sortBy === 'Price: Low to High') {
-    filteredProducts.sort((a, b) => a.price - b.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
   } else if (sortBy === 'Price: High to Low') {
-    filteredProducts.sort((a, b) => b.price - a.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
   } else if (sortBy === 'Rating') {
-    filteredProducts.sort((a, b) => b.rating - a.rating);
+    filteredProducts = [...filteredProducts].sort((a, b) => b.rating - a.rating);
+  } else if (sortBy === 'Newest') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.id - a.id);
   }
 
   return (
@@ -187,7 +193,7 @@ export default function CategoryPage() {
                   <div className="flex items-center gap-2">
                     <select value={sortBy} onChange={e => setSortBy(e.target.value)}
                       className="text-xs font-bold text-stone-700 bg-[#F2EDE4]/30 border border-[#C9A84C]/30 rounded-lg px-2.5 py-1 outline-none">
-                      {['Popular', 'Price: Low to High', 'Price: High to Low', 'Rating'].map(o => (
+                      {['Popular', 'Newest', 'Price: Low to High', 'Price: High to Low', 'Rating'].map(o => (
                         <option key={o}>{o}</option>
                       ))}
                     </select>
