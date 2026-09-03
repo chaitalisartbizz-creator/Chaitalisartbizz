@@ -57,7 +57,11 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     finishRef.current = true;
     setPhase('done');
     setVisible(false);
-    // Call onFinish with latest ref — never stale
+    // Dispatch after the 0.5s exit animation completes
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('artbizz:loader-done'));
+    }, 550);
+    // Call onFinish if provided (kept for compatibility)
     if (onFinishRef.current) onFinishRef.current();
   }, []);
 

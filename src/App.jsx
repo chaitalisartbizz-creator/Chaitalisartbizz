@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
 import PageTransition from './components/PageTransition';
 import { CartProvider } from './context/CartContext';
@@ -48,6 +48,35 @@ const ProtectedAdminRoute = ({ children }) => {
   return children;
 };
 
+// Dramatic entrance animation — triggered by 'artbizz:loader-done' event from PageLoader
+function ContentReveal({ children }) {
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setRevealed(true);
+    window.addEventListener('artbizz:loader-done', handler);
+    // Safety fallback: always reveal after 8s no matter what
+    const fallback = setTimeout(() => setRevealed(true), 8000);
+    return () => {
+      window.removeEventListener('artbizz:loader-done', handler);
+      clearTimeout(fallback);
+    };
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96, y: 30 }}
+      animate={revealed
+        ? { opacity: 1, scale: 1, y: 0 }
+        : { opacity: 0, scale: 0.96, y: 30 }
+      }
+      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 // Inner app that has access to DataContext
 function AppInner() {
   const location = useLocation();
@@ -89,8 +118,8 @@ function AppInner() {
       {/* PageLoader sits on top as a z-500 visual overlay — content always renders beneath it */}
       <PageLoader skip={false} dataReady={!loading} />
 
-      {/* Always rendered — PageLoader covers with z-index 500 until dismissed */}
-      <>
+      {/* ContentReveal plays dramatic entrance animation when PageLoader fires 'artbizz:loader-done' */}
+      <ContentReveal>
         <ActivityTracker />
         <Suspense fallback={
           <div className="fixed top-0 left-0 right-0 z-[999] h-1 bg-[#C9A84C]/30">
@@ -132,7 +161,7 @@ function AppInner() {
         <CartDrawer />
         {/* Global floating bottom nav — only visible on mobile */}
         <BottomNav />
-      </>
+      </ContentReveal>
       
       <ChatBot />
       <Toast />
