@@ -51,7 +51,6 @@ const ProtectedAdminRoute = ({ children }) => {
 // Inner app that has access to DataContext
 function AppInner() {
   const location = useLocation();
-  const [loaderFinished, setLoaderFinished] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
   const { frontendSettings, loading } = useData();
@@ -85,67 +84,55 @@ function AppInner() {
     return () => window.removeEventListener('audioChanged', handler);
   }, []);
 
-  // Hard fallback: if loader never calls onFinish (e.g. stale closure), force show content after 10s
-  useEffect(() => {
-    const t = setTimeout(() => setLoaderFinished(true), 10000);
-    return () => clearTimeout(t);
-  }, []);
-
   return (
     <div className="min-h-screen w-full overflow-x-clip mesh-bg text-gray-800 font-sans relative">
-      <PageLoader 
-        skip={false}
-        dataReady={!loading}
-        onFinish={() => {
-          setLoaderFinished(true);
-        }} 
-      />
-      
-      {loaderFinished && (
-        <>
-          <ActivityTracker />
+      {/* PageLoader sits on top as a z-500 visual overlay — content always renders beneath it */}
+      <PageLoader skip={false} dataReady={!loading} />
+
+      {/* Always rendered — PageLoader covers with z-index 500 until dismissed */}
+      <>
+        <ActivityTracker />
+        <Suspense fallback={
+          <div className="fixed top-0 left-0 right-0 z-[999] h-1 bg-[#C9A84C]/30">
+            <div className="h-full w-1/2 bg-[#C9A84C] animate-pulse" />
+          </div>
+        }>
           <AnimatePresence mode="wait">
-            <Suspense fallback={
-              <div className="fixed top-0 left-0 right-0 z-[999] h-1 bg-[#C9A84C]/30">
-                <div className="h-full w-1/2 bg-[#C9A84C] animate-pulse" />
-              </div>
-            }>
-              <Routes location={location} key={location.pathname}>
-                {/* Storefront Routes */}
-                <Route path="/"         element={<PageTransition><HomePage /></PageTransition>} />
-                <Route path="/category" element={<PageTransition><CategoryPage /></PageTransition>} />
-                <Route path="/offers"   element={<PageTransition><OffersPage /></PageTransition>} />
-                <Route path="/hub"      element={<PageTransition><HubPage /></PageTransition>} />
-                <Route path="/account"  element={<PageTransition><AccountPage /></PageTransition>} />
-                <Route path="/login"    element={<PageTransition><LoginPage /></PageTransition>} />
-                <Route path="/product/:id" element={<PageTransition><ProductPage /></PageTransition>} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={<PageTransition><ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute></PageTransition>}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="live" element={<AdminLive />} />
-                  <Route path="products" element={<AdminProducts />} />
-                  <Route path="categories" element={<AdminCategories />} />
-                  <Route path="slides" element={<AdminSlides />} />
-                  <Route path="deals" element={<AdminDeals />} />
-                  <Route path="orders" element={<AdminOrders />} />
-                  <Route path="customers" element={<AdminCustomers />} />
-                  <Route path="payment" element={<AdminPayment />} />
-                  <Route path="music" element={<AdminMusic />} />
-                  <Route path="settings" element={<AdminSettings />} />
-                  <Route path="retention" element={<AdminRetention />} />
-                  <Route path="notifications" element={<AdminNotifications />} />
-                </Route>
-              </Routes>
-            </Suspense>
+            <Routes location={location} key={location.pathname}>
+              {/* Storefront Routes */}
+              <Route path="/"         element={<PageTransition><HomePage /></PageTransition>} />
+              <Route path="/category" element={<PageTransition><CategoryPage /></PageTransition>} />
+              <Route path="/offers"   element={<PageTransition><OffersPage /></PageTransition>} />
+              <Route path="/hub"      element={<PageTransition><HubPage /></PageTransition>} />
+              <Route path="/account"  element={<PageTransition><AccountPage /></PageTransition>} />
+              <Route path="/login"    element={<PageTransition><LoginPage /></PageTransition>} />
+              <Route path="/product/:id" element={<PageTransition><ProductPage /></PageTransition>} />
+
+              {/* Admin Routes */}
+              <Route path="/admin" element={<PageTransition><ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute></PageTransition>}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="live" element={<AdminLive />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="slides" element={<AdminSlides />} />
+                <Route path="deals" element={<AdminDeals />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="customers" element={<AdminCustomers />} />
+                <Route path="payment" element={<AdminPayment />} />
+                <Route path="music" element={<AdminMusic />} />
+                <Route path="settings" element={<AdminSettings />} />
+                <Route path="retention" element={<AdminRetention />} />
+                <Route path="notifications" element={<AdminNotifications />} />
+              </Route>
+            </Routes>
           </AnimatePresence>
-          
-          <TopBar />
-          <CartDrawer />
-          {/* Global floating bottom nav — only visible on mobile */}
-          <BottomNav />
-        </>
-      )}
+        </Suspense>
+
+        <TopBar />
+        <CartDrawer />
+        {/* Global floating bottom nav — only visible on mobile */}
+        <BottomNav />
+      </>
       
       <ChatBot />
       <Toast />
