@@ -129,15 +129,14 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
   };
 
   if (skip) return null;
-  if (!visible) return null;
 
   return (
     <AnimatePresence>
-      {phase !== 'done' && (
+      {visible && phase !== 'done' && (
         <motion.div
           key="page-loader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.5 } }}
+          exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.8 } }}
           className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 30%, #3D2E1E 60%, #1A1A1A 100%)'
