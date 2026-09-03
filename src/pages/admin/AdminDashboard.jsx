@@ -144,14 +144,29 @@ export default function AdminDashboard() {
                 >
                   1 Month
                 </button>
-                <div className="flex items-center gap-2 px-2">
-                  <button 
-                    onClick={() => setDateRange('custom')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 ${dateRange === 'custom' ? 'bg-[#2C2C2C] text-[#C9A84C] shadow' : 'text-stone-600'}`}
-                  >
-                    <Calendar size={13} /> Custom
-                  </button>
-                </div>
+                <button 
+                  onClick={() => setDateRange('custom')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 ${dateRange === 'custom' ? 'bg-[#2C2C2C] text-[#C9A84C] shadow' : 'text-stone-600'}`}
+                >
+                  <Calendar size={13} /> Custom
+                </button>
+                {dateRange === 'custom' && (
+                  <div className="flex items-center gap-1 ml-1 pl-2 border-l border-[#C9A84C]/30">
+                    <input 
+                      type="date" 
+                      value={customStart}
+                      onChange={(e) => setCustomStart(e.target.value)}
+                      className="text-[10px] bg-white/80 border border-[#C9A84C]/30 rounded px-1.5 py-1 outline-none text-stone-600 focus:border-[#C9A84C]"
+                    />
+                    <span className="text-stone-400 text-[10px]">-</span>
+                    <input 
+                      type="date" 
+                      value={customEnd}
+                      onChange={(e) => setCustomEnd(e.target.value)}
+                      className="text-[10px] bg-white/80 border border-[#C9A84C]/30 rounded px-1.5 py-1 outline-none text-stone-600 focus:border-[#C9A84C]"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
