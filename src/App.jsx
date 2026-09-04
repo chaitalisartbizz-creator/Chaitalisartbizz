@@ -84,7 +84,7 @@ function ContentReveal({ children }) {
 // Inner app that has access to DataContext
 function AppInner() {
   const location = useLocation();
-  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
   const { frontendSettings, loading } = useData();
 
@@ -92,30 +92,63 @@ function AppInner() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Update audio source when settings change
+  // Sync audio state when audio element fires events
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onPlay  = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    audio.addEventListener('play',  onPlay);
+    audio.addEventListener('pause', onPause);
+    return () => {
+      audio.removeEventListener('play',  onPlay);
+      audio.removeEventListener('pause', onPause);
+    };
+  }, []);
+
+  // Update audio source when settings change (e.g. after page reload / DataContext load)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const newSrc = frontendSettings?.siteAudioUrl || '/background.mp3';
-    if (audio.src !== newSrc && !audio.src.endsWith(newSrc)) {
+    const currentSrc = audio.src;
+    // Normalise: browser sets absolute src, so compare endings
+    if (!currentSrc.endsWith(newSrc) && currentSrc !== newSrc) {
       const wasPlaying = !audio.paused;
       audio.src = newSrc;
-      if (wasPlaying) audio.play().catch(() => {});
+      audio.load();
+      if (wasPlaying) {
+        audio.play().catch(() => {});
+      }
     }
   }, [frontendSettings?.siteAudioUrl]);
 
-  // Listen for audio changed event from AdminMusic
+  // Listen for audio changed event dispatched by AdminMusic after saving
   useEffect(() => {
     const handler = (e) => {
       const audio = audioRef.current;
       if (!audio) return;
       const wasPlaying = !audio.paused;
       audio.src = e.detail.url || '/background.mp3';
-      if (wasPlaying) audio.play().catch(() => {});
+      audio.load();
+      // Always try to play when admin explicitly saves new audio
+      audio.volume = 0.3;
+      audio.play().catch(() => {});
     };
     window.addEventListener('audioChanged', handler);
     return () => window.removeEventListener('audioChanged', handler);
   }, []);
+
+  const handleToggleAudio = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) {
+      audio.volume = 0.3;
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
+  };
 
   return (
     <div className="min-h-screen w-full overflow-x-clip mesh-bg text-gray-800 font-sans relative">
@@ -178,20 +211,19 @@ function AppInner() {
         src={frontendSettings?.siteAudioUrl || '/background.mp3'}
         loop
         preload="none"
-        muted={isMuted}
         className="hidden"
       />
       
       <button
-        onClick={() => setIsMuted(!isMuted)}
-        title={isMuted ? 'Unmute Music' : 'Mute Music'}
+        onClick={handleToggleAudio}
+        title={isPlaying ? 'Pause Music' : 'Play Music'}
         className="md:bottom-6 fixed bottom-[100px] left-4 z-[75] group bg-[#2C2C2C]/90 hover:bg-[#C9A84C] text-[#F0DFA0] p-2.5 rounded-full backdrop-blur shadow-lg transition-all duration-200 border border-[#C9A84C]/30 hover:scale-110 hover:shadow-[0_0_20px_rgba(201,168,76,0.5)]"
-        aria-label="Toggle Mute"
+        aria-label="Toggle Music"
       >
         <span className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          {isMuted ? 'Unmute' : 'Mute'}
+          {isPlaying ? 'Pause Music' : 'Play Music'}
         </span>
-        {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
       </button>
     </div>
   );
