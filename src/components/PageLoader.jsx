@@ -175,12 +175,13 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.8 }}
-                className="px-10 py-4 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] border-2 border-[#C9A84C] rounded-full text-[#F0DFA0] font-bold tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(201,168,76,0.3)] hover:shadow-[0_0_30px_rgba(201,168,76,0.6)] hover:scale-105 transition-all duration-300 cursor-pointer"
-                onClick={handleEnter}
-                onPointerUp={handleEnter}
-                onTouchEnd={(e) => { e.preventDefault(); handleEnter(); }}
+                className={`px-10 py-4 border-2 border-[#C9A84C] rounded-full text-[#F0DFA0] font-bold tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(201,168,76,0.3)] transition-all duration-300 ${!dataReady ? 'bg-transparent opacity-60 cursor-wait' : 'bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] hover:shadow-[0_0_30px_rgba(201,168,76,0.6)] hover:scale-105 cursor-pointer'}`}
+                onClick={dataReady ? handleEnter : undefined}
+                onPointerUp={dataReady ? handleEnter : undefined}
+                onTouchEnd={(e) => { e.preventDefault(); if (dataReady) handleEnter(); }}
+                disabled={!dataReady}
               >
-                Enter Gallery ✨
+                {!dataReady ? 'Loading Gallery...' : 'Enter Gallery ✨'}
               </motion.button>
             </div>
           ) : (
