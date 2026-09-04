@@ -42,9 +42,18 @@ function HeroCarousel() {
         onMouseEnter={() => setAuto(false)}
         onMouseLeave={() => setAuto(true)}
       >
-        {s.heroImage && (
+        {s.mobileImage ? (
+          <>
+            <div className="block md:hidden">
+              <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-auto object-cover max-h-[600px]" loading="eager" />
+            </div>
+            <div className="hidden md:block">
+              <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-auto object-cover max-h-[520px]" loading="eager" />
+            </div>
+          </>
+        ) : s.heroImage ? (
           <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-auto object-cover max-h-[520px]" loading="eager" />
-        )}
+        ) : null}
         
         {/* Navigation Arrows */}
         <button onClick={prev} className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-[#C9A84C] hover:text-white transition-all z-20">

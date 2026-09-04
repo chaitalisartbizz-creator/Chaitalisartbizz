@@ -59,7 +59,7 @@ export default function AdminSiteEditor() {
   };
 
   const addSlide = () => {
-    setLocalSlides([...localSlides, { heroImage: '', title: '', subtitle: '', cta: '', gradient: '', tag: '', badge: '' }]);
+    setLocalSlides([...localSlides, { heroImage: '', mobileImage: '', title: '', subtitle: '', cta: '', gradient: '', tag: '', badge: '' }]);
   };
 
   const removeSlide = async (idx, id) => {
@@ -130,6 +130,19 @@ export default function AdminSiteEditor() {
                       recommendedSize="1920×700px"
                       maxSize="3MB"
                     />
+                    <div className="mt-4">
+                      <UploadField 
+                        label="Mobile Image (Optional)"
+                        value={slide.mobileImage}
+                        onChange={(url) => {
+                          const newSlides = [...localSlides];
+                          newSlides[idx].mobileImage = url;
+                          setLocalSlides(newSlides);
+                        }}
+                        recommendedSize="800×1000px"
+                        maxSize="2MB"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

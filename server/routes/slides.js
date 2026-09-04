@@ -17,11 +17,12 @@ router.get('/', async (req, res) => {
 // POST new slide
 router.post('/', async (req, res) => {
   try {
-    const { gradient, tag, badge, title, subtitle, cta, dog, cat, heroImage } = req.body;
+    const { gradient, tag, badge, title, subtitle, cta, dog, cat, heroImage, mobileImage } = req.body;
     
-    const uploadedDog = await uploadToCloudinary(dog, 'prime_pets/slides');
-    const uploadedCat = await uploadToCloudinary(cat, 'prime_pets/slides');
-    const uploadedHeroImage = await uploadToCloudinary(heroImage, 'prime_pets/slides');
+    const uploadedDog = await uploadToCloudinary(dog, 'artbizz_media/slides');
+    const uploadedCat = await uploadToCloudinary(cat, 'artbizz_media/slides');
+    const uploadedHeroImage = await uploadToCloudinary(heroImage, 'artbizz_media/slides');
+    const uploadedMobileImage = await uploadToCloudinary(mobileImage, 'artbizz_media/slides');
 
     const slide = await prisma.slide.create({
       data: {
@@ -33,7 +34,8 @@ router.post('/', async (req, res) => {
         cta: cta || '',
         dog: uploadedDog || '',
         cat: uploadedCat || '',
-        heroImage: uploadedHeroImage || ''
+        heroImage: uploadedHeroImage || '',
+        mobileImage: uploadedMobileImage || ''
       }
     });
     
@@ -48,11 +50,12 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { gradient, tag, badge, title, subtitle, cta, dog, cat, heroImage } = req.body;
+    const { gradient, tag, badge, title, subtitle, cta, dog, cat, heroImage, mobileImage } = req.body;
     
-    const uploadedDog = await uploadToCloudinary(dog, 'prime_pets/slides');
-    const uploadedCat = await uploadToCloudinary(cat, 'prime_pets/slides');
-    const uploadedHeroImage = await uploadToCloudinary(heroImage, 'prime_pets/slides');
+    const uploadedDog = await uploadToCloudinary(dog, 'artbizz_media/slides');
+    const uploadedCat = await uploadToCloudinary(cat, 'artbizz_media/slides');
+    const uploadedHeroImage = await uploadToCloudinary(heroImage, 'artbizz_media/slides');
+    const uploadedMobileImage = await uploadToCloudinary(mobileImage, 'artbizz_media/slides');
 
     const slide = await prisma.slide.update({
       where: { id: Number(id) },
@@ -65,7 +68,8 @@ router.put('/:id', async (req, res) => {
         cta: cta || '',
         dog: uploadedDog || '',
         cat: uploadedCat || '',
-        heroImage: uploadedHeroImage || ''
+        heroImage: uploadedHeroImage || '',
+        mobileImage: uploadedMobileImage || ''
       }
     });
     

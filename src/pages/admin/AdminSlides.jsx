@@ -16,7 +16,8 @@ export default function AdminSlides() {
   const [isUploading, setIsUploading] = useState(false);
 
   const defaultSlide = {
-    heroImage: ''
+    heroImage: '',
+    mobileImage: ''
   };
 
 
@@ -179,6 +180,39 @@ export default function AdminSlides() {
                                    try {
                                      const base64 = await handleImageUpload(e.target.files[0]);
                                      setEditingSlide({...editingSlide, heroImage: base64});
+                                   } catch(err) {
+                                     console.error("Upload failed", err);
+                                     alert("Image upload failed");
+                                   } finally {
+                                     setIsUploading(false);
+                                   }
+                                 }
+                             }} />
+                           </label>
+                         </div>
+                       </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">
+                      Mobile Banner Media (Optional)
+                      <span className="block text-xs text-gray-400 font-normal mt-0.5">Recommended Size: 800x1000 pixels</span>
+                    </label>
+                    <div className="flex gap-2 items-center">
+                       {editingSlide.mobileImage && <MediaDisplay src={editingSlide.mobileImage} className="w-10 h-16 rounded bg-gray-100 object-cover shrink-0 border" alt="thumb" />}
+                       <div className="flex-1 flex flex-col">
+                         <div className="flex gap-2">
+                           <input type="url" value={editingSlide.mobileImage || ''} onChange={e => setEditingSlide({...editingSlide, mobileImage: e.target.value})} className="flex-1 p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" placeholder="Paste mobile media URL here..." />
+                           <span className="text-sm text-gray-500 flex items-center">OR</span>
+                           <label className={`cursor-pointer ${isUploading ? 'bg-gray-100 opacity-70' : 'bg-white hover:bg-gray-50'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
+                             {isUploading ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload'}
+                             <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploading} onChange={async (e) => {
+                                 if (e.target.files && e.target.files[0]) {
+                                   setIsUploading(true);
+                                   try {
+                                     const base64 = await handleImageUpload(e.target.files[0]);
+                                     setEditingSlide({...editingSlide, mobileImage: base64});
                                    } catch(err) {
                                      console.error("Upload failed", err);
                                      alert("Image upload failed");

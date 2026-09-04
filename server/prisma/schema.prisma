@@ -10,17 +10,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  firebaseId String? @unique
-  email     String?  @unique
-  phone     String?  @unique
-  name      String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  firebaseId String?  @unique
+  email      String?  @unique
+  phone      String?  @unique
+  name       String
+  role       String   @default("user")
+  createdAt  DateTime @default(now())
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
   brand       String
   price       Float
@@ -58,20 +58,21 @@ model Deal {
 }
 
 model Slide {
-  id       Int     @id @default(autoincrement())
-  gradient String
-  tag      String
-  badge    String
-  title    String
-  subtitle String
-  cta      String
-  dog      String?
-  cat      String?
+  id        Int     @id @default(autoincrement())
+  gradient  String
+  tag       String
+  badge     String
+  title     String
+  subtitle  String
+  cta       String
+  dog       String?
+  cat       String?
   heroImage String?
+  mobileImage String?
 }
 
 model FrontendSetting {
-  id                  Int    @id @default(autoincrement())
+  id                  Int     @id @default(autoincrement())
   storeName           String
   tagline             String
   logoChar            String
@@ -98,22 +99,22 @@ model Banner {
 }
 
 model Order {
-  id            Int      @id @default(autoincrement())
-  visitorId     String?
-  customerName  String
-  customerPhone String
-  customerEmail String?
-  customerAddress String
-  items         String   // JSON string of cart items
-  total         Float
-  paymentMethod String   // "COD" | "ONLINE"
-  paymentStatus String   @default("PENDING") // PENDING | PAID | FAILED
-  status        String   @default("PENDING") // PENDING | CONFIRMED | SHIPPED | DELIVERED | CANCELLED
-  razorpayOrderId String?
+  id                Int      @id @default(autoincrement())
+  visitorId         String?
+  customerName      String
+  customerPhone     String
+  customerEmail     String?
+  customerAddress   String
+  items             String // JSON string of cart items
+  total             Float
+  paymentMethod     String // "COD" | "ONLINE"
+  paymentStatus     String   @default("PENDING") // PENDING | PAID | FAILED
+  status            String   @default("PENDING") // PENDING | CONFIRMED | SHIPPED | DELIVERED | CANCELLED
+  razorpayOrderId   String?
   razorpayPaymentId String?
-  notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model SiteVisit {
@@ -133,15 +134,15 @@ model ActivityLog {
 }
 
 model Visitor {
-  id            String   @id @default(uuid())
-  visitorId     String   @unique
-  name          String?
-  phone         String?
-  fcmToken      String?
-  device        String?
-  browser       String?
-  os            String?
-  ip            String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @default(uuid())
+  visitorId String   @unique
+  name      String?
+  phone     String?
+  fcmToken  String?
+  device    String?
+  browser   String?
+  os        String?
+  ip        String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
