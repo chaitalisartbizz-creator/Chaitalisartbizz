@@ -35,7 +35,7 @@ export default function Header() {
   const location = useLocation();
   const { cartCount, wishlistItems, setCartOpen } = useCart();
   const { user, isAuthenticated } = useAuth();
-  const { products, frontendSettings } = useData();
+  const { products, frontendSettings, categories } = useData();
   const settings = frontendSettings || {};
   const wishlistCount = wishlistItems ? wishlistItems.length : 0;
 
@@ -289,31 +289,20 @@ export default function Header() {
         {/* Category Strip */}
         <div className="border-t border-[#C9A84C]/20 bg-[#F2EDE4]/50 py-1.5 px-4 md:px-6">
           <div className="max-w-[1600px] mx-auto flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            {[
-              { label: '🖼️ Custom Portraits', category: 'Custom Portraits', query: 'Portrait' },
-              { label: '🌿 Resin Art', category: 'Resin Art', query: 'Resin' },
-              { label: '✨ Digital Designs', category: 'Digital Designs', query: 'Digital' },
-              { label: '🎁 Personalised Gifts', category: 'Personalised Gifts', query: 'Gift' },
-              { label: '💐 Decor Art', category: 'Decor Art', query: 'Decor' },
-              { label: '📦 Festive Packages', category: 'Festive Packages', query: '' },
-              { label: '🎨 Canvas Paintings', category: 'Canvas Paintings', query: 'Canvas' },
-              { label: '🏺 Clay Art', category: 'Clay Art', query: 'Clay' },
-            ].map((item) => {
+            {(categories || []).map((cat) => {
               const currentCat = location.state?.category;
-              const currentQuery = location.state?.searchQuery || '';
-              const isSelected = (currentCat === item.category && (!item.query || currentQuery.toLowerCase().includes(item.query.toLowerCase()))) ||
-                                 (currentQuery && item.query && currentQuery.toLowerCase().includes(item.query.toLowerCase()));
+              const isSelected = currentCat === cat.label;
               return (
                 <button
-                  key={item.label}
-                  onClick={() => navigate('/category', { state: { category: item.category, searchQuery: item.query } })}
+                  key={cat.id || cat.label}
+                  onClick={() => navigate('/category', { state: { category: cat.label } })}
                   className={`flex-shrink-0 text-xs font-bold px-3 py-1 rounded-full border transition-all whitespace-nowrap ${
                     isSelected
                       ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C] shadow-sm'
                       : 'bg-white/80 text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C] hover:text-[#C9A84C] hover:bg-[#F2EDE4]'
                   }`}
                 >
-                  {item.label}
+                  {cat.emoji && <span className="mr-1">{cat.emoji}</span>}{cat.label}
                 </button>
               );
             })}
