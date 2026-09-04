@@ -37,6 +37,7 @@ app.use('/api/payment', require('./routes/payment'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/cron', require('./routes/cron'));
+app.use('/api/instagram', require('./routes/instagram'));
 
 if (process.env.NODE_ENV !== 'production' && require.main === module) {
   app.listen(port, () => {

@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
 
     const settings = await prisma.frontendSetting.findFirst();
     const banners = await prisma.banner.findMany();
+    const instagramFeeds = await prisma.instagramFeed.findMany({ orderBy: { createdAt: 'desc' } });
 
     res.json({
       slides,
@@ -31,7 +32,8 @@ router.get('/', async (req, res) => {
       categories,
       deals,
       products,
-      frontendSettings: settings
+      frontendSettings: settings,
+      instagramFeeds
     });
   } catch (error) {
     console.error('Error fetching combined data:', error);

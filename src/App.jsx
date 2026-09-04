@@ -31,6 +31,7 @@ const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'));
 const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'));
+const AdminInstagram = lazy(() => import('./pages/admin/AdminInstagram'));
 const AdminSlides = lazy(() => import('./pages/admin/AdminSlides'));
 const AdminDeals = lazy(() => import('./pages/admin/AdminDeals'));
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
@@ -183,6 +184,7 @@ function AppInner() {
                 <Route path="site-editor" element={<AdminSiteEditor />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="categories" element={<AdminCategories />} />
+                <Route path="instagram" element={<AdminInstagram />} />
                 <Route path="slides" element={<AdminSlides />} />
                 <Route path="deals" element={<AdminDeals />} />
                 <Route path="orders" element={<AdminOrders />} />

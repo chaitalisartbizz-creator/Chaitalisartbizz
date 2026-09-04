@@ -10,6 +10,7 @@ export function DataProvider({ children }) {
   const [deals, setDeals] = useState([]);
   const [products, setProducts] = useState([]);
   const [frontendSettings, setFrontendSettings] = useState(null);
+  const [instagramFeeds, setInstagramFeeds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [fcmToken, setFcmToken] = useState(null);
@@ -43,12 +44,14 @@ export function DataProvider({ children }) {
     setLoading(true);
     try {
       const res = await axios.get('/api/data');
-      setSlides(res.data.slides || []);
-      setBanners(res.data.banners || []);
-      setCategories(res.data.categories || []);
-      setDeals(res.data.deals || []);
-      setProducts(res.data.products || []);
-      setFrontendSettings(res.data.frontendSettings || null);
+      const { slides, categories, deals, products, frontendSettings, banners, instagramFeeds } = res.data;
+      setSlides(slides || []);
+      setCategories(categories || []);
+      setDeals(deals || []);
+      setProducts(products || []);
+      setFrontendSettings(frontendSettings || null);
+      setBanners(banners || []);
+      setInstagramFeeds(instagramFeeds || []);
     } catch (error) {
       console.error("Failed to fetch initial data:", error);
     } finally {
@@ -74,6 +77,7 @@ export function DataProvider({ children }) {
       deals, setDeals,
       products, setProducts,
       frontendSettings, setFrontendSettings,
+      instagramFeeds, setInstagramFeeds,
       activityLog, logActivity,
       loading,
       refreshData
