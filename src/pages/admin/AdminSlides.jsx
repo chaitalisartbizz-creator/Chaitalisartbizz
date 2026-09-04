@@ -1,243 +1,139 @@
-import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { handleImageUpload } from '../../utils/imageUpload';
-import MediaDisplay from '../../components/MediaDisplay';
 import { useData } from '../../context/DataContext';
 import { useCart } from '../../context/CartContext';
-import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, LayoutTemplate, Loader2 } from 'lucide-react';
+import { ImageIcon, Loader2, Save, ExternalLink } from 'lucide-react';
+import UploadField from '../../components/UploadField';
 
 export default function AdminSlides() {
-  const { slides, banners, refreshData } = useData();
+  const { slides, refreshData } = useData();
   const { showToast } = useCart();
-  const [editingSlide, setEditingSlide] = useState(null);
-  const [isSlideModalOpen, setIsSlideModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [localSlides, setLocalSlides] = useState(slides || []);
 
-  const defaultSlide = {
-    heroImage: '',
-    mobileImage: ''
-  };
+  useEffect(() => {
+    setLocalSlides(slides || []);
+  }, [slides]);
 
-
-  const handleSaveSlide = async (e) => {
-    e.preventDefault();
+  const handleSaveSlides = async () => {
+    setIsSaving(true);
     try {
-      if (editingSlide.id) {
-        await axios.put(`/api/slides/${editingSlide.id}`, editingSlide);
-        showToast('Slide updated successfully!');
-      } else {
-        await axios.post('/api/slides', editingSlide);
-        showToast('New slide added!');
+      for (const slide of localSlides) {
+        if (slide.id) {
+          await axios.put(`/api/slides/${slide.id}`, slide);
+        } else {
+          await axios.post(`/api/slides`, slide);
+        }
       }
       await refreshData();
-      setIsSlideModalOpen(false);
+      showToast('Slides saved successfully!');
     } catch (err) {
       console.error(err);
-      showToast('Error saving slide.');
+      showToast('Error saving slides.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleDeleteSlide = async (id) => {
-    if (confirm('Are you sure you want to delete this slide?')) {
-      try {
-        await axios.delete(`/api/slides/${id}`);
-        showToast('Slide deleted.');
-        await refreshData();
-      } catch (err) {
-        console.error(err);
-        showToast('Error deleting slide.');
+  const addSlide = () => {
+    setLocalSlides([...localSlides, { heroImage: '', mobileImage: '', title: '', subtitle: '', cta: '', gradient: '', tag: '', badge: '' }]);
+  };
+
+  const removeSlide = async (idx, id) => {
+    if (confirm('Are you sure you want to remove this slide?')) {
+      if (id) {
+        try {
+          await axios.delete(`/api/slides/${id}`);
+          await refreshData();
+        } catch (err) {
+          console.error(err);
+          showToast('Error removing slide.');
+          return;
+        }
       }
+      const newSlides = [...localSlides];
+      newSlides.splice(idx, 1);
+      setLocalSlides(newSlides);
+      showToast('Slide removed.');
     }
   };
-  const filteredSlides = slides.filter(s => 
-    s.id.toString().includes(searchQuery)
-  );
-
 
   return (
-    <>
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden animate-fade-in">
-        {/* Header & Search */}
-      <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/30">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">Hero Slides</h2>
-          <p className="text-sm text-gray-500">Manage homepage visuals</p>
-        </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
-          <div className="relative w-full sm:w-48">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm"
-            />
+    <div className="animate-fade-in">
+      <div className="mb-8">
+        <h1 className="text-3xl font-cinzel font-bold text-[#1A1A1A]">Hero Slides</h1>
+        <p className="text-gray-500 mt-2">Visually edit homepage carousel with live preview</p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="text-xl font-bold font-cinzel text-[#1A1A1A]">Hero Carousel Editor</h2>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button onClick={addSlide} className="w-full sm:w-auto bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
+              + Add Slide
+            </button>
+            <button onClick={handleSaveSlides} disabled={isSaving} className="w-full sm:w-auto bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50 shadow-sm">
+              {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+              Save Changes
+            </button>
           </div>
-          <button onClick={() => { setEditingSlide(defaultSlide); setIsSlideModalOpen(true); }} className="flex items-center justify-center gap-2 bg-[#C9A84C] hover:bg-[#A8873A] text-white px-4 py-2 rounded-xl font-semibold transition-all shadow-lg shadow-[#C9A84C]/20 whitespace-nowrap">
-            <Plus size={18} /> Add Slide
-          </button>
         </div>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50/50 text-gray-500 text-sm border-b border-gray-100">
-              <th className="p-4 font-semibold pl-6">ID</th>
-              <th className="p-4 font-semibold">Media</th>
-              <th className="p-4 font-semibold text-right pr-6">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {filteredSlides.map(s => (
-              <tr key={s.id} className="hover:bg-gray-50/30 transition-colors group">
-                <td className="p-4 pl-6">
-                  <p className="font-bold text-gray-800 text-xs text-gray-500">#{s.id}</p>
-                </td>
-                <td className="p-4">
-                  <div className="flex gap-2">
-                    {s.heroImage ? (
-                      <div className={`w-24 h-12 rounded-xl overflow-hidden shadow-sm bg-gray-50 flex items-center justify-center`}>
-                        <MediaDisplay src={s.heroImage} alt="hero bg" className="w-full h-full object-cover" />
-                      </div>
-                    ) : (
-                      <div className="w-24 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300"><ImageIcon size={16}/></div>
-                    )}
-                  </div>
-                </td>
-                <td className="p-4 pr-6">
-                  <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button title="Edit Banner" onClick={() => { setEditingSlide(s); setIsSlideModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors">
-                      <Edit2 size={18} />
-                    </button>
-                    <button title="Delete Banner" onClick={() => handleDeleteSlide(s.id)} className="p-2 text-red-500 hover:bg-red-100 rounded-xl transition-colors">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {filteredSlides.length === 0 && (
-              <tr>
-                <td colSpan="3" className="p-12 text-center">
-                  <div className="inline-flex flex-col items-center justify-center text-gray-400">
-                    <LayoutTemplate size={48} className="mb-4 text-gray-300" />
-                    <p className="text-lg font-medium text-gray-500">No banners found</p>
-                  </div>
-                </td>
-              </tr>
+        
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div className="space-y-6 bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
+            {localSlides.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                No slides added yet. Click "Add Slide" to begin.
+              </div>
             )}
-          </tbody>
-        </table>
-      </div>
-      </div>
-
-      {isSlideModalOpen && createPortal(
-        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[300] flex items-center justify-center p-4 animate-fade-in">
-          <form onSubmit={handleSaveSlide} className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-            <div className="p-6 border-b flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-800">{editingSlide.id ? 'Edit Slide' : 'Add New Slide'}</h3>
-              <button type="button" onClick={() => setIsSlideModalOpen(false)} className="w-8 h-8 flex items-center justify-center bg-white border rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="overflow-y-auto flex-1 p-6">
-              <div className="space-y-8">
-                
-                {/* Visual Preview */}
-                <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                  <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2"><ImageIcon size={16}/> Live Preview Layout</h4>
-                  <div className="w-full h-32 rounded-xl shadow-inner flex overflow-hidden relative bg-gray-900">
-                    {editingSlide.heroImage ? (
-                      <MediaDisplay src={editingSlide.heroImage} className="absolute inset-0 w-full h-full object-cover" alt="hero bg" />
-                    ) : (
-                      <div className="flex w-full items-center justify-center text-gray-500 text-sm">Upload an image to see preview</div>
-                    )}
-                  </div>
+            {localSlides.map((slide, idx) => (
+              <div key={slide.id || idx} className="border border-gray-100 rounded-xl p-4 relative">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold">Slide {idx + 1}</h3>
+                  <button onClick={() => removeSlide(idx, slide.id)} className="text-red-500 hover:text-red-700 text-sm font-medium">
+                    Remove
+                  </button>
                 </div>
-
-                <div className="space-y-4">
-                  <h4 className="font-bold text-gray-800 border-b pb-2">🖼️ Media</h4>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">
-                      Banner Media (Image or Video) <span className="text-red-500">*</span>
-                      <span className="block text-xs text-gray-400 font-normal mt-0.5">Recommended Size: 1920x640 pixels (3:1 ratio)</span>
-                    </label>
-                    <div className="flex gap-2 items-center">
-                       {editingSlide.heroImage && <MediaDisplay src={editingSlide.heroImage} className="w-16 h-10 rounded bg-gray-100 object-cover shrink-0 border" alt="thumb" />}
-                       <div className="flex-1 flex flex-col">
-                         <div className="flex gap-2">
-                           <input type="url" value={editingSlide.heroImage || ''} onChange={e => setEditingSlide({...editingSlide, heroImage: e.target.value})} className="flex-1 p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" placeholder="Paste media URL here..." />
-                           <span className="text-sm text-gray-500 flex items-center">OR</span>
-                           <label className={`cursor-pointer ${isUploading ? 'bg-gray-100 opacity-70' : 'bg-white hover:bg-gray-50'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                             {isUploading ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload'}
-                             <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploading} onChange={async (e) => {
-                                 if (e.target.files && e.target.files[0]) {
-                                   setIsUploading(true);
-                                   try {
-                                     const base64 = await handleImageUpload(e.target.files[0]);
-                                     setEditingSlide({...editingSlide, heroImage: base64});
-                                   } catch(err) {
-                                     console.error("Upload failed", err);
-                                     alert("Image upload failed");
-                                   } finally {
-                                     setIsUploading(false);
-                                   }
-                                 }
-                             }} />
-                           </label>
-                         </div>
-                       </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">
-                      Mobile Banner Media (Optional)
-                      <span className="block text-xs text-gray-400 font-normal mt-0.5">Recommended Size: 800x1000 pixels</span>
-                    </label>
-                    <div className="flex gap-2 items-center">
-                       {editingSlide.mobileImage && <MediaDisplay src={editingSlide.mobileImage} className="w-10 h-16 rounded bg-gray-100 object-cover shrink-0 border" alt="thumb" />}
-                       <div className="flex-1 flex flex-col">
-                         <div className="flex gap-2">
-                           <input type="url" value={editingSlide.mobileImage || ''} onChange={e => setEditingSlide({...editingSlide, mobileImage: e.target.value})} className="flex-1 p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" placeholder="Paste mobile media URL here..." />
-                           <span className="text-sm text-gray-500 flex items-center">OR</span>
-                           <label className={`cursor-pointer ${isUploading ? 'bg-gray-100 opacity-70' : 'bg-white hover:bg-gray-50'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                             {isUploading ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload'}
-                             <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploading} onChange={async (e) => {
-                                 if (e.target.files && e.target.files[0]) {
-                                   setIsUploading(true);
-                                   try {
-                                     const base64 = await handleImageUpload(e.target.files[0]);
-                                     setEditingSlide({...editingSlide, mobileImage: base64});
-                                   } catch(err) {
-                                     console.error("Upload failed", err);
-                                     alert("Image upload failed");
-                                   } finally {
-                                     setIsUploading(false);
-                                   }
-                                 }
-                             }} />
-                           </label>
-                         </div>
-                       </div>
-                    </div>
-                  </div>
+                <UploadField 
+                  label="Desktop Image"
+                  value={slide.heroImage}
+                  onChange={(url) => {
+                    const newSlides = [...localSlides];
+                    newSlides[idx].heroImage = url;
+                    setLocalSlides(newSlides);
+                  }}
+                  recommendedSize="1920×700px"
+                  maxSize="3MB"
+                />
+                <div className="mt-4">
+                  <UploadField 
+                    label="Mobile Image (Optional)"
+                    value={slide.mobileImage}
+                    onChange={(url) => {
+                      const newSlides = [...localSlides];
+                      newSlides[idx].mobileImage = url;
+                      setLocalSlides(newSlides);
+                    }}
+                    recommendedSize="800×1000px"
+                    maxSize="2MB"
+                  />
                 </div>
               </div>
+            ))}
+          </div>
+          
+          <div className="bg-gray-100 rounded-2xl p-4 overflow-hidden h-fit sticky top-24">
+            <h3 className="font-bold text-gray-500 mb-4 flex items-center gap-2"><ExternalLink size={16}/> Live Preview</h3>
+            <div className="w-full aspect-[192/70] relative rounded-xl overflow-hidden shadow-lg bg-black flex items-center justify-center text-gray-600">
+              {localSlides[0]?.heroImage ? (
+                <img src={localSlides[0].heroImage} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                "No image preview"
+              )}
             </div>
-            <div className="p-6 border-t bg-gray-50/50 flex justify-end gap-3">
-              <button type="button" onClick={() => setIsSlideModalOpen(false)} className="px-6 py-2.5 border border-gray-200 bg-white rounded-xl hover:bg-gray-50 font-bold text-gray-600 transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-2.5 bg-[#C9A84C] hover:bg-[#A8873A] text-white rounded-xl font-bold shadow-lg shadow-[#C9A84C]/20 transition-all hover:-translate-y-0.5">
-                {editingSlide.id ? 'Save Changes' : 'Create Slide'}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
-      , document.body)}
-    </>
+      </div>
+    </div>
   );
 }

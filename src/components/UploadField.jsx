@@ -84,9 +84,9 @@ export default function UploadField({
       
       <div className="mb-3 flex items-start gap-2 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
         <Info size={16} className="text-amber-600 mt-0.5 shrink-0" />
-        <div className="text-xs text-amber-800">
-          <p><span className="font-semibold">Size:</span> {recommendedSize}</p>
-          <p><span className="font-semibold">Max:</span> {maxSize} · <span className="font-semibold">Formats:</span> {formats}</p>
+        <div className="text-xs text-amber-800 break-words w-full overflow-hidden">
+          <p className="truncate"><span className="font-semibold">Size:</span> {recommendedSize}</p>
+          <p className="truncate"><span className="font-semibold">Max:</span> {maxSize} | <span className="font-semibold">Formats:</span> {formats}</p>
         </div>
       </div>
 
