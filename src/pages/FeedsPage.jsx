@@ -4,6 +4,7 @@ import LiveBackground from '../components/LiveBackground';
 import { Video, Heart, MessageCircle, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useData } from '../context/DataContext';
+import InstagramEmbed from '../components/InstagramEmbed';
 
 export default function FeedsPage() {
   const { instagramFeeds } = useData();
@@ -11,14 +12,6 @@ export default function FeedsPage() {
   // If there are no feeds, we show a fallback (the one provided initially)
   const fallbackFeed = { url: 'https://www.instagram.com/p/Dch4BriSnAv/' };
   const feedsToDisplay = (instagramFeeds && instagramFeeds.length > 0) ? instagramFeeds : [fallbackFeed];
-
-  const getEmbedUrl = (url) => {
-    try {
-      let cleanUrl = url.split('?')[0];
-      if (!cleanUrl.endsWith('/')) cleanUrl += '/';
-      return cleanUrl + 'embed/captioned?autoplay=1&muted=1';
-    } catch(e) { return url; }
-  };
 
   return (
     <div className="min-h-screen bg-[#F2EDE4] font-sans pb-24 md:pb-0">
@@ -63,16 +56,9 @@ export default function FeedsPage() {
                 className="flex flex-col gap-4 w-full bg-white/60 backdrop-blur-md p-4 rounded-[2rem] shadow-xl border border-stone-100"
               >
                 {/* Instagram Embed */}
-                <div className="w-full bg-white p-2 rounded-[1.5rem] shadow-inner border border-stone-50 flex-shrink-0 mx-auto">
-                  <div className="rounded-[1rem] overflow-hidden bg-stone-50 relative min-h-[500px] flex items-center justify-center">
-                    <iframe 
-                      src={getEmbedUrl(feed.url)}
-                      className="w-full h-[600px] border-none"
-                      scrolling="no"
-                      allowTransparency="true"
-                      allow="autoplay; encrypted-media; picture-in-picture"
-                      title="Instagram Reel"
-                    />
+                <div className="w-full bg-white p-2 rounded-[1.5rem] shadow-inner border border-stone-50 flex-shrink-0 mx-auto overflow-hidden">
+                  <div className="rounded-[1rem] overflow-hidden bg-stone-50 relative min-h-[500px] flex flex-col items-center justify-center pt-4">
+                    <InstagramEmbed url={feed.url} />
                   </div>
                 </div>
 

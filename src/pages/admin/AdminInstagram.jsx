@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useData } from '../../context/DataContext';
 import { useCart } from '../../context/CartContext';
 import { Video, Plus, Trash2, Loader2, Info } from 'lucide-react';
+import InstagramEmbed from '../../components/InstagramEmbed';
 
 export default function AdminInstagram() {
   const { instagramFeeds, refreshData } = useData();
@@ -15,9 +16,15 @@ export default function AdminInstagram() {
     if (!url.includes('instagram.com')) {
       return showToast('Please enter a valid Instagram URL');
     }
+    
+    // Extract link if they pasted the full HTML blockquote embed
+    let cleanUrl = url;
+    const match = url.match(/data-instgrm-permalink="(.*?)"/);
+    if (match) cleanUrl = match[1];
+
     setLoading(true);
     try {
-      await axios.post('/api/instagram', { url });
+      await axios.post('/api/instagram', { url: cleanUrl });
       showToast('Instagram feed added successfully!');
       setUrl('');
       await refreshData();
@@ -91,15 +98,8 @@ export default function AdminInstagram() {
             >
               <Trash2 size={16} />
             </button>
-            <div className="relative bg-stone-100 p-2 min-h-[400px] flex items-center justify-center">
-              <iframe 
-                src={(feed.url.split('?')[0].endsWith('/') ? feed.url.split('?')[0] : feed.url.split('?')[0] + '/') + 'embed/captioned?autoplay=0'}
-                className="w-full h-[500px] border-none rounded-2xl bg-white"
-                scrolling="no"
-                allowTransparency="true"
-                allow="autoplay; encrypted-media; picture-in-picture"
-                title="Instagram Preview"
-              />
+            <div className="relative bg-stone-100 p-2 min-h-[400px] flex flex-col items-center justify-center overflow-y-auto">
+              <InstagramEmbed url={feed.url} />
             </div>
             <div className="p-4 border-t border-stone-100 bg-stone-50 text-center">
               <a href={feed.url} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline break-all">
