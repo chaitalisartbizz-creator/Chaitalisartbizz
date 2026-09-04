@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, RotateCcw, Plus, Minus, Award, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, RotateCcw, Plus, Minus, Award, Sparkles, CheckCircle2, Share2 } from 'lucide-react';
 import Header from '../components/Header';
 import ScrollReveal from '../components/ScrollReveal';
 import MediaDisplay from '../components/MediaDisplay';
@@ -10,7 +10,7 @@ import { useData } from '../context/DataContext';
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products } = useData();
+  const { products, frontendSettings } = useData();
   const { addToCart, toggleWishlist, isWishlisted, setCartOpen } = useCart();
   
   const product = products.find(p => String(p.id) === String(id));
@@ -18,6 +18,53 @@ export default function ProductPage() {
   const [selectedWeight, setSelectedWeight] = useState('250g');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  
+  const handleShare = async () => {
+    const SHARE_HOOKS = [
+      "Hey! Look at this amazing product I found at Chaitali's Artbizz. \u2728",
+      "You have to see this beautiful handcrafted piece from Chaitali's Artbizz! \ud83d\ude0d",
+      "I thought you might love this stunning artwork! Check it out. \ud83c\udfa8",
+      "Found the perfect gift idea at Chaitali's Artbizz, take a look! \ud83c\udf81",
+      "Obsessed with this product from Chaitali's Artbizz. \ud83d\udc96"
+    ];
+    
+    const hook = SHARE_HOOKS[Math.floor(Math.random() * SHARE_HOOKS.length)];
+    const phone = frontendSettings?.supportPhone || "+919764030635";
+    const siteInfo = "Chaitali's Artbizz - Premium Handcrafted Resin & Art Studio";
+    
+    // Short URL
+    const url = window.location.origin + '/product/' + product.id;
+    
+    const textToShare = `${hook}\n\n${product.name}\n\n${siteInfo}\nContact: ${phone}\n\n`;
+
+    try {
+      if (navigator.share) {
+        let shareData = {
+          title: product.name,
+          text: textToShare,
+          url: url
+        };
+
+        try {
+          const response = await fetch(product.img);
+          const blob = await response.blob();
+          const file = new File([blob], 'product-thumbnail.jpg', { type: blob.type });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            shareData.files = [file];
+          }
+        } catch (e) {
+          console.log("Could not attach image to share", e);
+        }
+
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(textToShare + url);
+        alert('Product info and link copied to clipboard!');
+      }
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -98,6 +145,11 @@ export default function ProductPage() {
                   <button className="absolute top-4 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-stone-600 transition-all z-10 shadow-md"
                     onClick={() => toggleWishlist(product)}>
                     <Heart size={20} className={isWishlisted(product.id) ? "fill-red-500 text-red-500" : ""} />
+                  </button>
+                  <button className="absolute top-16 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-stone-600 transition-all z-10 shadow-md"
+                    onClick={handleShare}
+                    title="Share Product">
+                    <Share2 size={20} />
                   </button>
                   <MediaDisplay src={gallery[activeImage]} alt={product.name} className="w-full h-full object-cover p-2" />
                 </div>
