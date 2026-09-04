@@ -9,6 +9,7 @@ export default function AdminSlides() {
   const { slides, refreshData } = useData();
   const { showToast } = useCart();
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   const [localSlides, setLocalSlides] = useState(slides || []);
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function AdminSlides() {
 
   const handleSaveSlides = async () => {
     setIsSaving(true);
+    setSaveError(null);
     try {
       for (const slide of localSlides) {
         if (slide.id) {
@@ -29,6 +31,8 @@ export default function AdminSlides() {
       showToast('Slides saved successfully!');
     } catch (err) {
       console.error(err);
+      const errMsg = err.response?.data?.error || err.message || JSON.stringify(err);
+      setSaveError(errMsg);
       showToast('Error saving slides.');
     } finally {
       setIsSaving(false);
@@ -66,6 +70,23 @@ export default function AdminSlides() {
       </div>
 
       <div className="space-y-6">
+        
+        {saveError && (
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex flex-col gap-2">
+            <h3 className="font-bold">Error Saving Slides!</h3>
+            <p className="text-sm font-mono bg-red-100 p-2 rounded-lg break-words">{saveError}</p>
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(saveError);
+                showToast('Error copied to clipboard');
+              }}
+              className="w-fit mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors"
+            >
+              Copy Error Message
+            </button>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <h2 className="text-xl font-bold font-cinzel text-[#1A1A1A]">Hero Carousel Editor</h2>
           <div className="flex gap-2 w-full sm:w-auto">
