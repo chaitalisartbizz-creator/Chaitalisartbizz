@@ -97,7 +97,7 @@ export default function AdminInstagram() {
                 className="w-full h-[500px] border-none rounded-2xl bg-white"
                 scrolling="no"
                 allowTransparency="true"
-                allow="encrypted-media"
+                allow="autoplay; encrypted-media; picture-in-picture"
                 title="Instagram Preview"
               />
             </div>

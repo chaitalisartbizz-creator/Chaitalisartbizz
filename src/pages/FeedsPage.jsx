@@ -16,7 +16,7 @@ export default function FeedsPage() {
     try {
       let cleanUrl = url.split('?')[0];
       if (!cleanUrl.endsWith('/')) cleanUrl += '/';
-      return cleanUrl + 'embed/captioned?autoplay=1';
+      return cleanUrl + 'embed/captioned?autoplay=1&muted=1';
     } catch(e) { return url; }
   };
 
@@ -70,7 +70,7 @@ export default function FeedsPage() {
                       className="w-full h-[600px] border-none"
                       scrolling="no"
                       allowTransparency="true"
-                      allow="encrypted-media"
+                      allow="autoplay; encrypted-media; picture-in-picture"
                       title="Instagram Reel"
                     />
                   </div>
