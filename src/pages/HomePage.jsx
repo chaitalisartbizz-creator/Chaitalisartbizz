@@ -832,7 +832,7 @@ function DealsTicker() {
 
 /* ── MAIN HOME PAGE ── */
 export default function HomePage() {
-  const { loading } = useData();
+  const { loading, categories } = useData();
   const navigate = useNavigate();
 
   return (
@@ -878,7 +878,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Art Categories</h4>
               <ul className="space-y-2 text-sm">
-                {categories.slice(0,6).map(c => (
+                {(categories || []).slice(0,6).map(c => (
                   <li key={c.label}><button onClick={() => navigate('/category', { state: { category: c.label } })} className="text-stone-400 hover:text-[#C9A84C] transition-colors line-clamp-1 text-left">{c.label}</button></li>
                 ))}
               </ul>
