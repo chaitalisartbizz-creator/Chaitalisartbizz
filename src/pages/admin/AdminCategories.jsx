@@ -15,7 +15,7 @@ export default function AdminCategories() {
   const [isUploading, setIsUploading] = useState(false);
 
   const defaultCategory = {
-    label: '', emoji: '', img: '', bg: '#FFFFFF'
+    label: '', emoji: '', img: '', bg: '#FFFFFF', sub: ''
   };
 
   const handleSave = async (e) => {
@@ -50,27 +50,28 @@ export default function AdminCategories() {
   };
 
   const filteredCategories = categories.filter(c => 
-    c.label.toLowerCase().includes(searchQuery.toLowerCase())
+    c.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.sub?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <>
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden animate-fade-in">
-        {/* Header & Search */}
-      <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/30">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Categories</h2>
-          <p className="text-sm text-gray-500">Manage store categories</p>
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <Tag className="text-[#C9A84C]" size={28} /> Product Categories
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">Manage store categories, images, and sub-categories</p>
         </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative w-full sm:w-64">
+        <div className="flex w-full sm:w-auto gap-3">
+          <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
               type="text" 
               placeholder="Search categories..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all"
             />
           </div>
           <button 
@@ -85,100 +86,81 @@ export default function AdminCategories() {
       <div>
         {/* Mobile View */}
         <div className="block lg:hidden space-y-4 p-4">
-          {filteredCategories.length === 0 ? (
-            <div className="p-12 text-center bg-gray-50/50 rounded-2xl border border-gray-100">
-              <Package size={42} className="mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500 font-bold">No categories found.</p>
-            </div>
-          ) : (
-            filteredCategories.map(c => (
-              <div key={c.id || c.label} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 relative">
-                <div className="w-16 h-16 shrink-0 rounded-full overflow-hidden border border-gray-200/50 shadow-sm flex items-center justify-center relative" style={{ backgroundColor: c.bg }}>
-                  {c.img ? (
-                    <img src={c.img} alt={c.label} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-50" />
-                  ) : null}
-                  <span className="text-3xl relative z-10 drop-shadow-sm">{c.emoji}</span>
+          {filteredCategories.map(cat => (
+            <div key={cat.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-4 flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center border shrink-0" style={{ backgroundColor: cat.bg || '#FFF' }}>
+                  {cat.img ? (
+                    <img src={cat.img} alt={cat.label} className="w-full h-full object-cover rounded-full mix-blend-multiply" />
+                  ) : (
+                    <span className="text-3xl">{cat.emoji}</span>
+                  )}
                 </div>
-                
-                <div className="flex-1 min-w-0 pr-8">
-                  <h3 className="font-bold text-gray-800 text-lg truncate mb-1">{c.label}</h3>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full border shadow-inner" style={{ backgroundColor: c.bg }}></div>
-                    <span className="text-xs font-medium text-gray-600">{c.bg}</span>
-                  </div>
-                </div>
-
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button onClick={() => { setEditing(c); setIsModalOpen(true); }} className="p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
-                    <Edit2 size={16} />
-                  </button>
-                  <button onClick={() => handleDelete(c.id)} className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
-                    <Trash2 size={16} />
-                  </button>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-800">{cat.label}</h3>
+                  {cat.sub && <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{cat.sub}</p>}
                 </div>
               </div>
-            ))
-          )}
+              <div className="bg-gray-50 px-4 py-3 border-t flex justify-between gap-3">
+                <button onClick={() => { setEditing(cat); setIsModalOpen(true); }} className="flex-1 py-2 bg-white border rounded-xl text-gray-600 font-semibold text-sm hover:bg-gray-50 flex justify-center items-center gap-2">
+                  <Edit2 size={16} /> Edit
+                </button>
+                <button onClick={() => handleDelete(cat.id)} className="flex-1 py-2 bg-white border border-red-100 rounded-xl text-red-500 font-semibold text-sm hover:bg-red-50 flex justify-center items-center gap-2">
+                  <Trash2 size={16} /> Delete
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Desktop View */}
-        <div className="hidden lg:block overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
           <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50/50 text-gray-500 text-sm border-b border-gray-100">
-              <th className="p-4 font-semibold pl-6">Category</th>
-              <th className="p-4 font-semibold">Emoji</th>
-              <th className="p-4 font-semibold">Background Color</th>
-              <th className="p-4 font-semibold text-right pr-6">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {filteredCategories.map(c => (
-              <tr key={c.id || c.label} className="hover:bg-gray-50/30 transition-colors group">
-                <td className="p-4 pl-6 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200/50 shadow-sm" style={{ backgroundColor: c.bg }}>
-                    {c.img ? (
-                      <img src={c.img} alt={c.label} className="w-full h-full object-cover mix-blend-multiply" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400"><ImageIcon size={20}/></div>
-                    )}
-                  </div>
-                  <span className="font-bold text-gray-800">{c.label}</span>
-                </td>
-                <td className="p-4 text-2xl">{c.emoji}</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full border shadow-inner" style={{ backgroundColor: c.bg }}></div>
-                    <span className="text-sm font-medium text-gray-600">{c.bg}</span>
-                  </div>
-                </td>
-                <td className="p-4 pr-6">
-                  <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button title="Edit Category" onClick={() => { setEditing(c); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors">
-                      <Edit2 size={18} />
-                    </button>
-                    <button title="Delete Category" onClick={() => handleDelete(c.id)} className="p-2 text-red-500 hover:bg-red-100 rounded-xl transition-colors">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </td>
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="p-5 font-bold text-sm text-gray-500 uppercase tracking-wider w-24">Image</th>
+                <th className="p-5 font-bold text-sm text-gray-500 uppercase tracking-wider">Category & Sub-categories</th>
+                <th className="p-5 font-bold text-sm text-gray-500 uppercase tracking-wider text-right">Actions</th>
               </tr>
-            ))}
-            {filteredCategories.length === 0 && (
-              <tr>
-                <td colSpan="4" className="p-12 text-center">
-                  <div className="inline-flex flex-col items-center justify-center text-gray-400">
-                    <Tag size={48} className="mb-4 text-gray-300" />
-                    <p className="text-lg font-medium text-gray-500">No categories found</p>
-                    <p className="text-sm">Try adjusting your search or add a new category.</p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
+            </thead>
+            <tbody>
+              {filteredCategories.map(cat => (
+                <tr key={cat.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
+                  <td className="p-5">
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center border shadow-sm" style={{ backgroundColor: cat.bg || '#FFF' }}>
+                      {cat.img ? (
+                        <img src={cat.img} alt={cat.label} className="w-full h-full object-cover rounded-full mix-blend-multiply" />
+                      ) : (
+                        <span className="text-2xl">{cat.emoji}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-5">
+                    <div className="font-bold text-gray-800 text-lg flex items-center gap-2">
+                      {cat.label}
+                    </div>
+                    {cat.sub && <div className="text-sm text-gray-500 mt-1 max-w-lg">{cat.sub}</div>}
+                  </td>
+                  <td className="p-5">
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => { setEditing(cat); setIsModalOpen(true); }} className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                        <Edit2 size={18} />
+                      </button>
+                      <button onClick={() => handleDelete(cat.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
+          {filteredCategories.length === 0 && (
+            <div className="p-12 text-center text-gray-500">
+              No categories found. Click "Add Category" to create one.
+            </div>
+          )}
         </div>
-      </div>
       </div>
 
       {isModalOpen && createPortal(
@@ -235,6 +217,11 @@ export default function AdminCategories() {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Category Label <span className="text-red-500">*</span></label>
                     <input required type="text" placeholder="e.g. Resin Clocks" value={editing.label || ''} onChange={e => setEditing({...editing, label: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Sub-categories</label>
+                    <input type="text" placeholder="e.g. Shirts, t-shirts, scarves" value={editing.sub || ''} onChange={e => setEditing({...editing, sub: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <p className="text-xs text-gray-500 mt-1">Comma-separated list of items under this category.</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

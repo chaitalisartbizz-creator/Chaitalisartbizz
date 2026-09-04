@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 // POST new category
 router.post('/', async (req, res) => {
   try {
-    const { label, emoji, img, bg } = req.body;
+    const { label, emoji, img, bg, sub } = req.body;
     
     const uploadedImg = await uploadToCloudinary(img, 'prime_pets/categories');
 
@@ -26,7 +26,8 @@ router.post('/', async (req, res) => {
         label,
         emoji: emoji || '',
         img: uploadedImg || '',
-        bg: bg || 'bg-gray-100'
+        bg: bg || '#F3F4F6',
+        sub: sub || ''
       }
     });
     
@@ -41,20 +42,21 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { label, emoji, img, bg } = req.body;
-    
+    const { label, emoji, img, bg, sub } = req.body;
+
     const uploadedImg = await uploadToCloudinary(img, 'prime_pets/categories');
 
     const category = await prisma.category.update({
-      where: { id: Number(id) },
+      where: { id: parseInt(id) },
       data: {
         label,
         emoji: emoji || '',
-        img: uploadedImg || '',
-        bg: bg || 'bg-gray-100'
+        ...(uploadedImg && { img: uploadedImg }),
+        bg: bg || '#F3F4F6',
+        sub: sub || ''
       }
     });
-    
+
     res.json(category);
   } catch (error) {
     console.error('Error updating category:', error);

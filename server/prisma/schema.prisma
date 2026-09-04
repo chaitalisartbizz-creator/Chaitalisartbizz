@@ -37,11 +37,12 @@ model Product {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
+  id    Int     @id @default(autoincrement())
   label String
   emoji String
   img   String
   bg    String
+  sub   String? @default("")
 }
 
 model Deal {

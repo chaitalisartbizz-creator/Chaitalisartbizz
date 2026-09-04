@@ -17,12 +17,16 @@ const NAV_LINKS = [
 ];
 
 const SHOP_DROPS = [
-  { label: '🖼️ Custom Portraits',    sub: 'Pet portraits, family art, caricatures' },
-  { label: '🌿 Resin Art',           sub: 'Resin trays, clocks, frames & jewellery' },
-  { label: '✨ Digital Designs',     sub: 'Logos, invitations, social media creatives' },
-  { label: '🎁 Personalised Gifts',  sub: 'Mugs, cushions, photo frames & hampers' },
-  { label: '💐 Decor Art',           sub: 'Wall art, mandala, fluid art & macramé' },
-  { label: '📦 Festive Packages',    sub: 'Custom gift combos & celebration sets' },
+  { label: '🧵 Hand Embroidery', sub: 'Shirts, t-shirts, scarves, hoops' },
+  { label: '🎨 Fabric Painting', sub: 'Shirts, t-shirts, scarves, hoops' },
+  { label: '👶 Baby Welcome Frames', sub: 'Customized frames in different sizes' },
+  { label: '🖼️ Canvas Painting', sub: 'Custom handcrafted canvas art' },
+  { label: '🕯️ Premium Candles', sub: 'Photo jars, scented, mithai, flower, 12 scents, urli' },
+  { label: '✨ Resin Art & Preservation', sub: 'Clocks, trays, varmala preservation, religious frames, rakhi, jewellery' },
+  { label: '🧸 3D Photo Creation', sub: 'Custom personalized 3D photo creations' },
+  { label: '🎁 Trousseau Packing', sub: 'Engagement, baby shower, shadi hampers & bouquets' },
+  { label: '🎯 Activity Zone', sub: 'Thumb print trees, string art, reveal photo frames' },
+  { label: '🪔 Diwali Special', sub: 'Toran, bandhanwar, shubh labh, tea light holders' },
 ];
 
 export default function Header() {
@@ -121,11 +125,11 @@ export default function Header() {
                   <div
                     onMouseEnter={() => setShopOpen(true)}
                     onMouseLeave={() => setShopOpen(false)}
-                    className={`absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-3xl backdrop-saturate-[2] rounded-2xl shadow-2xl border border-[#C9A84C]/20 overflow-hidden transition-all duration-200 z-[100] ${
+                    className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[44rem] bg-white/95 backdrop-blur-3xl backdrop-saturate-[2] rounded-2xl shadow-2xl border border-[#C9A84C]/20 overflow-hidden transition-all duration-200 z-[100] ${
                       shopOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'
                     }`}
                   >
-                    <div className="p-2.5">
+                    <div className="p-4 grid grid-cols-2 gap-2">
                       {SHOP_DROPS.map(d => (
                         <button
                           key={d.label}
@@ -141,7 +145,7 @@ export default function Header() {
                             <p className="text-stone-900 font-bold text-sm group-hover:text-[#A8873A] transition-colors">
                               {d.label.substring(d.label.indexOf(' ') + 1)}
                             </p>
-                            <p className="text-stone-500 text-xs">{d.sub}</p>
+                            <p className="text-stone-500 text-xs leading-snug">{d.sub}</p>
                           </div>
                         </button>
                       ))}
