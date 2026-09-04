@@ -26,6 +26,12 @@ router.put('/', async (req, res) => {
     
     // Upload logo to Cloudinary if it's new (base64)
     const uploadedLogo = await uploadToCloudinary(logoBase64, 'prime_pets/settings');
+    
+    // Upload audio to Cloudinary if it's new (base64)
+    let uploadedAudioUrl = siteAudioUrl;
+    if (siteAudioUrl && siteAudioUrl.startsWith('data:audio/')) {
+      uploadedAudioUrl = await uploadToCloudinary(siteAudioUrl, 'prime_pets/audio');
+    }
 
     let settings = await prisma.frontendSetting.findFirst();
 
@@ -40,7 +46,7 @@ router.put('/', async (req, res) => {
       whatsappNumber: whatsappNumber || '',
       razorpayKeyId: razorpayKeyId !== undefined ? razorpayKeyId : null,
       whatsappOrderNumber: whatsappOrderNumber !== undefined ? whatsappOrderNumber : null,
-      siteAudioUrl: siteAudioUrl !== undefined ? siteAudioUrl : null,
+      siteAudioUrl: uploadedAudioUrl !== undefined ? uploadedAudioUrl : null,
       contactEmail: contactEmail !== undefined ? contactEmail : null,
       contactPhone: contactPhone !== undefined ? contactPhone : null,
     };
