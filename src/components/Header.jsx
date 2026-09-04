@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { label: 'Home',           path: '/' },
   { label: 'Art Catalogue',  path: '/category', hasDropdown: true },
   { label: 'Deals & Offers', path: '/offers' },
+  { label: 'Instagram Feeds', path: '/feeds' },
   { label: 'Training Program',   path: '/hub' },
 ];
 

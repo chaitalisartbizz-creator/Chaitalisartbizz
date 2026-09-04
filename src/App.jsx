@@ -19,6 +19,7 @@ import { useData } from './context/DataContext';
 // Lazy load pages
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const FeedsPage = lazy(() => import('./pages/FeedsPage'));
 const ProductPage = lazy(() => import('./pages/ProductPage'));
 const OffersPage = lazy(() => import('./pages/OffersPage'));
 const HubPage = lazy(() => import('./pages/HubPage'));
@@ -168,6 +169,7 @@ function AppInner() {
               {/* Storefront Routes */}
               <Route path="/"         element={<PageTransition><HomePage /></PageTransition>} />
               <Route path="/category" element={<PageTransition><CategoryPage /></PageTransition>} />
+              <Route path="/feeds"    element={<PageTransition><FeedsPage /></PageTransition>} />
               <Route path="/offers"   element={<PageTransition><OffersPage /></PageTransition>} />
               <Route path="/hub"      element={<PageTransition><HubPage /></PageTransition>} />
               <Route path="/account"  element={<PageTransition><AccountPage /></PageTransition>} />
