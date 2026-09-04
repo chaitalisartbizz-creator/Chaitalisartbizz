@@ -11,7 +11,6 @@ const NAV_ITEMS = [
   { path: '/admin/live', label: 'Live Website', icon: Activity },
   { path: '/admin/site-editor', label: 'Site Branding', icon: Layout },
   { path: '/admin/products', label: 'Art Catalogue', icon: Palette },
-  { path: '/admin/categories', label: 'Art Categories', icon: Image },
   { path: '/admin/slides', label: 'Hero Slides', icon: Image },
   { path: '/admin/deals', label: 'Deals & Promos', icon: Percent },
   { path: '/admin/orders', label: 'Orders', icon: ShoppingBag },

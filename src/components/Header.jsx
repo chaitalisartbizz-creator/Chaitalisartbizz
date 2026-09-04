@@ -17,16 +17,16 @@ const NAV_LINKS = [
 ];
 
 const SHOP_DROPS = [
-  { label: '🧵 Hand Embroidery', sub: 'Shirts, t-shirts, scarves, hoops' },
-  { label: '🎨 Fabric Painting', sub: 'Shirts, t-shirts, scarves, hoops' },
-  { label: '👶 Baby Welcome Frames', sub: 'Customized frames in different sizes' },
-  { label: '🖼️ Canvas Painting', sub: 'Custom handcrafted canvas art' },
-  { label: '🕯️ Premium Candles', sub: 'Photo jars, scented, mithai, flower, 12 scents, urli' },
-  { label: '✨ Resin Art & Preservation', sub: 'Clocks, trays, varmala preservation, religious frames, rakhi, jewellery' },
-  { label: '🧸 3D Photo Creation', sub: 'Custom personalized 3D photo creations' },
-  { label: '🎁 Trousseau Packing', sub: 'Engagement, baby shower, shadi hampers & bouquets' },
-  { label: '🎯 Activity Zone', sub: 'Thumb print trees, string art, reveal photo frames' },
-  { label: '🪔 Diwali Special', sub: 'Toran, bandhanwar, shubh labh, tea light holders' },
+  { label: '🪡 Hand Embroidery', sub: 'Shirt, T-shirt, Scarf, Hoop' },
+  { label: '🎨 Fabric Painting', sub: 'Shirt, T-shirt, Scarf, Hoop' },
+  { label: '🧸 Baby Welcome Frame', sub: 'Different sizes available' },
+  { label: '🖼️ Canvas Painting', sub: 'Custom handpainted canvas art' },
+  { label: '🕯️ Candles', sub: 'Photo candle jar, Scented, Mithai, Flower, Decorative, 12 Scents, Uurli (Diwali)' },
+  { label: '✨ Resin Art', sub: 'Clock, Tray, Table, Frame, Varmala Preservation, Baby Kit Set, 3D Photo Frame, Religious Frames (Mahadev, Ganpati, Golden Temple, Asivusa, Navkar Mantra), Haldi/Mehendi/Ring Platter, Rakhi, Jewellery (Earrings, Bracelet, Bangles, Pendant, Necklace)' },
+  { label: '📷 3D Photo Creation', sub: 'Custom 3D photo creations' },
+  { label: '🎁 Packing (Trousseau)', sub: 'Engagement, Baby Shower, Naming Ceremony, Shadi, Rukvat, Bouquets (Candle, Money, Chocolate, Flower, Photo), Hampers' },
+  { label: '🎯 Activity Zone', sub: 'Thumb Print Tree, String Art, Reveal Photo Frame' },
+  { label: '🪔 Diwali Spl', sub: 'Toran, Bandhanwar, Shubh Labh, Tea Light Holder, Decorated Panti' },
 ];
 
 export default function Header() {

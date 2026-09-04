@@ -7,8 +7,9 @@ import { TableRowSkeleton } from '../../components/Skeleton';
 import { useData } from '../../context/DataContext';
 import { useCart } from '../../context/CartContext';
 import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Package, Loader2 } from 'lucide-react';
+import AdminCategories from './AdminCategories';
 
-export default function AdminProducts() {
+function AdminProductsContent() {
   const { products, setProducts, categories, refreshData, loading } = useData();
   const { showToast } = useCart();
   const [editing, setEditing] = useState(null);
@@ -167,7 +168,7 @@ export default function AdminProducts() {
           <thead>
             <tr className="bg-gray-50/50 text-gray-500 text-sm border-b border-gray-100">
               <th className="p-4 font-semibold pl-6">Product</th>
-              <th className="p-4 font-semibold">Collection</th>
+              <th className="p-4 font-semibold">Sub-Category</th>
               <th className="p-4 font-semibold">Price</th>
               <th className="p-4 font-semibold">Status/Badge</th>
               <th className="p-4 font-semibold text-right pr-6">Actions</th>
@@ -361,8 +362,8 @@ export default function AdminProducts() {
                   </div>
                   
                   <div>
-                    <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Art Style / Collection <span className="text-red-500">*</span></label>
-                    <input id="brand" list="brand-list" required type="text" placeholder="Select or type collection" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Sub-Category / Collection <span className="text-red-500">*</span></label>
+                    <input id="brand" list="brand-list" required type="text" placeholder="e.g. Clock, Hoop, Shirt" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="brand-list">
                       {uniqueBrands.map(b => <option key={b} value={b} />)}
                     </datalist>
@@ -380,8 +381,8 @@ export default function AdminProducts() {
                   </div>
 
                   <div className="md:col-span-2">
-                    <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-1">Sub Category</label>
-                    <input id="category" list="category-list" type="text" placeholder="Select or type sub category (e.g. Wall Clocks, Name Plates)" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-1">Main Category <span className="text-red-500">*</span></label>
+                    <input id="category" list="category-list" required type="text" placeholder="Select the main category" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="category-list">
                       {categories.map(c => <option key={c.label} value={c.label} />)}
                     </datalist>
@@ -426,5 +427,28 @@ export default function AdminProducts() {
         </div>
       , document.body)}
     </>
+  );
+}
+
+export default function AdminProducts() {
+  const [tab, setTab] = useState('products');
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex space-x-2 bg-gray-100 p-1 rounded-xl w-fit">
+        <button 
+          className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${tab === 'products' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`} 
+          onClick={() => setTab('products')}
+        >
+          Art Catalogue (Products)
+        </button>
+        <button 
+          className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${tab === 'categories' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`} 
+          onClick={() => setTab('categories')}
+        >
+          Art Categories (Folders)
+        </button>
+      </div>
+      {tab === 'products' ? <AdminProductsContent /> : <AdminCategories />}
+    </div>
   );
 }
