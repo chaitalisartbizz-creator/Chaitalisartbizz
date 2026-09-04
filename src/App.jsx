@@ -16,33 +16,52 @@ import TopBar from './components/TopBar';
 import ActivityTracker from './components/ActivityTracker';
 import { useData } from './context/DataContext';
 
+const lazyWithRetry = (componentImport) =>
+  lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
+    );
+    try {
+      const component = await componentImport();
+      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
+        window.location.reload();
+        return new Promise(() => {}); // Wait for reload
+      }
+      throw error;
+    }
+  });
+
 // Lazy load pages
-const HomePage = lazy(() => import('./pages/HomePage'));
-const CategoryPage = lazy(() => import('./pages/CategoryPage'));
-const FeedsPage = lazy(() => import('./pages/FeedsPage'));
-const ProductPage = lazy(() => import('./pages/ProductPage'));
-const OffersPage = lazy(() => import('./pages/OffersPage'));
-const HubPage = lazy(() => import('./pages/HubPage'));
-const AccountPage = lazy(() => import('./pages/AccountPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
+const HomePage = lazyWithRetry(() => import('./pages/HomePage'));
+const CategoryPage = lazyWithRetry(() => import('./pages/CategoryPage'));
+const FeedsPage = lazyWithRetry(() => import('./pages/FeedsPage'));
+const ProductPage = lazyWithRetry(() => import('./pages/ProductPage'));
+const OffersPage = lazyWithRetry(() => import('./pages/OffersPage'));
+const HubPage = lazyWithRetry(() => import('./pages/HubPage'));
+const AccountPage = lazyWithRetry(() => import('./pages/AccountPage'));
+const LoginPage = lazyWithRetry(() => import('./pages/LoginPage'));
 
 // Lazy load Admin pages
-const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'));
-const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'));
-const AdminInstagram = lazy(() => import('./pages/admin/AdminInstagram'));
-const AdminSlides = lazy(() => import('./pages/admin/AdminSlides'));
-const AdminDeals = lazy(() => import('./pages/admin/AdminDeals'));
-const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
-const AdminCustomers = lazy(() => import('./pages/admin/AdminCustomers'));
-const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
-const AdminPayment = lazy(() => import('./pages/admin/AdminPayment'));
-const AdminMusic = lazy(() => import('./pages/admin/AdminMusic'));
-const AdminLive = lazy(() => import('./pages/admin/AdminLive'));
-const AdminSiteEditor = lazy(() => import('./pages/admin/AdminSiteEditor'));
-const AdminRetention = lazy(() => import('./pages/admin/AdminRetention'));
-const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
+const AdminLayout = lazyWithRetry(() => import('./layouts/AdminLayout'));
+const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
+const AdminProducts = lazyWithRetry(() => import('./pages/admin/AdminProducts'));
+const AdminCategories = lazyWithRetry(() => import('./pages/admin/AdminCategories'));
+const AdminInstagram = lazyWithRetry(() => import('./pages/admin/AdminInstagram'));
+const AdminSlides = lazyWithRetry(() => import('./pages/admin/AdminSlides'));
+const AdminDeals = lazyWithRetry(() => import('./pages/admin/AdminDeals'));
+const AdminSettings = lazyWithRetry(() => import('./pages/admin/AdminSettings'));
+const AdminCustomers = lazyWithRetry(() => import('./pages/admin/AdminCustomers'));
+const AdminOrders = lazyWithRetry(() => import('./pages/admin/AdminOrders'));
+const AdminPayment = lazyWithRetry(() => import('./pages/admin/AdminPayment'));
+const AdminMusic = lazyWithRetry(() => import('./pages/admin/AdminMusic'));
+const AdminLive = lazyWithRetry(() => import('./pages/admin/AdminLive'));
+const AdminSiteEditor = lazyWithRetry(() => import('./pages/admin/AdminSiteEditor'));
+const AdminRetention = lazyWithRetry(() => import('./pages/admin/AdminRetention'));
+const AdminNotifications = lazyWithRetry(() => import('./pages/admin/AdminNotifications'));
 
 // Protected Admin Route Component
 const ProtectedAdminRoute = ({ children }) => {

@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { label: 'Home',           path: '/' },
   { label: 'Art Catalogue',  path: '/category', hasDropdown: true },
   { label: 'Deals & Offers', path: '/offers' },
-  { label: 'Instagram Feeds', path: '/feeds' },
+  { label: 'Instagram Feeds', path: '/feeds', isIcon: true },
   { label: 'Training Program',   path: '/hub' },
 ];
 
@@ -29,6 +29,25 @@ const SHOP_DROPS = [
   { label: '🎯 Activity Zone', sub: 'Thumb Print Tree, String Art, Reveal Photo Frame' },
   { label: '🪔 Diwali Spl', sub: 'Toran, Bandhanwar, Shubh Labh, Tea Light Holder, Decorated Panti' },
 ];
+
+const InstagramGlowingLogo = () => (
+  <div className="relative inline-flex items-center justify-center group overflow-visible px-2 py-0.5 rounded-lg">
+    <div className="absolute inset-0 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-20 transition-opacity blur-[4px] rounded-lg" />
+    <div className="flex items-center gap-1.5 font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 drop-shadow-sm group-hover:drop-shadow-md transition-all">
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="18" height="18" viewBox="0 0 24 24" fill="none" 
+        stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+        className="text-pink-500 group-hover:scale-110 transition-transform duration-300"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      FEEDS
+    </div>
+  </div>
+);
 
 export default function Header() {
   const navigate = useNavigate();
@@ -118,7 +137,7 @@ export default function Header() {
                       : 'text-stone-700 hover:text-[#C9A84C] hover:bg-black/5'
                   }`}
                 >
-                  {link.label}
+                  {link.isIcon ? <InstagramGlowingLogo /> : link.label}
                   {link.hasDropdown && <ChevronDown size={13} className="opacity-60 flex-shrink-0" />}
                 </button>
 
@@ -166,7 +185,7 @@ export default function Header() {
             {/* Dynamic Account/Login Link in Desktop Nav */}
             <button 
               onClick={() => navigate(isAuthenticated ? '/account' : '/login')}
-              className={`font-cinzel font-bold text-sm lg:text-[15px] tracking-wide transition-all ${
+              className={`font-cinzel font-bold text-sm lg:text-[15px] tracking-wide whitespace-nowrap transition-all ${
                 isActive(isAuthenticated ? '/account' : '/login') 
                   ? 'text-[#C9A84C]' 
                   : 'text-stone-700 hover:text-[#C9A84C]'
@@ -344,7 +363,7 @@ export default function Header() {
                       isActive(link.path) ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'bg-white text-stone-700 hover:bg-[#F2EDE4]'
                     }`}
                   >
-                    {link.label}
+                    {link.isIcon ? <InstagramGlowingLogo /> : link.label}
                   </button>
                 ))}
               </nav>
