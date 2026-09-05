@@ -367,18 +367,20 @@ function AdminProductsContent() {
                   
                   <div>
                     <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Sub-Category / Collection <span className="text-red-500">*</span></label>
-                    <input id="brand" list="brand-list" required type="text" placeholder="e.g. Wall Clocks, Name Plates" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <input id="brand" list="brand-list" required type="text" placeholder="Select or type a custom one..." value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="brand-list">
                       {uniqueBrands.map(b => <option key={b} value={b} />)}
                     </datalist>
+                    <p className="text-[10px] text-gray-400 mt-1 font-medium italic">Type any new name to automatically add it to this list.</p>
                   </div>
 
                   <div>
                     <label htmlFor="petType" className="block text-sm font-bold text-gray-700 mb-1">Art Medium <span className="text-red-500">*</span></label>
-                    <input id="petType" list="medium-list" required type="text" placeholder="e.g. Resin Art, Acrylic" value={editing.petType || ''} onChange={e => setEditing({...editing, petType: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <input id="petType" list="medium-list" required type="text" placeholder="Select or type a custom one..." value={editing.petType || ''} onChange={e => setEditing({...editing, petType: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="medium-list">
                       {uniqueMediums.map(m => <option key={m} value={m} />)}
                     </datalist>
+                    <p className="text-[10px] text-gray-400 mt-1 font-medium italic">Type any new medium to automatically add it to this list.</p>
                   </div>
 
                   <div className="md:col-span-2">
