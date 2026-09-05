@@ -204,7 +204,7 @@ export default function AdminOrders() {
     setDownloadingOrderId(order.id);
     setSelectedOrderForInvoice(order);
     
-    // Wait for state update to render InvoiceTemplate
+    // Wait for state update to render InvoiceTemplate and images to fetch
     setTimeout(async () => {
       try {
         const element = invoiceRef.current;
@@ -215,15 +215,18 @@ export default function AdminOrders() {
           html2canvas:  { scale: 2, useCORS: true },
           jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
-        await html2pdf().set(opt).from(element).save();
+        const generatePdf = typeof html2pdf === 'function' ? html2pdf : html2pdf.default;
+        await generatePdf().set(opt).from(element).save();
       } catch (err) {
         console.error('Invoice generation failed:', err);
+        const errMsg = err?.message || String(err);
         showToast('❌ Failed to generate invoice.');
+        alert('Invoice Generation Error: ' + errMsg);
       } finally {
         setDownloadingOrderId(null);
         setSelectedOrderForInvoice(null);
       }
-    }, 100);
+    }, 500);
   };
 
   /* ── Stats ── */
