@@ -3,10 +3,13 @@ import axios from 'axios';
 import {
   Package, ChevronDown, ChevronUp, Trash2, MessageCircle,
   ShoppingBag, Clock, CheckCircle, TrendingUp, RefreshCw,
-  IndianRupee, Phone, User, Hash, Filter, Loader2,
+  IndianRupee, Phone, User, Hash, Filter, Loader2, Download
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useData } from '../../context/DataContext';
 import ScrollReveal from '../../components/ScrollReveal';
+import InvoiceTemplate from '../../components/InvoiceTemplate';
+import html2pdf from 'html2pdf.js';
 
 /* ─── Constants ─────────────────────────────────────────────────────────── */
 
@@ -136,6 +139,7 @@ function StatCard({ label, value, icon: Icon, color, bg }) {
 
 export default function AdminOrders() {
   const { showToast } = useCart();
+  const { frontendSettings } = useData();
 
   const [orders, setOrders]             = useState([]);
   const [loading, setLoading]           = useState(true);
@@ -143,6 +147,10 @@ export default function AdminOrders() {
   const [expandedRow, setExpandedRow]   = useState(null);
   const [updatingId, setUpdatingId]     = useState(null);
   const [deletingId, setDeletingId]     = useState(null);
+  
+  const [downloadingOrderId, setDownloadingOrderId] = useState(null);
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState(null);
+  const invoiceRef = React.useRef(null);
 
   /* ── Fetch ── */
   const fetchOrders = useCallback(async () => {
@@ -191,6 +199,33 @@ export default function AdminOrders() {
     }
   };
 
+  /* ── Download Invoice ── */
+  const handleDownloadInvoice = async (order) => {
+    setDownloadingOrderId(order.id);
+    setSelectedOrderForInvoice(order);
+    
+    // Wait for state update to render InvoiceTemplate
+    setTimeout(async () => {
+      try {
+        const element = invoiceRef.current;
+        const opt = {
+          margin:       0,
+          filename:     `Invoice_${String(order.id).slice(-6).toUpperCase()}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        await html2pdf().set(opt).from(element).save();
+      } catch (err) {
+        console.error('Invoice generation failed:', err);
+        showToast('❌ Failed to generate invoice.');
+      } finally {
+        setDownloadingOrderId(null);
+        setSelectedOrderForInvoice(null);
+      }
+    }, 100);
+  };
+
   /* ── Stats ── */
   const stats = useMemo(() => {
     const total     = orders.length;
@@ -219,7 +254,12 @@ export default function AdminOrders() {
   /* ─────────────────────────────────────────────────────────────────────── */
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in relative">
+      <div style={{ position: 'fixed', left: '-9999px', top: '0', pointerEvents: 'none' }}>
+        {selectedOrderForInvoice && (
+          <InvoiceTemplate ref={invoiceRef} order={selectedOrderForInvoice} frontendSettings={frontendSettings} />
+        )}
+      </div>
 
       {/* Page Header */}
       <ScrollReveal>
@@ -358,6 +398,14 @@ export default function AdminOrders() {
                             className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 text-sm font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-1"
                           >
                             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />} Items
+                          </button>
+                          <button
+                            title="Download Invoice"
+                            onClick={() => handleDownloadInvoice(order)}
+                            disabled={downloadingOrderId === order.id}
+                            className="w-10 h-10 bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#A8873A] rounded-xl flex items-center justify-center transition-colors shrink-0 disabled:opacity-50"
+                          >
+                            {downloadingOrderId === order.id ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                           </button>
                           <button
                             onClick={() => handleDelete(order.id)}
@@ -541,6 +589,15 @@ export default function AdminOrders() {
                             {/* Actions */}
                             <td className="px-4 py-4 pr-6">
                               <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                {/* Download */}
+                                <button
+                                  title="Download Invoice"
+                                  onClick={() => handleDownloadInvoice(order)}
+                                  disabled={downloadingOrderId === order.id}
+                                  className="p-2 text-[#A8873A] hover:bg-[#F2EDE4] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {downloadingOrderId === order.id ? <Loader2 size={17} className="animate-spin" /> : <Download size={17} />}
+                                </button>
                                 {/* WhatsApp */}
                                 <a
                                   href={buildWhatsAppUrl({ ...order, customerName, phone, status: ordStatus })}
