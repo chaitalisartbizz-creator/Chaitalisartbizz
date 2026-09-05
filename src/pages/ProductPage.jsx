@@ -46,14 +46,19 @@ export default function ProductPage() {
         };
 
         try {
-          const response = await fetch(product.img);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+          
+          const response = await fetch(product.img, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          
           const blob = await response.blob();
           const file = new File([blob], 'product-thumbnail.jpg', { type: blob.type });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             shareData.files = [file];
           }
         } catch (e) {
-          console.log("Could not attach image to share", e);
+          console.log("Skipping image attachment (timeout or error)");
         }
 
         await navigator.share(shareData);
