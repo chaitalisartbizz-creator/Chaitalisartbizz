@@ -58,6 +58,7 @@ const AdminCustomers = lazyWithRetry(() => import('./pages/admin/AdminCustomers'
 const AdminOrders = lazyWithRetry(() => import('./pages/admin/AdminOrders'));
 const AdminPayment = lazyWithRetry(() => import('./pages/admin/AdminPayment'));
 const AdminMusic = lazyWithRetry(() => import('./pages/admin/AdminMusic'));
+const AdminCampaigns = lazyWithRetry(() => import('./pages/admin/AdminCampaigns'));
 const AdminLive = lazyWithRetry(() => import('./pages/admin/AdminLive'));
 const AdminSiteEditor = lazyWithRetry(() => import('./pages/admin/AdminSiteEditor'));
 const AdminRetention = lazyWithRetry(() => import('./pages/admin/AdminRetention'));
@@ -208,6 +209,7 @@ function AppInner() {
                 <Route path="deals" element={<AdminDeals />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="customers" element={<AdminCustomers />} />
+                <Route path="campaigns" element={<AdminCampaigns />} />
                 <Route path="payment" element={<AdminPayment />} />
                 <Route path="music" element={<AdminMusic />} />
                 <Route path="settings" element={<AdminSettings />} />
