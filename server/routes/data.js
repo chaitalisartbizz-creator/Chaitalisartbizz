@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
         ...p,
         images: parsedImages,
         features: parsedFeatures,
-        img: parsedImages.length > 0 ? parsedImages[0] : null
+        img: p.img || (parsedImages.length > 0 ? parsedImages[0] : null)
       };
     });
 

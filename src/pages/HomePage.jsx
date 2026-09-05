@@ -722,7 +722,7 @@ function CategorySectionsGrid() {
 
   return (
     <div className="space-y-4 md:space-y-6 mb-4">
-      {categories.map((cat) => {
+      {categories.map((cat, idx) => {
         const catProducts = products.filter(p => p.category === cat.label);
         const props = { cat, products: catProducts, addToCart, toggleWishlist, isInCart, isWishlisted, navigate };
 
@@ -734,21 +734,30 @@ function CategorySectionsGrid() {
         if (cat.label === 'Festive Packages') return <FestivePackagesSection key={cat.label} {...props} />;
 
         // Fallback for any dynamic new categories
+        const themeList = [
+          { live: '3d-floating', text: 'text-[#F0DFA0]', bg: 'bg-[#1A1A1A]', head: 'text-[#F0DFA0]', border: 'border-[#C9A84C]/40', badge: 'bg-[#C9A84C] text-[#2C2C2C]', iconBg: 'bg-[#C9A84C]/20 border-[#C9A84C]/30' },
+          { live: 'festive-sparks', text: 'text-[#F0DFA0]', bg: 'bg-[#2A231C]', head: 'text-white', border: 'border-[#C9A84C]/30', badge: 'bg-[#C9A84C] text-[#2C2C2C]', iconBg: 'bg-white/10 border-white/20' },
+          { live: 'dark-particles', text: 'text-white', bg: 'bg-[#0A1220]', head: 'text-white', border: 'border-[#6B7FA3]/40', badge: 'bg-[#6B7FA3] text-white', iconBg: 'bg-[#6B7FA3]/20 border-[#6B7FA3]/40' },
+          { live: 'resin-flow', text: 'text-white', bg: 'bg-[#18211E]', head: 'text-[#DFF0E8]', border: 'border-[#5FA88B]/40', badge: 'bg-[#5FA88B] text-white', iconBg: 'bg-[#5FA88B]/20 border-[#5FA88B]/40' },
+          { live: 'kintsugi-fluid', text: 'text-[#F0DFA0]', bg: 'bg-[#111111]', head: 'text-white', border: 'border-[#C9A84C]/40', badge: 'bg-[#C9A84C] text-[#111111]', iconBg: 'bg-[#C9A84C]/20 border-[#C9A84C]/30' }
+        ];
+        const t = themeList[idx % themeList.length];
+
         return (
           <section key={cat.label} className="relative z-10 max-w-[1600px] mx-auto w-full px-4 md:px-6 mb-6">
-            <div className="glass-panel rounded-3xl p-4 md:p-6 relative overflow-hidden">
-              <LiveBackground theme="cream-waves" />
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-3 border-b border-[#C9A84C]/30 gap-3">
+            <div className={`${t.bg} ${t.border} border rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-2xl`}>
+              <LiveBackground theme={t.live} />
+              <div className={`relative z-10 flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-3 border-b ${t.border} gap-3`}>
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl p-2 bg-[#C9A84C]/20 rounded-2xl border border-[#C9A84C]/30 shadow-sm">{cat.emoji || '✨'}</span>
+                  <span className={`text-3xl p-2 rounded-2xl border shadow-sm ${t.iconBg}`}>{cat.emoji || '?'}</span>
                   <div>
-                    <h2 className="text-[#F0DFA0] font-cinzel font-bold text-xl md:text-3xl flex items-center gap-2">
-                      {cat.label} <span className="text-xs font-bold text-[#2C2C2C] bg-[#C9A84C] px-2 py-0.5 rounded-full">({catProducts.length})</span>
+                    <h2 className={`${t.head} font-cinzel font-bold text-xl md:text-3xl flex items-center gap-2`}>
+                      {cat.label} <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${t.badge}`}>({catProducts.length})</span>
                     </h2>
                   </div>
                 </div>
                 <button onClick={() => navigate('/category', { state: { category: cat.label } })}
-                  className="flex items-center gap-1.5 text-[#2C2C2C] text-xs font-bold bg-[#C9A84C] hover:bg-[#A8873A] hover:text-[#2C2C2C] px-4 py-2 rounded-full transition-all">
+                  className="flex items-center gap-1.5 text-[#2C2C2C] text-xs font-bold bg-[#C9A84C] hover:bg-[#A8873A] hover:text-[#2C2C2C] px-4 py-2 rounded-full transition-all shadow-md">
                   View All <ArrowRight size={12} />
                 </button>
               </div>
