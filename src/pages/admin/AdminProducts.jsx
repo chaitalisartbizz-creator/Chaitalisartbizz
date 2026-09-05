@@ -26,7 +26,11 @@ function AdminProductsContent() {
     name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: ''
   };
 
-  const uniqueBrands = [...new Set((products || []).map(p => p.brand).filter(Boolean))];
+  const DEFAULT_BRANDS = ['Wall Clocks', 'Name Plates', 'Geode Art', 'Mantra Frames', 'Pooja Thali', 'Keychains', 'Coasters'];
+  const uniqueBrands = [...new Set([...DEFAULT_BRANDS, ...(products || []).map(p => p.brand).filter(Boolean)])];
+
+  const DEFAULT_MEDIUMS = ['Resin Art', 'Acrylic', 'MDF Board', 'Digital Portrait', 'Oil Painting', 'Watercolor', 'Mixed Media', 'Charcoal', 'Pencil Sketch', 'Alcohol Ink', 'Fluid Art', 'Lippan Art'];
+  const uniqueMediums = [...new Set([...DEFAULT_MEDIUMS, ...(products || []).map(p => p.petType).filter(Boolean)])];
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -363,7 +367,7 @@ function AdminProductsContent() {
                   
                   <div>
                     <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Sub-Category / Collection <span className="text-red-500">*</span></label>
-                    <input id="brand" list="brand-list" required type="text" placeholder="e.g. Clock, Hoop, Shirt" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <input id="brand" list="brand-list" required type="text" placeholder="e.g. Wall Clocks, Name Plates" value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                     <datalist id="brand-list">
                       {uniqueBrands.map(b => <option key={b} value={b} />)}
                     </datalist>
@@ -371,13 +375,10 @@ function AdminProductsContent() {
 
                   <div>
                     <label htmlFor="petType" className="block text-sm font-bold text-gray-700 mb-1">Art Medium <span className="text-red-500">*</span></label>
-                    <select id="petType" required value={editing.petType || 'Resin Art'} onChange={e => setEditing({...editing, petType: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm">
-                      <option value="Resin Art">Resin Art</option>
-                      <option value="Acrylic">Acrylic</option>
-                      <option value="MDF Board">MDF Board</option>
-                      <option value="Digital Portrait">Digital Portrait</option>
-                      <option value="Other">Other</option>
-                    </select>
+                    <input id="petType" list="medium-list" required type="text" placeholder="e.g. Resin Art, Acrylic" value={editing.petType || ''} onChange={e => setEditing({...editing, petType: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <datalist id="medium-list">
+                      {uniqueMediums.map(m => <option key={m} value={m} />)}
+                    </datalist>
                   </div>
 
                   <div className="md:col-span-2">
