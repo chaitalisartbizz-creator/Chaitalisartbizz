@@ -135,7 +135,13 @@ export default function ProductPage() {
                       onClick={() => setActiveImage(idx)}
                       className={`w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${activeImage === idx ? 'border-[#C9A84C] shadow-md' : 'border-[#F2EDE4] opacity-70 hover:opacity-100'}`}
                     >
-                      <MediaDisplay src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover bg-[#F2EDE4]" />
+                        <MediaDisplay 
+                          src={img} 
+                          alt={`Thumbnail ${idx}`} 
+                          className="w-full h-full object-cover bg-[#F2EDE4]" 
+                          loading="eager" 
+                          fetchpriority="high" 
+                        />
                     </button>
                   ))}
                 </div>
@@ -156,7 +162,13 @@ export default function ProductPage() {
                     title="Share Product">
                     <Share2 size={20} />
                   </button>
-                  <MediaDisplay src={gallery[activeImage]} alt={product.name} className="w-full h-full object-cover p-2" />
+                  <MediaDisplay 
+                    src={gallery[activeImage]} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover p-2" 
+                    loading="eager"
+                    fetchpriority="high"
+                  />
                 </div>
               </div>
             </ScrollReveal>
