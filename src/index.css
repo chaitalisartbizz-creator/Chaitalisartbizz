@@ -301,3 +301,9 @@ body {
   transform: translate(0, 0) scale(1);
   filter: blur(0px);
 }
+
+/* NProgress Custom Theme */
+#nprogress .bar { background: #C9A84C !important; height: 3px !important; }
+#nprogress .peg { box-shadow: 0 0 10px #C9A84C, 0 0 5px #C9A84C !important; }
+#nprogress .spinner-icon { border-top-color: #C9A84C !important; border-left-color: #C9A84C !important; }
+

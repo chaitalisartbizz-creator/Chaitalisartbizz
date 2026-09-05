@@ -15,6 +15,7 @@ export default function UploadField({
 }) {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
 
   const processFile = async (file) => {
@@ -32,15 +33,17 @@ export default function UploadField({
 
     try {
       setIsUploading(true);
+      setUploadProgress(0);
       if (onUploadStart) onUploadStart();
       
-      const url = await handleImageUpload(file);
+      const url = await handleImageUpload(file, setUploadProgress);
       onChange(url);
     } catch (err) {
       console.error('Upload failed:', err);
       alert('Upload failed. Please try again.');
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
       if (onUploadEnd) onUploadEnd();
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -108,9 +111,15 @@ export default function UploadField({
         />
 
         {isUploading ? (
-          <div className="h-40 flex flex-col items-center justify-center text-gray-500">
+          <div className="h-40 flex flex-col items-center justify-center text-gray-700 bg-gray-50">
             <Loader2 size={32} className="animate-spin mb-3 text-[#C9A84C]" />
-            <p className="text-sm font-medium">Uploading media...</p>
+            <p className="text-sm font-bold mb-2">Uploading media... {uploadProgress}%</p>
+            <div className="w-3/4 max-w-[200px] h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-[#C9A84C] to-amber-300 transition-all duration-300" 
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
           </div>
         ) : value ? (
           <div className="group relative w-full h-40 bg-gray-100 flex items-center justify-center">
