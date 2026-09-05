@@ -4,7 +4,7 @@ import {
   ChevronLeft, ChevronRight, Star, ShoppingBag, Heart,
   Sparkles, ArrowRight, Award, ShieldCheck, Palette, Brush
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import { useData } from '../context/DataContext';
 import { useCart } from '../context/CartContext';
@@ -38,22 +38,33 @@ function HeroCarousel() {
       className="relative z-10 max-w-[1600px] mx-auto w-full px-4 md:px-6 mb-4"
     >
       <div
-        className="relative overflow-hidden rounded-3xl w-full shadow-2xl border border-[#C9A84C]/40"
+        className="relative overflow-hidden rounded-3xl w-full shadow-2xl border border-[#C9A84C]/40 bg-stone-900 aspect-[4/5] md:aspect-[21/9] max-h-[600px]"
         onMouseEnter={() => setAuto(false)}
         onMouseLeave={() => setAuto(true)}
       >
-        {s.mobileImage ? (
-          <>
-            <div className="block md:hidden">
-              <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-auto object-cover max-h-[600px]" loading="eager" />
-            </div>
-            <div className="hidden md:block">
-              <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-auto object-cover max-h-[520px]" loading="eager" />
-            </div>
-          </>
-        ) : s.heroImage ? (
-          <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-auto object-cover max-h-[520px]" loading="eager" />
-        ) : null}
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={cur}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full"
+          >
+            {s.mobileImage ? (
+              <>
+                <div className="block md:hidden w-full h-full">
+                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-full object-cover" loading="eager" />
+                </div>
+                <div className="hidden md:block w-full h-full">
+                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-full object-cover" loading="eager" />
+                </div>
+              </>
+            ) : s.heroImage ? (
+              <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-full object-cover" loading="eager" />
+            ) : null}
+          </motion.div>
+        </AnimatePresence>
         
         {/* Navigation Arrows */}
         <button onClick={prev} className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-[#C9A84C] hover:text-white transition-all z-20">
