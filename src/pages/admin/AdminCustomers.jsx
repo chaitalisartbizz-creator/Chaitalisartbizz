@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { Users, Search, Mail, Phone, Calendar, Shield } from 'lucide-react';
+import { Users, Search, Mail, Phone, Calendar, Shield, Loader2 } from 'lucide-react';
 import ScrollReveal from '../../components/ScrollReveal';
 
 export default function AdminCustomers() {
