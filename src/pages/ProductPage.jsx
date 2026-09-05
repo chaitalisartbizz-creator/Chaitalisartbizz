@@ -295,32 +295,58 @@ export default function ProductPage() {
                 ))}
               </div>
               <div className="text-stone-700 text-sm leading-relaxed">
-                {activeTab === 'description' && (
-                  <div className="space-y-3">
-                    <p className="font-semibold text-stone-900">{product.description}</p>
-                    <p>Every piece is uniquely designed and handcrafted with precision to ensure it perfectly aligns with your vision. We carefully package every item to ensure it arrives safely at your doorstep.</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2">
-                      <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Custom made to order</div>
-                      <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Durable & Long-lasting</div>
-                      <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Precision detailing</div>
-                      <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Secure eco-friendly packaging</div>
+                  {activeTab === 'description' && (
+                    <div className="space-y-3">
+                      <div className="whitespace-pre-line text-stone-900 font-medium">
+                        {product.description || "Beautifully detailed portrait perfect for living room walls.\n\nEvery piece is uniquely designed and handcrafted with precision to ensure it perfectly aligns with your vision. We carefully package every item to ensure it arrives safely at your doorstep."}
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2">
+                        {product.features ? (
+                           (typeof product.features === 'string' ? product.features.split('\n') : product.features).filter(f => f.trim()).map((feat, idx) => (
+                             <div key={idx} className="flex items-start gap-2 text-emerald-800 font-bold text-xs">
+                               <CheckCircle2 size={15} className="mt-0.5 flex-shrink-0" /> 
+                               <span>{feat}</span>
+                             </div>
+                           ))
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Custom made to order</div>
+                            <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Durable & Long-lasting</div>
+                            <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Precision detailing</div>
+                            <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs"><CheckCircle2 size={15} /> Secure eco-friendly packaging</div>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {activeTab === 'customization options' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#F2EDE4]/50 p-4 rounded-2xl border border-[#C9A84C]/30">
-                    <div><p className="text-xs text-stone-500 font-bold">Personalised Text</p><p className="font-black text-stone-900">Available</p></div>
-                    <div><p className="text-xs text-stone-500 font-bold">Color Theme</p><p className="font-black text-stone-900">Customizable</p></div>
-                    <div><p className="text-xs text-stone-500 font-bold">Size</p><p className="font-black text-stone-900">Standard / Large / Premium</p></div>
-                    <div><p className="text-xs text-stone-500 font-bold">Turnaround Time</p><p className="font-black text-stone-900">5-7 Business Days</p></div>
-                  </div>
-                )}
-                {activeTab === 'quality guarantee' && (
-                  <div className="space-y-2">
-                    <p className="font-bold text-[#2C2C2C]">Chaitali's Artbizz Quality Assurance:</p>
-                    <p>We use premium resin, high-grade canvases, and the best digital tools to craft your masterpieces. Every product undergoes strict visual inspection before dispatch.</p>
-                  </div>
-                )}
+                  )}
+                  {activeTab === 'customization options' && (
+                    <>
+                      {product.customization ? (
+                        <div className="whitespace-pre-line text-stone-800 bg-[#F2EDE4]/50 p-4 rounded-2xl border border-[#C9A84C]/30">
+                          {product.customization}
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#F2EDE4]/50 p-4 rounded-2xl border border-[#C9A84C]/30">
+                          <div><p className="text-xs text-stone-500 font-bold">Personalised Text</p><p className="font-black text-stone-900">Available</p></div>
+                          <div><p className="text-xs text-stone-500 font-bold">Color Theme</p><p className="font-black text-stone-900">Customizable</p></div>
+                          <div><p className="text-xs text-stone-500 font-bold">Size</p><p className="font-black text-stone-900">Standard / Large / Premium</p></div>
+                          <div><p className="text-xs text-stone-500 font-bold">Turnaround Time</p><p className="font-black text-stone-900">5-7 Business Days</p></div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {activeTab === 'quality guarantee' && (
+                    <div className="space-y-2">
+                      {product.quality ? (
+                        <div className="whitespace-pre-line">{product.quality}</div>
+                      ) : (
+                        <>
+                          <p className="font-bold text-[#2C2C2C]">Chaitali's Artbizz Quality Assurance:</p>
+                          <p>We use premium resin, high-grade canvases, and the best digital tools to craft your masterpieces. Every product undergoes strict visual inspection before dispatch.</p>
+                        </>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
           </ScrollReveal>

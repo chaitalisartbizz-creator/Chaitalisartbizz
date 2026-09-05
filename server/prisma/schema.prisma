@@ -34,6 +34,9 @@ model Product {
   category    String
   petType     String
   description String?
+  features    String?
+  customization String?
+  quality     String?
 }
 
 model Category {

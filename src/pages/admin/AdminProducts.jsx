@@ -22,8 +22,10 @@ function AdminProductsContent() {
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [galleryProgress, setGalleryProgress] = useState(0);
 
-  const defaultProduct = {
-    name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: ''
+  const defaultProduct = { 
+    name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', 
+    rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: '',
+    description: '', features: '', customization: '', quality: ''
   };
 
   const DEFAULT_BRANDS = ['Wall Clocks', 'Name Plates', 'Geode Art', 'Mantra Frames', 'Pooja Thali', 'Keychains', 'Coasters'];
@@ -437,7 +439,33 @@ function AdminProductsContent() {
                   
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Status Badge</label>
-                    <input type="text" placeholder="e.g. 🏆 Bestseller" value={editing.badge || ''} onChange={e => setEditing({...editing, badge: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <input type="text" placeholder="e.g. ✨ Bestseller" value={editing.badge || ''} onChange={e => setEditing({...editing, badge: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                  </div>
+
+                  <div className="md:col-span-2 mt-4">
+                    <h3 className="text-sm font-bold text-gray-700 mb-3 border-b border-gray-200 pb-2">Product Details Tabs (Optional)</h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 mb-1">Description (Tab 1)</label>
+                        <textarea placeholder="Main description paragraph..." value={editing.description || ''} onChange={e => setEditing({...editing, description: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 mb-1">Features/Bullets (Tab 1) - One per line</label>
+                        <textarea placeholder="Custom made to order&#10;Durable & Long-lasting" value={editing.features || ''} onChange={e => setEditing({...editing, features: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 mb-1">Customization Options (Tab 2)</label>
+                        <textarea placeholder="Leave blank to use default..." value={editing.customization || ''} onChange={e => setEditing({...editing, customization: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 mb-1">Quality Guarantee (Tab 3)</label>
+                        <textarea placeholder="Leave blank to use default..." value={editing.quality || ''} onChange={e => setEditing({...editing, quality: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

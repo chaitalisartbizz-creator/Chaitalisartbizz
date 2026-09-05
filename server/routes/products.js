@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 // POST new product
 router.post('/', async (req, res) => {
   try {
-    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description } = req.body;
+    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality } = req.body;
     
     // Upload main image to Cloudinary if it's base64
     const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
@@ -50,7 +50,10 @@ router.post('/', async (req, res) => {
         badge,
         category: category || '',
         petType: petType || 'Resin Art',
-        description
+        description,
+        features,
+        customization,
+        quality
       }
     });
     
@@ -66,7 +69,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description } = req.body;
+    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality } = req.body;
     
     // Upload main image if it's base64 (newly uploaded)
     const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
@@ -95,7 +98,10 @@ router.put('/:id', async (req, res) => {
         badge,
         category: category || '',
         petType: petType || 'Resin Art',
-        description
+        description,
+        features,
+        customization,
+        quality
       }
     });
     

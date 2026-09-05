@@ -11,8 +11,12 @@ router.get('/', async (req, res) => {
     const products = productsRaw.map(p => {
       let parsedImages = [];
       try { parsedImages = p.images ? JSON.parse(p.images) : []; } catch(e) {}
-      let parsedFeatures = [];
-      try { parsedFeatures = p.features ? JSON.parse(p.features) : []; } catch(e) {}
+      let parsedFeatures = p.features;
+      try { 
+        if (p.features && p.features.startsWith('[')) {
+          parsedFeatures = JSON.parse(p.features); 
+        }
+      } catch(e) {}
       
       return {
         ...p,
