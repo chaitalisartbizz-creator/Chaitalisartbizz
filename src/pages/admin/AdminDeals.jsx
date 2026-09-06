@@ -13,6 +13,7 @@ export default function AdminDeals() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const defaultDeal = {
     title: '', sub: '', badge: '', tag: '', img: '', grad: 'from-[#C9A84C] to-[#a65d14]', bg: '#FFF4ED', border: '#e6c8a8', save: ''
@@ -171,19 +172,27 @@ export default function AdminDeals() {
                       <div className="flex gap-2">
                         <input type="url" placeholder="Paste URL here..." value={editing.img || ''} onChange={e => setEditing({...editing, img: e.target.value})} className="flex-1 p-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                         <span className="text-sm text-gray-500 flex items-center">OR</span>
-                        <label className={`cursor-pointer ${isUploading ? 'bg-gray-200 opacity-70' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                          {isUploading ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload'}
+                        <label className={`relative overflow-hidden cursor-pointer ${isUploading ? 'bg-gray-100 opacity-90' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700 z-0`}>
+                          {isUploading && (
+                            <div 
+                              className="absolute inset-0 bg-[#C9A84C]/20 transition-all duration-300 -z-10"
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          )}
+                          {isUploading ? <><Loader2 className="animate-spin text-[#C9A84C]" size={16} /> <span className="font-bold">{uploadProgress}%</span></> : 'Upload'}
                           <input type="file" accept="image/*" className="hidden" disabled={isUploading} onChange={async (e) => {
                               if (e.target.files && e.target.files[0]) {
                                 setIsUploading(true);
+                                setUploadProgress(0);
                                 try {
-                                  const base64 = await handleImageUpload(e.target.files[0]);
+                                  const base64 = await handleImageUpload(e.target.files[0], setUploadProgress);
                                   setEditing({...editing, img: base64});
                                 } catch(err) {
                                   console.error("Upload failed", err);
                                   alert("Image upload failed");
                                 } finally {
                                   setIsUploading(false);
+                                  setUploadProgress(0);
                                 }
                               }
                           }} />

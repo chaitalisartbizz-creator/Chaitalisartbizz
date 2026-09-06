@@ -25,7 +25,8 @@ function AdminProductsContent() {
   const defaultProduct = { 
     name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', 
     rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: '',
-    description: '', features: '', customization: '', quality: ''
+    description: '', features: '', customization: '', quality: '',
+    tab1Name: '', tab2Name: '', tab3Name: ''
   };
 
   const DEFAULT_BRANDS = ['Wall Clocks', 'Name Plates', 'Geode Art', 'Mantra Frames', 'Pooja Thali', 'Keychains', 'Coasters'];
@@ -276,8 +277,14 @@ function AdminProductsContent() {
                     <div className="flex gap-2">
                       <input id="img" type="url" placeholder="Paste URL here..." value={editing.img || ''} onChange={e => setEditing({...editing, img: e.target.value})} className="flex-1 p-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                       <span className="text-sm text-gray-500 flex items-center">OR</span>
-                      <label className={`cursor-pointer ${isUploadingPrimary ? 'bg-gray-200 opacity-70' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                        {isUploadingPrimary ? <><Loader2 className="animate-spin" size={16} /> {primaryProgress}%</> : 'Upload File'}
+                      <label className={`relative overflow-hidden cursor-pointer ${isUploadingPrimary ? 'bg-gray-100 opacity-90' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700 z-0`}>
+                        {isUploadingPrimary && (
+                          <div 
+                            className="absolute inset-0 bg-[#C9A84C]/20 transition-all duration-300 -z-10"
+                            style={{ width: `${primaryProgress}%` }}
+                          />
+                        )}
+                        {isUploadingPrimary ? <><Loader2 className="animate-spin text-[#C9A84C]" size={16} /> <span className="font-bold">{primaryProgress}%</span></> : 'Upload File'}
                         <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploadingPrimary} onChange={async (e) => {
                             if (e.target.files && e.target.files[0]) {
                               setIsUploadingPrimary(true);
@@ -323,8 +330,14 @@ function AdminProductsContent() {
                     >
                       Add URL
                     </button>
-                    <label className={`cursor-pointer ${isUploadingGallery ? 'bg-gray-200 opacity-70' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
-                      {isUploadingGallery ? <><Loader2 className="animate-spin" size={16} /> {galleryProgress}%</> : 'Upload'}
+                    <label className={`relative overflow-hidden cursor-pointer ${isUploadingGallery ? 'bg-gray-100 opacity-90' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700 z-0`}>
+                      {isUploadingGallery && (
+                        <div 
+                          className="absolute inset-0 bg-[#C9A84C]/20 transition-all duration-300 -z-10"
+                          style={{ width: `${galleryProgress}%` }}
+                        />
+                      )}
+                      {isUploadingGallery ? <><Loader2 className="animate-spin text-[#C9A84C]" size={16} /> <span className="font-bold">{galleryProgress}%</span></> : 'Upload'}
                       <input type="file" accept="image/*,video/*" className="hidden" disabled={isUploadingGallery} onChange={async (e) => {
                           if (e.target.files && e.target.files[0]) {
                             setIsUploadingGallery(true);
@@ -446,24 +459,47 @@ function AdminProductsContent() {
                     <h3 className="text-sm font-bold text-gray-700 mb-3 border-b border-gray-200 pb-2">Product Details Tabs (Optional)</h3>
                     
                     <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-bold text-gray-600 mb-1">Description (Tab 1)</label>
-                        <textarea placeholder="Main description paragraph..." value={editing.description || ''} onChange={e => setEditing({...editing, description: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-3">
+                        <div className="flex gap-3">
+                          <div className="flex-1">
+                            <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Tab 1 Name</label>
+                            <input type="text" placeholder="Description" value={editing.tab1Name || ''} onChange={e => setEditing({...editing, tab1Name: e.target.value})} className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm font-bold text-gray-700" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-600 mb-1">Description Content</label>
+                          <textarea placeholder="Main description paragraph..." value={editing.description || ''} onChange={e => setEditing({...editing, description: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[60px]" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-600 mb-1">Features/Bullets - One per line</label>
+                          <textarea placeholder="Custom made to order&#10;Durable & Long-lasting" value={editing.features || ''} onChange={e => setEditing({...editing, features: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[60px]" />
+                        </div>
                       </div>
                       
-                      <div>
-                        <label className="block text-xs font-bold text-gray-600 mb-1">Features/Bullets (Tab 1) - One per line</label>
-                        <textarea placeholder="Custom made to order&#10;Durable & Long-lasting" value={editing.features || ''} onChange={e => setEditing({...editing, features: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-3">
+                        <div className="flex gap-3">
+                          <div className="flex-1">
+                            <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Tab 2 Name</label>
+                            <input type="text" placeholder="Customization Options" value={editing.tab2Name || ''} onChange={e => setEditing({...editing, tab2Name: e.target.value})} className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm font-bold text-gray-700" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-600 mb-1">Tab 2 Content</label>
+                          <textarea placeholder="Leave blank to use default..." value={editing.customization || ''} onChange={e => setEditing({...editing, customization: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[60px]" />
+                        </div>
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-gray-600 mb-1">Customization Options (Tab 2)</label>
-                        <textarea placeholder="Leave blank to use default..." value={editing.customization || ''} onChange={e => setEditing({...editing, customization: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-gray-600 mb-1">Quality Guarantee (Tab 3)</label>
-                        <textarea placeholder="Leave blank to use default..." value={editing.quality || ''} onChange={e => setEditing({...editing, quality: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[80px]" />
+                      <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm space-y-3">
+                        <div className="flex gap-3">
+                          <div className="flex-1">
+                            <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Tab 3 Name</label>
+                            <input type="text" placeholder="Quality Guarantee" value={editing.tab3Name || ''} onChange={e => setEditing({...editing, tab3Name: e.target.value})} className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm font-bold text-gray-700" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-600 mb-1">Tab 3 Content</label>
+                          <textarea placeholder="Leave blank to use default..." value={editing.quality || ''} onChange={e => setEditing({...editing, quality: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm min-h-[60px]" />
+                        </div>
                       </div>
                     </div>
                   </div>

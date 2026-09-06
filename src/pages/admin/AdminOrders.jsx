@@ -217,12 +217,23 @@ export default function AdminOrders() {
         };
         const generatePdf = typeof html2pdf === 'function' ? html2pdf : html2pdf.default;
         await generatePdf().set(opt).from(element).save();
-      } catch (err) {
-        console.error('Invoice generation failed:', err);
-        const errMsg = err?.message || String(err);
-        showToast('❌ Failed to generate invoice.');
-        alert('Invoice Generation Error: ' + errMsg);
-      } finally {
+        } catch (err) {
+          console.error('Invoice generation failed:', err);
+          const errMsg = err?.message || String(err);
+          showToast('❌ Failed to generate invoice.');
+          if (window.confirm(`Invoice Generation Error:\n\n${errMsg}\n\nClick OK to copy error to clipboard.`)) {
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(errMsg);
+                showToast('Error copied to clipboard');
+              } else {
+                prompt('Copy the error below:', errMsg);
+              }
+            } catch(e) {
+              prompt('Copy the error below:', errMsg);
+            }
+          }
+        } finally {
         setDownloadingOrderId(null);
         setSelectedOrderForInvoice(null);
       }

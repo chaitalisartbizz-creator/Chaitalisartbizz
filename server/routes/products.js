@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 // POST new product
 router.post('/', async (req, res) => {
   try {
-    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality } = req.body;
+    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality, tab1Name, tab2Name, tab3Name } = req.body;
     
     // Upload main image to Cloudinary if it's base64
     const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
@@ -53,14 +53,16 @@ router.post('/', async (req, res) => {
         description,
         features,
         customization,
-        quality
+        quality,
+        tab1Name,
+        tab2Name,
+        tab3Name
       }
     });
     
-    // Return parsed version
-    res.status(201).json({ ...product, images: uploadedImages });
+    res.status(201).json(product);
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('Create product error:', error);
     res.status(500).json({ error: 'Failed to create product' });
   }
 });
@@ -69,7 +71,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality } = req.body;
+    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality, tab1Name, tab2Name, tab3Name } = req.body;
     
     // Upload main image if it's base64 (newly uploaded)
     const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
@@ -101,7 +103,10 @@ router.put('/:id', async (req, res) => {
         description,
         features,
         customization,
-        quality
+        quality,
+        tab1Name,
+        tab2Name,
+        tab3Name
       }
     });
     

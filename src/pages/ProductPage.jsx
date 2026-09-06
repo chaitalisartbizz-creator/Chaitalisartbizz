@@ -17,7 +17,7 @@ export default function ProductPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedWeight, setSelectedWeight] = useState('250g');
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState('description');
+  const [activeTab, setActiveTab] = useState('tab1');
   
   const handleShare = async () => {
     const SHARE_HOOKS = [
@@ -284,18 +284,22 @@ export default function ProductPage() {
           <ScrollReveal delay={200}>
             <div className="mt-12 bg-white/90 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-[#C9A84C]/40 shadow-lg">
               <div className="flex gap-6 border-b border-[#C9A84C]/30 mb-6 overflow-x-auto">
-                {['description', 'customization options', 'quality guarantee'].map(tab => (
+                {[
+                  { id: 'tab1', label: product.tab1Name || 'Description' },
+                  { id: 'tab2', label: product.tab2Name || 'Customization Options' },
+                  { id: 'tab3', label: product.tab3Name || 'Quality Guarantee' }
+                ].map(tab => (
                   <button 
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`pb-3 text-sm font-bold capitalize whitespace-nowrap transition-all border-b-2 ${activeTab === tab ? 'border-[#C9A84C] text-[#2C2C2C]' : 'border-transparent text-stone-400 hover:text-stone-700'}`}
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`pb-3 text-sm font-bold capitalize whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id ? 'border-[#C9A84C] text-[#2C2C2C]' : 'border-transparent text-stone-400 hover:text-stone-700'}`}
                   >
-                    {tab}
+                    {tab.label}
                   </button>
                 ))}
               </div>
               <div className="text-stone-700 text-sm leading-relaxed">
-                  {activeTab === 'description' && (
+                  {activeTab === 'tab1' && (
                     <div className="space-y-3">
                       <div className="whitespace-pre-line text-stone-900 font-medium">
                         {product.description || "Beautifully detailed portrait perfect for living room walls.\n\nEvery piece is uniquely designed and handcrafted with precision to ensure it perfectly aligns with your vision. We carefully package every item to ensure it arrives safely at your doorstep."}
@@ -319,7 +323,7 @@ export default function ProductPage() {
                       </div>
                     </div>
                   )}
-                  {activeTab === 'customization options' && (
+                  {activeTab === 'tab2' && (
                     <>
                       {product.customization ? (
                         <div className="whitespace-pre-line text-stone-800 bg-[#F2EDE4]/50 p-4 rounded-2xl border border-[#C9A84C]/30">
@@ -335,7 +339,7 @@ export default function ProductPage() {
                       )}
                     </>
                   )}
-                  {activeTab === 'quality guarantee' && (
+                  {activeTab === 'tab3' && (
                     <div className="space-y-2">
                       {product.quality ? (
                         <div className="whitespace-pre-line">{product.quality}</div>

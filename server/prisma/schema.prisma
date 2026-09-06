@@ -37,6 +37,9 @@ model Product {
   features    String?
   customization String?
   quality     String?
+  tab1Name    String?
+  tab2Name    String?
+  tab3Name    String?
 }
 
 model Category {
