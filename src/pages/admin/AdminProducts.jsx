@@ -32,6 +32,17 @@ function AdminProductsContent() {
   const DEFAULT_BRANDS = ['Wall Clocks', 'Name Plates', 'Geode Art', 'Mantra Frames', 'Pooja Thali', 'Keychains', 'Coasters'];
   const uniqueBrands = [...new Set([...DEFAULT_BRANDS, ...(products || []).map(p => p.brand).filter(Boolean)])];
 
+  const availableSubCategories = React.useMemo(() => {
+    if (editing?.category) {
+      const selectedCat = categories.find(c => c.label.toLowerCase() === editing.category.toLowerCase());
+      if (selectedCat && selectedCat.sub) {
+        const subs = selectedCat.sub.split(',').map(s => s.trim()).filter(Boolean);
+        if (subs.length > 0) return [...new Set([...subs, ...uniqueBrands])];
+      }
+    }
+    return uniqueBrands;
+  }, [editing?.category, categories, uniqueBrands]);
+
   const DEFAULT_MEDIUMS = ['Resin Art', 'Acrylic', 'MDF Board', 'Digital Portrait', 'Oil Painting', 'Watercolor', 'Mixed Media', 'Charcoal', 'Pencil Sketch', 'Alcohol Ink', 'Fluid Art', 'Lippan Art'];
   const uniqueMediums = [...new Set([...DEFAULT_MEDIUMS, ...(products || []).map(p => p.petType).filter(Boolean)])];
 
@@ -380,12 +391,20 @@ function AdminProductsContent() {
                     <input id="name" required type="text" placeholder="e.g. Custom Couple Portrait" value={editing.name || ''} onChange={e => setEditing({...editing, name: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                   </div>
                   
+                  <div className="md:col-span-2">
+                    <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-1">Main Category <span className="text-red-500">*</span></label>
+                    <input id="category" list="category-list" required type="text" placeholder="Select the main category" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
+                    <datalist id="category-list">
+                      {categories.map(c => <option key={c.label} value={c.label} />)}
+                    </datalist>
+                  </div>
+
                   <div>
                     <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Sub-Category / Collection <span className="text-red-500">*</span></label>
                     <div className="flex gap-2">
                       <input id="brand" list="brand-list" required type="text" placeholder="Select or type a custom one..." value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="flex-1 p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                       <datalist id="brand-list">
-                        {uniqueBrands.map(b => <option key={b} value={b} />)}
+                        {availableSubCategories.map(b => <option key={b} value={b} />)}
                       </datalist>
                       <button 
                         type="button" 
@@ -420,13 +439,7 @@ function AdminProductsContent() {
                     </div>
                   </div>
 
-                  <div className="md:col-span-2">
-                    <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-1">Main Category <span className="text-red-500">*</span></label>
-                    <input id="category" list="category-list" required type="text" placeholder="Select the main category" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
-                    <datalist id="category-list">
-                      {categories.map(c => <option key={c.label} value={c.label} />)}
-                    </datalist>
-                  </div>
+
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>

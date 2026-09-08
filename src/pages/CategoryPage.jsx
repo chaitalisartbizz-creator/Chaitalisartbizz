@@ -33,7 +33,10 @@ export default function CategoryPage() {
   const { addToCart, toggleWishlist, isInCart, isWishlisted } = useCart();
   const { categories: ALL_CATEGORIES, products: PRODUCTS, loading } = useData();
 
-  const BRANDS = ['All', ...new Set(PRODUCTS.map(p => p.brand).filter(Boolean))];
+  const activeCategoryObj = ALL_CATEGORIES.find(c => c.label === activeCategory);
+  const availableSubcategories = activeCategoryObj?.sub 
+    ? activeCategoryObj.sub.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
 
   const getSynonymQuery = (q) => {
     const qLower = q.toLowerCase();
@@ -153,6 +156,26 @@ export default function CategoryPage() {
                     ))}
                   </div>
 
+                  {/* Sub-categories */}
+                  {availableSubcategories.length > 0 && (
+                    <div className="border-t border-[#C9A84C]/30 pt-4">
+                      <p className="text-stone-900 font-bold text-sm mb-3 font-cinzel">Sub-categories</p>
+                      <button 
+                        onClick={() => setActiveBrand('All')}
+                        className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeBrand === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}
+                      >
+                        All
+                      </button>
+                      {availableSubcategories.map(sub => (
+                        <button key={sub} onClick={() => setActiveBrand(sub)}
+                          className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeBrand === sub ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}>
+                          {sub}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+
                   {/* Price Filter */}
                   <div className="border-t border-[#C9A84C]/30 pt-4">
                     <p className="text-stone-900 font-bold text-sm mb-3 font-cinzel">Price Range</p>
@@ -184,6 +207,20 @@ export default function CategoryPage() {
                     </button>
                   ))}
                 </div>
+                {availableSubcategories.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-4">
+                    <button onClick={() => setActiveBrand('All')}
+                      className={`flex-shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${activeBrand === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C]' : 'bg-white text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C]'}`}>
+                      All
+                    </button>
+                    {availableSubcategories.map(sub => (
+                      <button key={sub} onClick={() => setActiveBrand(sub)}
+                        className={`flex-shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${activeBrand === sub ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C]' : 'bg-white text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C]'}`}>
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </ScrollReveal>
 
               {/* Toolbar */}
