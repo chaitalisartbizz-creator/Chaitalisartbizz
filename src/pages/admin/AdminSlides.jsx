@@ -145,11 +145,11 @@ export default function AdminSlides() {
           
           <div className="bg-gray-100 rounded-2xl p-4 overflow-hidden h-fit sticky top-24">
             <h3 className="font-bold text-gray-500 mb-4 flex items-center gap-2"><ExternalLink size={16}/> Live Preview</h3>
-            <div className="w-full aspect-[192/70] relative rounded-xl overflow-hidden shadow-lg bg-black flex items-center justify-center text-gray-600">
+            <div className="w-full relative rounded-xl overflow-hidden shadow-lg bg-black flex items-center justify-center text-gray-600">
               {localSlides[0]?.heroImage ? (
-                <img src={localSlides[0].heroImage} alt="Preview" className="w-full h-full object-contain" />
+                <img src={localSlides[0].heroImage} alt="Preview" className="w-full h-auto block" />
               ) : (
-                "No image preview"
+                <div className="aspect-[192/70] flex items-center justify-center">No image preview</div>
               )}
             </div>
           </div>

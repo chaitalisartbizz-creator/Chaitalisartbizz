@@ -38,7 +38,7 @@ function HeroCarousel() {
       className="relative z-10 max-w-[1600px] mx-auto w-full px-4 md:px-6 mb-4"
     >
       <div
-        className="relative overflow-hidden rounded-3xl w-full shadow-2xl border border-[#C9A84C]/40 bg-stone-900 aspect-[4/5] md:aspect-[21/9] max-h-[600px]"
+        className="relative overflow-hidden rounded-3xl w-full shadow-2xl border border-[#C9A84C]/40 bg-stone-900"
         onMouseEnter={() => setAuto(false)}
         onMouseLeave={() => setAuto(true)}
       >
@@ -49,20 +49,20 @@ function HeroCarousel() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full"
+            className="w-full"
           >
             {s.mobileImage ? (
               <>
-                <div className="block md:hidden w-full h-full flex items-center justify-center">
-                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-full object-contain" loading="eager" />
+                <div className="block md:hidden w-full">
+                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-auto block" loading="eager" />
                 </div>
-                <div className="hidden md:block w-full h-full flex items-center justify-center">
-                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-full object-contain" loading="eager" />
+                <div className="hidden md:block w-full">
+                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-auto block" loading="eager" />
                 </div>
               </>
             ) : s.heroImage ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-full object-contain" loading="eager" />
+              <div className="w-full">
+                <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-auto block" loading="eager" />
               </div>
             ) : null}
           </motion.div>
