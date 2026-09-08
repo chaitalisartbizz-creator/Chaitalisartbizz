@@ -236,7 +236,7 @@ function AdminProductsContent() {
                       )}
                     </td>
                     <td className="p-4 pr-6">
-                      <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-2">
                         <button title="Edit Product" data-testid={`edit-btn-${p.id}`} onClick={() => { setEditing(p); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors">
                           <Edit2 size={18} />
                         </button>
