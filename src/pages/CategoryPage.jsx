@@ -34,9 +34,11 @@ export default function CategoryPage() {
   const { categories: ALL_CATEGORIES, products: PRODUCTS, loading } = useData();
 
   const activeCategoryObj = ALL_CATEGORIES.find(c => c.label === activeCategory);
-  const availableSubcategories = activeCategoryObj?.sub 
+  const catSubs = activeCategoryObj?.sub 
     ? activeCategoryObj.sub.split(',').map(s => s.trim()).filter(Boolean)
     : [];
+  const productSubs = PRODUCTS.filter(p => p.category === activeCategory).map(p => p.brand).filter(Boolean);
+  const availableSubcategories = [...new Set([...catSubs, ...productSubs])];
 
   const getSynonymQuery = (q) => {
     const qLower = q.toLowerCase();

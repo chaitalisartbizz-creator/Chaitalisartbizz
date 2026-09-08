@@ -35,13 +35,18 @@ function AdminProductsContent() {
   const availableSubCategories = React.useMemo(() => {
     if (editing?.category) {
       const selectedCat = categories.find(c => c.label.toLowerCase() === editing.category.toLowerCase());
+      let catSubs = [];
       if (selectedCat && selectedCat.sub) {
-        const subs = selectedCat.sub.split(',').map(s => s.trim()).filter(Boolean);
-        if (subs.length > 0) return [...new Set([...subs, ...uniqueBrands])];
+        catSubs = selectedCat.sub.split(',').map(s => s.trim()).filter(Boolean);
       }
+      const productSubs = (products || [])
+        .filter(p => p.category?.toLowerCase() === editing.category.toLowerCase())
+        .map(p => p.brand)
+        .filter(Boolean);
+      return [...new Set([...catSubs, ...productSubs])];
     }
     return uniqueBrands;
-  }, [editing?.category, categories, uniqueBrands]);
+  }, [editing?.category, categories, products, uniqueBrands]);
 
   const DEFAULT_MEDIUMS = ['Resin Art', 'Acrylic', 'MDF Board', 'Digital Portrait', 'Oil Painting', 'Watercolor', 'Mixed Media', 'Charcoal', 'Pencil Sketch', 'Alcohol Ink', 'Fluid Art', 'Lippan Art'];
   const uniqueMediums = [...new Set([...DEFAULT_MEDIUMS, ...(products || []).map(p => p.petType).filter(Boolean)])];
