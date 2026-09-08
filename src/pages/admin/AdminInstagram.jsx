@@ -91,13 +91,36 @@ export default function AdminInstagram() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {(instagramFeeds || []).map((feed) => (
           <div key={feed.id} className="bg-white rounded-3xl border border-[#C9A84C]/20 shadow-lg overflow-hidden flex flex-col group relative">
-            <button 
-              onClick={() => handleDelete(feed.id)}
-              className="absolute top-3 right-3 z-20 bg-red-500/90 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 hover:scale-110"
-              title="Delete Feed"
-            >
-              <Trash2 size={16} />
-            </button>
+            <div className="absolute top-3 right-3 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+              <button 
+                onClick={async () => {
+                  try {
+                    await axios.put(`/api/instagram/${feed.id}/pin`, { pinned: !feed.pinned });
+                    await refreshData();
+                  } catch (e) {
+                    showToast('Failed to update pin status');
+                  }
+                }}
+                className={`${feed.pinned ? 'bg-[#C9A84C] text-white' : 'bg-gray-800/80 text-white hover:bg-gray-700'} p-2 rounded-full shadow-lg transition-all hover:scale-110`}
+                title={feed.pinned ? "Unpin from Top" : "Pin to Top"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={feed.pinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+              </button>
+              <button 
+                onClick={() => handleDelete(feed.id)}
+                className="bg-red-500/90 text-white p-2 rounded-full shadow-lg transition-all hover:bg-red-600 hover:scale-110"
+                title="Delete Feed"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+            
+            {feed.pinned && (
+              <div className="absolute top-3 left-3 z-20 bg-[#C9A84C] text-white text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded shadow-lg pointer-events-none">
+                Pinned
+              </div>
+            )}
+
             <div className="relative bg-stone-100 p-2 min-h-[400px] flex flex-col items-center justify-center overflow-y-auto">
               <InstagramEmbed url={feed.url} />
             </div>

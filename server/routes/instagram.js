@@ -6,7 +6,10 @@ const prisma = require('../db');
 router.get('/', async (req, res) => {
   try {
     const feeds = await prisma.instagramFeed.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: [
+        { pinned: 'desc' },
+        { createdAt: 'desc' }
+      ]
     });
     res.json(feeds);
   } catch (error) {
@@ -24,6 +27,20 @@ router.post('/', async (req, res) => {
     res.json(feed);
   } catch (error) {
     res.status(500).json({ error: 'Error creating feed' });
+  }
+});
+
+// PUT pin/unpin feed
+router.put('/:id/pin', async (req, res) => {
+  try {
+    const { pinned } = req.body;
+    const feed = await prisma.instagramFeed.update({
+      where: { id: parseInt(req.params.id) },
+      data: { pinned }
+    });
+    res.json(feed);
+  } catch (error) {
+    res.status(500).json({ error: 'Error pinning feed' });
   }
 });
 

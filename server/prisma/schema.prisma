@@ -159,5 +159,6 @@ model Visitor {
 model InstagramFeed {
   id        Int      @id @default(autoincrement())
   url       String
+  pinned    Boolean  @default(false)
   createdAt DateTime @default(now())
 }
