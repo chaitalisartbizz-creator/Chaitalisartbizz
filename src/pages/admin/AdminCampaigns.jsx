@@ -104,7 +104,7 @@ export default function AdminCampaigns() {
     <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-gray-800 flex items-center gap-3 tracking-tight">
-          <Mail className="text-[#C9A84C]" />
+          <Mail className="text-[#d07e20]" />
           Email Campaigns
         </h1>
         <p className="text-gray-500 font-medium mt-2">Send promotional emails and announcements to your customers.</p>
@@ -112,7 +112,7 @@ export default function AdminCampaigns() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white border border-gray-100 shadow-sm rounded-3xl p-6">
-          <div className="flex items-center gap-3 text-[#C9A84C] mb-2">
+          <div className="flex items-center gap-3 text-[#d07e20] mb-2">
             <Users size={20} />
             <h3 className="font-bold text-gray-800">Audience Size</h3>
           </div>
@@ -142,7 +142,7 @@ export default function AdminCampaigns() {
                   value="ALL"
                   checked={targetType === 'ALL'}
                   onChange={() => setTargetType('ALL')}
-                  className="accent-[#C9A84C]"
+                  className="accent-[#d07e20]"
                 />
                 <span className="text-gray-800 text-sm font-medium">All Collected Customers ({emails.length})</span>
               </label>
@@ -153,7 +153,7 @@ export default function AdminCampaigns() {
                   value="SPECIFIC"
                   checked={targetType === 'SPECIFIC'}
                   onChange={() => setTargetType('SPECIFIC')}
-                  className="accent-[#C9A84C]"
+                  className="accent-[#d07e20]"
                 />
                 <span className="text-gray-800 text-sm font-medium">Specific Email</span>
               </label>
@@ -168,7 +168,7 @@ export default function AdminCampaigns() {
                 value={targetEmail}
                 onChange={(e) => setTargetEmail(e.target.value)}
                 placeholder="customer@example.com"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] transition-all"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-[#d07e20] focus:ring-1 focus:ring-[#d07e20] transition-all"
                 required={targetType === 'SPECIFIC'}
               />
             </div>
@@ -182,7 +182,7 @@ export default function AdminCampaigns() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Huge Festive Sale! 50% Off Dog Food 🐶"
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] transition-all font-semibold"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-[#d07e20] focus:ring-1 focus:ring-[#d07e20] transition-all font-semibold"
               required
             />
           </div>
@@ -198,11 +198,11 @@ export default function AdminCampaigns() {
               onChange={(e) => setBody(e.target.value)}
               placeholder="Hi there! We are excited to announce..."
               rows={8}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] transition-all resize-y"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-[#d07e20] focus:ring-1 focus:ring-[#d07e20] transition-all resize-y"
               required
             />
-            <div className="mt-2 flex items-start gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/20 rounded-lg p-3">
-              <AlertCircle size={16} className="text-[#C9A84C] flex-shrink-0 mt-0.5" />
+            <div className="mt-2 flex items-start gap-2 bg-[#d07e20]/10 border border-[#d07e20]/20 rounded-lg p-3">
+              <AlertCircle size={16} className="text-[#d07e20] flex-shrink-0 mt-0.5" />
               <p className="text-xs text-orange-800 leading-relaxed font-medium">
                 You can type normal text, or paste HTML (like <code>&lt;b&gt;bold&lt;/b&gt;</code> or <code>&lt;a href="..."&gt;links&lt;/a&gt;</code>) for advanced formatting. Line breaks are automatically converted.
               </p>
@@ -222,16 +222,16 @@ export default function AdminCampaigns() {
               />
               <label 
                 htmlFor="file-upload" 
-                className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-gray-300 hover:border-[#C9A84C] rounded-xl px-4 py-8 cursor-pointer transition-colors group bg-gray-50"
+                className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-gray-300 hover:border-[#d07e20] rounded-xl px-4 py-8 cursor-pointer transition-colors group bg-gray-50"
               >
                 {attachment ? (
                   <div className="text-center">
-                    <p className="text-gray-800 font-bold group-hover:text-[#C9A84C] transition-colors">{attachment.name}</p>
+                    <p className="text-gray-800 font-bold group-hover:text-[#d07e20] transition-colors">{attachment.name}</p>
                     <p className="text-xs text-gray-500 mt-1 font-medium">{(attachment.size / 1024 / 1024).toFixed(2)} MB</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center group-hover:bg-[#C9A84C]/20 group-hover:text-[#C9A84C] transition-colors text-gray-500">
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center group-hover:bg-[#d07e20]/20 group-hover:text-[#d07e20] transition-colors text-gray-500">
                       <FileUp size={20} />
                     </div>
                     <p className="text-gray-500 text-sm font-bold group-hover:text-gray-800 transition-colors">Click to upload a file (Max 10MB)</p>
@@ -256,7 +256,7 @@ export default function AdminCampaigns() {
           <button
             type="submit"
             disabled={sending}
-            className="flex items-center gap-2 bg-[#C9A84C] text-white font-bold py-3 px-8 rounded-xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#C9A84C] shadow-sm"
+            className="flex items-center gap-2 bg-[#d07e20] text-white font-bold py-3 px-8 rounded-xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#d07e20] shadow-sm"
           >
             {sending ? (
               <>

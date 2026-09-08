@@ -21,7 +21,7 @@ router.put('/', async (req, res) => {
       storeName, tagline, logoChar, footerDescription,
       facebookUrl, instagramUrl, youtubeUrl, whatsappNumber,
       logoBase64, razorpayKeyId, whatsappOrderNumber,
-      siteAudioUrl, contactEmail, contactPhone
+      siteAudioUrl, contactEmail, contactPhone, aboutUsData
     } = req.body;
     
     // Upload logo to Cloudinary if it's new (base64)
@@ -49,6 +49,7 @@ router.put('/', async (req, res) => {
       siteAudioUrl: uploadedAudioUrl !== undefined ? uploadedAudioUrl : null,
       contactEmail: contactEmail !== undefined ? contactEmail : null,
       contactPhone: contactPhone !== undefined ? contactPhone : null,
+      aboutUsData: aboutUsData !== undefined ? aboutUsData : null,
     };
 
     if (settings) {

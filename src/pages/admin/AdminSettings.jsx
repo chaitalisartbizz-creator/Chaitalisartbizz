@@ -14,6 +14,32 @@ export default function AdminSettings() {
   const [isClearing, setIsClearing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+    const defaultAboutUs = {
+    ownerName: "Chaitali Selot",
+    ownerRole: "Founder & Lead Artist",
+    ownerBio: "Chaitali Selot is the visionary behind Chaitali's Artbizz, bringing years of passion and expertise in handcrafted art...",
+    ownerImage: "/owner.png",
+    marketingPartner: "Ivory Tech Solutions",
+    eventPartner: "Atithi Events (Wedding Planner)",
+    pageTitle: "Our Journey in Art",
+    pageSubtitle: "Crafting premium handmade experiences for your soulful spaces."
+  };
+  const [aboutUsDataObj, setAboutUsDataObj] = useState(() => {
+    if (frontendSettings?.aboutUsData) {
+      try { return { ...defaultAboutUs, ...JSON.parse(frontendSettings.aboutUsData) }; } catch(e) {}
+    }
+    return defaultAboutUs;
+  });
+
+  const handleAboutUsChange = (e) => {
+    const { name, value } = e.target;
+    setAboutUsDataObj(prev => ({ ...prev, [name]: value }));
+  };
+
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, aboutUsData: JSON.stringify(aboutUsDataObj) }));
+  }, [aboutUsDataObj]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -68,6 +94,7 @@ export default function AdminSettings() {
 
   const tabs = [
     { id: 'general', label: 'General Info', icon: Layout },
+    { id: 'about', label: 'About Us Page', icon: Users },
     { id: 'footer', label: 'Footer & Text', icon: MessageSquare },
     { id: 'social', label: 'Social Links', icon: Globe },
     { id: 'contact', label: 'Contact & WhatsApp', icon: Phone },
@@ -175,6 +202,48 @@ export default function AdminSettings() {
                     className="w-20 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#F2EDE4] transition-all font-black text-xl text-center"
                     placeholder="P" />
                   <p className="text-xs text-gray-400 mt-2">This letter appears in the glowing icon on the header and footer.</p>
+                </div>
+              </div>
+            )}
+
+                        {activeTab === 'about' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Page Title</label>
+                    <input type="text" name="pageTitle" value={aboutUsDataObj.pageTitle || ''} onChange={handleAboutUsChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Page Subtitle</label>
+                    <input type="text" name="pageSubtitle" value={aboutUsDataObj.pageSubtitle || ''} onChange={handleAboutUsChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Owner Name</label>
+                    <input type="text" name="ownerName" value={aboutUsDataObj.ownerName || ''} onChange={handleAboutUsChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Owner Role</label>
+                    <input type="text" name="ownerRole" value={aboutUsDataObj.ownerRole || ''} onChange={handleAboutUsChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Owner Bio</label>
+                    <textarea name="ownerBio" value={aboutUsDataObj.ownerBio || ''} onChange={handleAboutUsChange} rows={5}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all resize-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Marketing Partner</label>
+                    <input type="text" name="marketingPartner" value={aboutUsDataObj.marketingPartner || ''} onChange={handleAboutUsChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Event Partner</label>
+                    <input type="text" name="eventPartner" value={aboutUsDataObj.eventPartner || ''} onChange={handleAboutUsChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
+                  </div>
                 </div>
               </div>
             )}

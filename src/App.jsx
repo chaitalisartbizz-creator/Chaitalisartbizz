@@ -44,6 +44,7 @@ const OffersPage = lazyWithRetry(() => import('./pages/OffersPage'));
 const HubPage = lazyWithRetry(() => import('./pages/HubPage'));
 const AccountPage = lazyWithRetry(() => import('./pages/AccountPage'));
 const LoginPage = lazyWithRetry(() => import('./pages/LoginPage'));
+const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage'));
 
 // Lazy load Admin pages
 const AdminLayout = lazyWithRetry(() => import('./layouts/AdminLayout'));
@@ -189,6 +190,7 @@ function AppInner() {
             <Routes location={location} key={location.pathname}>
               {/* Storefront Routes */}
               <Route path="/"         element={<PageTransition><HomePage /></PageTransition>} />
+              <Route path="/about-us" element={<PageTransition><AboutUsPage /></PageTransition>} />
               <Route path="/category" element={<PageTransition><CategoryPage /></PageTransition>} />
               <Route path="/feeds"    element={<PageTransition><FeedsPage /></PageTransition>} />
               <Route path="/offers"   element={<PageTransition><OffersPage /></PageTransition>} />
