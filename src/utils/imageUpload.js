@@ -1,49 +1,46 @@
 import axios from 'axios';
 
 /**
- * Uploads a media file (image or video) to the backend server, 
- * which in turn uploads it to Cloudinary and returns the secure URL.
- * Bypasses multer by sending as a base64 JSON string.
+ * Uploads a media file (image or video) directly to Cloudinary using a signature from the backend.
+ * This bypasses Vercel's 4.5MB request limit and express.json 10MB limit!
  */
-export const handleImageUpload = (file, onProgress) => {
-  return new Promise((resolve, reject) => {
-    if (!file) {
-      reject('No file provided');
-      return;
-    }
+export const handleImageUpload = async (file, onProgress) => {
+  if (!file) {
+    throw new Error('No file provided');
+  }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      try {
-        const base64File = reader.result;
-        
-        const response = await axios.post('/api/upload', { file: base64File }, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          onUploadProgress: (progressEvent) => {
-            if (onProgress && progressEvent.total) {
-              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-              // Max out at 99% until the server actually responds with the Cloudinary URL
-              onProgress(percentCompleted === 100 ? 99 : percentCompleted);
-            }
-          }
-        });
+  try {
+    // 1. Get signature from our backend
+    const sigRes = await axios.get('/api/upload-signature');
+    const { timestamp, signature, cloud_name, api_key } = sigRes.data;
 
-        if (response.data && response.data.url) {
-          if (onProgress) onProgress(100);
-          resolve(response.data.url);
-        } else {
-          reject('Upload failed, no URL returned');
+    // 2. Upload directly to Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('api_key', api_key);
+    formData.append('timestamp', timestamp);
+    formData.append('signature', signature);
+    formData.append('folder', 'artbizz_media');
+
+    const uploadUrl = 'https://api.cloudinary.com/v1_1/' + cloud_name + '/auto/upload';
+
+    const response = await axios.post(uploadUrl, formData, {
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted === 100 ? 99 : percentCompleted);
         }
-      } catch (error) {
-        console.error('Upload Error:', error);
-        reject(error.response?.data?.error || 'Failed to upload media');
       }
-    };
-    reader.onerror = (error) => {
-      reject('Error reading file: ' + error);
-    };
-  });
+    });
+
+    if (response.data && response.data.secure_url) {
+      if (onProgress) onProgress(100);
+      return response.data.secure_url;
+    } else {
+      throw new Error('Upload failed, no URL returned from Cloudinary');
+    }
+  } catch (error) {
+    console.error('Upload Error:', error);
+    throw error.response?.data?.error?.message || error.message || 'Failed to upload media';
+  }
 };

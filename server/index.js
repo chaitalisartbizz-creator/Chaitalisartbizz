@@ -31,6 +31,7 @@ app.use('/api/banners', require('./routes/banners'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/data', require('./routes/data'));
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/upload-signature', require('./routes/upload-signature'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/payment', require('./routes/payment'));
