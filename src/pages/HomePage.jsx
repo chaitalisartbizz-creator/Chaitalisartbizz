@@ -49,8 +49,11 @@ function HeroCarousel() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="w-full"
+            className="w-full relative"
           >
+            {s.linkUrl && (
+              <Link to={s.linkUrl} className="absolute inset-0 z-10 block" aria-label="Slide Link" />
+            )}
             {s.mobileImage ? (
               <>
                 <div className="block md:hidden w-full">

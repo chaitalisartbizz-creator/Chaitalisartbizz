@@ -6,7 +6,7 @@ import { ImageIcon, Loader2, Save, ExternalLink } from 'lucide-react';
 import UploadField from '../../components/UploadField';
 
 export default function AdminSlides() {
-  const { slides, refreshData } = useData();
+  const { slides, products, categories, refreshData } = useData();
   const { showToast } = useCart();
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -20,45 +20,42 @@ export default function AdminSlides() {
     setIsSaving(true);
     setSaveError(null);
     try {
-      for (const slide of localSlides) {
-        if (slide.id) {
-          await axios.put(`/api/slides/${slide.id}`, slide);
+      for (const s of localSlides) {
+        if (s.id) {
+          await axios.put(`/api/slides/${s.id}`, s);
         } else {
-          await axios.post(`/api/slides`, slide);
+          await axios.post('/api/slides', s);
         }
       }
-      await refreshData();
-      showToast('Slides saved successfully!');
+      showToast('Carousel updated successfully');
+      refreshData();
     } catch (err) {
       console.error(err);
-      const errMsg = err.response?.data?.error || err.message || JSON.stringify(err);
-      setSaveError(errMsg);
-      showToast('Error saving slides.');
+      setSaveError('Failed to save slides. Please try again.');
     } finally {
       setIsSaving(false);
     }
   };
 
   const addSlide = () => {
-    setLocalSlides([...localSlides, { heroImage: '', mobileImage: '', title: '', subtitle: '', cta: '', gradient: '', tag: '', badge: '' }]);
+    setLocalSlides([...localSlides, { heroImage: '', mobileImage: '', linkUrl: '', title: '', subtitle: '', cta: '', gradient: '', tag: '', badge: '' }]);
   };
 
   const removeSlide = async (idx, id) => {
-    if (confirm('Are you sure you want to remove this slide?')) {
+    if (window.confirm('Are you sure you want to remove this slide?')) {
       if (id) {
         try {
           await axios.delete(`/api/slides/${id}`);
-          await refreshData();
+          refreshData();
         } catch (err) {
           console.error(err);
-          showToast('Error removing slide.');
+          alert('Failed to delete slide from server');
           return;
         }
       }
       const newSlides = [...localSlides];
       newSlides.splice(idx, 1);
       setLocalSlides(newSlides);
-      showToast('Slide removed.');
     }
   };
 
@@ -70,45 +67,36 @@ export default function AdminSlides() {
       </div>
 
       <div className="space-y-6">
-        
-        {saveError && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex flex-col gap-2">
-            <h3 className="font-bold">Error Saving Slides!</h3>
-            <p className="text-sm font-mono bg-red-100 p-2 rounded-lg break-words">{saveError}</p>
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(saveError);
-                showToast('Error copied to clipboard');
-              }}
-              className="w-fit mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors"
-            >
-              Copy Error Message
-            </button>
-          </div>
-        )}
-
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <h2 className="text-xl font-bold font-cinzel text-[#1A1A1A]">Hero Carousel Editor</h2>
           <div className="flex gap-2 w-full sm:w-auto">
-            <button onClick={addSlide} className="w-full sm:w-auto bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
+            <button 
+              onClick={addSlide}
+              className="w-full sm:w-auto bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
+            >
               + Add Slide
             </button>
-            <button onClick={handleSaveSlides} disabled={isSaving} className="w-full sm:w-auto bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50 shadow-sm">
+            <button 
+              onClick={handleSaveSlides}
+              disabled={isSaving}
+              className="w-full sm:w-auto bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-50 shadow-sm"
+            >
               {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-              Save Changes
+              {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
-        
+
+        {saveError && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium">
+            {saveError}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          <div className="space-y-6 bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
-            {localSlides.length === 0 && (
-              <div className="text-center text-gray-500 py-8">
-                No slides added yet. Click "Add Slide" to begin.
-              </div>
-            )}
+          <div className="space-y-6">
             {localSlides.map((slide, idx) => (
-              <div key={slide.id || idx} className="border border-gray-100 rounded-xl p-4 relative">
+              <div key={idx} className="border border-gray-100 rounded-xl p-4 relative bg-white shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-bold">Slide {idx + 1}</h3>
                   <button onClick={() => removeSlide(idx, slide.id)} className="text-red-500 hover:text-red-700 text-sm font-medium">
@@ -123,7 +111,7 @@ export default function AdminSlides() {
                     newSlides[idx].heroImage = url;
                     setLocalSlides(newSlides);
                   }}
-                  recommendedSize="1920×700px"
+                  recommendedSize="1920x700px"
                   maxSize="3MB"
                 />
                 <div className="mt-4">
@@ -135,9 +123,28 @@ export default function AdminSlides() {
                       newSlides[idx].mobileImage = url;
                       setLocalSlides(newSlides);
                     }}
-                    recommendedSize="800×1000px"
+                    recommendedSize="800x1000px"
                     maxSize="2MB"
                   />
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-semibold text-[#1A1A1A] mb-1.5">Link URL (Optional)</label>
+                  <input 
+                    type="text" 
+                    list="slide-links"
+                    placeholder="e.g., /category/Resin Art or /product/123" 
+                    value={slide.linkUrl || ''} 
+                    onChange={e => {
+                      const newSlides = [...localSlides];
+                      newSlides[idx].linkUrl = e.target.value;
+                      setLocalSlides(newSlides);
+                    }} 
+                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" 
+                  />
+                  <datalist id="slide-links">
+                    {categories?.map(c => <option key={`cat-${c.id}`} value={`/category/${encodeURIComponent(c.label)}`}>Category: {c.label}</option>)}
+                    {products?.map(p => <option key={`prod-${p.id}`} value={`/product/${p.id}`}>Product: {p.name}</option>)}
+                  </datalist>
                 </div>
               </div>
             ))}
