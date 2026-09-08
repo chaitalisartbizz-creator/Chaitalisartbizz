@@ -90,16 +90,51 @@ export default function ProductPage() {
     );
   }
 
-  // Options Multipliers
-  const sizeOptions = [
-    { label: 'Standard', multiplier: 1.0 },
-    { label: 'Large', multiplier: 1.5 },
-    { label: 'Premium Finish', multiplier: 2.0 },
-  ];
+  const dynamicSizes = React.useMemo(() => {
+    if (!product?.variants) return [];
+    try {
+      return product.variants.split('\n').map(line => {
+        const [label, price] = line.split('|');
+        return { label: label?.trim(), price: Number(price?.trim()) || 0, isDynamic: true };
+      }).filter(v => v.label);
+    } catch(e) { return []; }
+  }, [product?.variants]);
 
-  const currentMultiplier = sizeOptions.find(w => w.label === selectedWeight)?.multiplier || 1.0;
-  const computedPrice = Math.round(product.price * currentMultiplier);
-  const computedMrp   = product.mrp ? Math.round(product.mrp * currentMultiplier) : Math.round(computedPrice * 1.3);
+  const sizeOptions = dynamicSizes.length > 0 
+    ? [...dynamicSizes, { label: 'Custom Size', custom: true }]
+    : [
+        { label: 'Standard', multiplier: 1.0 },
+        { label: 'Large', multiplier: 1.5 },
+        { label: 'Premium Finish', multiplier: 2.0 },
+      ];
+
+  useEffect(() => {
+    if (sizeOptions.length > 0 && !sizeOptions.find(o => o.label === selectedWeight)) {
+      setSelectedWeight(sizeOptions[0].label);
+    }
+  }, [sizeOptions, selectedWeight]);
+
+  const selectedOpt = sizeOptions.find(w => w.label === selectedWeight);
+  let computedPrice = product.price;
+  let computedMrp = product.mrp || product.price * 1.3;
+
+  if (selectedOpt && selectedOpt.custom) {
+    // Custom size - price will be discussed
+    computedPrice = product.price; // Show base price
+  } else if (selectedOpt && selectedOpt.isDynamic) {
+    computedPrice = selectedOpt.price;
+    if (product.price > 0 && product.mrp > 0) {
+      computedMrp = Math.round((product.mrp / product.price) * computedPrice);
+    } else {
+      computedMrp = Math.round(computedPrice * 1.3);
+    }
+  } else {
+    const currentMultiplier = selectedOpt?.multiplier || 1.0;
+    computedPrice = Math.round(product.price * currentMultiplier);
+    computedMrp   = product.mrp ? Math.round(product.mrp * currentMultiplier) : Math.round(computedPrice * 1.3);
+  }
+
+  const [customSizeText, setCustomSizeText] = useState('');
 
   const gallery = [product.img, ...(product.images ? (typeof product.images === 'string' ? JSON.parse(product.images) : product.images) : [])];
   const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
@@ -223,6 +258,20 @@ export default function ProductPage() {
                   </div>
                 </div>
 
+                {selectedWeight === 'Custom Size' && (
+                  <div className="mb-6 animate-fade-in">
+                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wide mb-2">Describe Your Custom Requirements</label>
+                    <textarea
+                      value={customSizeText}
+                      onChange={(e) => setCustomSizeText(e.target.value)}
+                      placeholder="E.g., 24” × 6” with Ashtamangal. Please contact me with the final price."
+                      className="w-full p-3 rounded-xl border border-[#C9A84C]/40 bg-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C] transition-all"
+                      rows="3"
+                    />
+                    <p className="text-[10px] text-stone-500 mt-1">* Our team will contact you regarding the final pricing for this custom piece.</p>
+                  </div>
+                )}
+
                 {/* Quantity modifier */}
                 <div className="mb-8 flex items-center justify-between border-t border-b border-[#C9A84C]/20 py-4">
                   <span className="text-sm font-bold text-stone-700">Quantity</span>
@@ -237,8 +286,9 @@ export default function ProductPage() {
                 <div className="hidden md:flex gap-3 mb-6">
                   <button 
                     onClick={() => {
+                      const finalWeight = selectedWeight === 'Custom Size' ? `Custom: ${customSizeText}` : selectedWeight;
                       for(let i = 0; i < quantity; i++) {
-                        addToCart({ ...product, price: computedPrice, mrp: computedMrp, selectedWeight });
+                        addToCart({ ...product, price: computedPrice, mrp: computedMrp, selectedWeight: finalWeight });
                       }
                       setCartOpen(true);
                     }}
@@ -249,10 +299,12 @@ export default function ProductPage() {
                   </button>
                   <button 
                     onClick={() => {
+                      const finalWeight = selectedWeight === 'Custom Size' ? `Custom: ${customSizeText}` : selectedWeight;
                       for(let i = 0; i < quantity; i++) {
-                        addToCart({ ...product, price: computedPrice, mrp: computedMrp, selectedWeight });
+                        addToCart({ ...product, price: computedPrice, mrp: computedMrp, selectedWeight: finalWeight });
                       }
                       setCartOpen(true);
+                      // TODO: Redirect to checkout
                     }}
                     className="flex-1 bg-gradient-to-r from-[#2C2C2C] via-[#1A1A1A] to-[#2C2C2C] text-[#C9A84C] py-3.5 rounded-xl font-bold text-base hover:shadow-lg transition-all flex items-center justify-center gap-2"
                   >
@@ -395,17 +447,18 @@ export default function ProductPage() {
             <button onClick={() => setQuantity(quantity + 1)} className="px-2.5 text-stone-600 font-bold"><Plus size={13}/></button>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => { 
-              for(let i=0; i<quantity; i++) addToCart({ ...product, price: computedPrice, mrp: computedMrp, selectedWeight });
-              setCartOpen(true);
-            }}
-            className="flex-1 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] text-[#C9A84C] py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-1"
-          >
-            <ShoppingBag size={14} /> Add to Cart
-          </button>
-        </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { 
+                const finalWeight = selectedWeight === 'Custom Size' ? `Custom: ${customSizeText}` : selectedWeight;
+                for(let i=0; i<quantity; i++) addToCart({ ...product, price: computedPrice, mrp: computedMrp, selectedWeight: finalWeight });
+                setCartOpen(true);
+              }}
+              className="flex-1 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] text-[#C9A84C] py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-1"
+            >
+              <ShoppingBag size={14} /> Add to Cart
+            </button>
+          </div>
       </div>
     </div>
   );

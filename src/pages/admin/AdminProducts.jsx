@@ -26,7 +26,7 @@ function AdminProductsContent() {
     name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', 
     rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: '',
     description: '', features: '', customization: '', quality: '',
-    tab1Name: '', tab2Name: '', tab3Name: ''
+    tab1Name: '', tab2Name: '', tab3Name: '', variants: ''
   };
 
   const DEFAULT_BRANDS = ['Wall Clocks', 'Name Plates', 'Geode Art', 'Mantra Frames', 'Pooja Thali', 'Keychains', 'Coasters'];
@@ -443,6 +443,12 @@ function AdminProductsContent() {
                         <input id="mrp" required min="0" type="number" step="any" value={editing.mrp === 0 ? 0 : (editing.mrp || '')} onChange={e => setEditing({...editing, mrp: e.target.value})} className="w-full pl-7 p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
                       </div>
                     </div>
+                  </div>
+
+                  <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                    <label htmlFor="variants" className="block text-sm font-bold text-gray-700 mb-1">Custom Sizes / Variants (Optional)</label>
+                    <p className="text-[11px] text-gray-500 mb-2">Format each line as: <code className="bg-gray-200 px-1 rounded text-gray-700">Size/Label|Price</code> (e.g. <code className="bg-gray-200 px-1 rounded text-gray-700">12" × 3"|800</code>)</p>
+                    <textarea id="variants" rows="3" placeholder="12” × 3”|800&#10;15” × 3”|1200" value={editing.variants || ''} onChange={e => setEditing({...editing, variants: e.target.value})} className="w-full p-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm font-mono"></textarea>
                   </div>
 
                   <div>
