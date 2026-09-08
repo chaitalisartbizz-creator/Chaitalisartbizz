@@ -11,11 +11,11 @@ import Fuse from 'fuse.js';
 
 const NAV_LINKS = [
   { label: 'Home',           path: '/' },
-  { label: 'About Us',       path: '/about-us' },
   { label: 'Art Catalogue',  path: '/category', hasDropdown: true },
   { label: 'Deals & Offers', path: '/offers' },
   { label: 'Instagram Feeds', path: '/feeds', isIcon: true },
   { label: 'Training Program',   path: '/hub' },
+  { label: 'About Us',       path: '/about-us' },
 ];
 
 const SHOP_DROPS = [
