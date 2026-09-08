@@ -732,7 +732,7 @@ function CategorySectionsGrid() {
         const props = { cat, products: catProducts, addToCart, toggleWishlist, isInCart, isWishlisted, navigate };
 
         if (cat.label === 'Custom Portraits') return <CustomPortraitsSection key={cat.label} {...props} />;
-        if (cat.label === 'Resin Art') return <ResinArtSection key={cat.label} {...props} />;
+        if (cat.label === 'Resin Art') return null; // Rendered explicitly in HomePage
         if (cat.label === 'Digital Designs') return <DigitalDesignsSection key={cat.label} {...props} />;
         if (cat.label === 'Personalised Gifts') return <PersonalisedGiftsSection key={cat.label} {...props} />;
         if (cat.label === 'Decor Art') return <DecorArtSection key={cat.label} {...props} />;
@@ -856,6 +856,18 @@ function DealsTicker() {
 }
 
 /* ── MAIN HOME PAGE ── */
+function ResinArtStandalone() {
+  const { categories, products } = useData();
+  const { addToCart, toggleWishlist, isInCart, isWishlisted } = useCart();
+  const navigate = useNavigate();
+  
+  const cat = categories.find(c => c.label === 'Resin Art');
+  if (!cat) return null;
+  const catProducts = products.filter(p => p.category === cat.label);
+  
+  return <ResinArtSection cat={cat} products={catProducts} addToCart={addToCart} toggleWishlist={toggleWishlist} isInCart={isInCart} isWishlisted={isWishlisted} navigate={navigate} />;
+}
+
 export default function HomePage() {
   const { loading, categories } = useData();
   const navigate = useNavigate();
@@ -869,6 +881,7 @@ export default function HomePage() {
         <TrustBadges />
         <QuickCategories />
         <SiteHeroBannersSection />
+        <ResinArtStandalone />
         <CategorySectionsGrid />
       </main>
 
