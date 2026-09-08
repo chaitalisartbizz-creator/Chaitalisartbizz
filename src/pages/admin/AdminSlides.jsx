@@ -147,7 +147,7 @@ export default function AdminSlides() {
             <h3 className="font-bold text-gray-500 mb-4 flex items-center gap-2"><ExternalLink size={16}/> Live Preview</h3>
             <div className="w-full aspect-[192/70] relative rounded-xl overflow-hidden shadow-lg bg-black flex items-center justify-center text-gray-600">
               {localSlides[0]?.heroImage ? (
-                <img src={localSlides[0].heroImage} alt="Preview" className="w-full h-full object-cover" />
+                <img src={localSlides[0].heroImage} alt="Preview" className="w-full h-full object-contain" />
               ) : (
                 "No image preview"
               )}

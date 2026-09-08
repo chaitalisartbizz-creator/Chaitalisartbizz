@@ -53,15 +53,17 @@ function HeroCarousel() {
           >
             {s.mobileImage ? (
               <>
-                <div className="block md:hidden w-full h-full">
-                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-full object-cover" loading="eager" />
+                <div className="block md:hidden w-full h-full flex items-center justify-center">
+                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-full object-contain" loading="eager" />
                 </div>
-                <div className="hidden md:block w-full h-full">
-                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-full object-cover" loading="eager" />
+                <div className="hidden md:block w-full h-full flex items-center justify-center">
+                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-full object-contain" loading="eager" />
                 </div>
               </>
             ) : s.heroImage ? (
-              <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-full object-cover" loading="eager" />
+              <div className="w-full h-full flex items-center justify-center">
+                <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-full object-contain" loading="eager" />
+              </div>
             ) : null}
           </motion.div>
         </AnimatePresence>
