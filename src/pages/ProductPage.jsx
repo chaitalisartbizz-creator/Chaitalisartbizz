@@ -18,14 +18,44 @@ export default function ProductPage() {
   const [selectedWeight, setSelectedWeight] = useState('250g');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('tab1');
+  const [customSizeText, setCustomSizeText] = useState('');
+
+  const dynamicSizes = React.useMemo(() => {
+    if (!product?.variants) return [];
+    try {
+      return product.variants.split('\n').map(line => {
+        const [label, price] = line.split('|');
+        return { label: label?.trim(), price: Number(price?.trim()) || 0, isDynamic: true };
+      }).filter(v => v.label);
+    } catch(e) { return []; }
+  }, [product?.variants]);
+
+  const sizeOptions = dynamicSizes.length > 0 
+    ? [...dynamicSizes, { label: 'Custom Size', custom: true }]
+    : [
+        { label: 'Standard', multiplier: 1.0 },
+        { label: 'Large', multiplier: 1.5 },
+        { label: 'Premium Finish', multiplier: 2.0 },
+      ];
+
+  useEffect(() => {
+    if (sizeOptions.length > 0 && !sizeOptions.find(o => o.label === selectedWeight)) {
+      setSelectedWeight(sizeOptions[0].label);
+    }
+  }, [sizeOptions, selectedWeight]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
   
   const handleShare = async () => {
+    if (!product) return;
     const SHARE_HOOKS = [
-      "Hey! Look at this amazing product I found at Chaitali's Artbizz. \u2728",
-      "You have to see this beautiful handcrafted piece from Chaitali's Artbizz! \ud83d\ude0d",
-      "I thought you might love this stunning artwork! Check it out. \ud83c\udfa8",
-      "Found the perfect gift idea at Chaitali's Artbizz, take a look! \ud83c\udf81",
-      "Obsessed with this product from Chaitali's Artbizz. \ud83d\udc96"
+      "Hey! Look at this amazing product I found at Chaitali's Artbizz. ✨",
+      "You have to see this beautiful handcrafted piece from Chaitali's Artbizz! 😍",
+      "I thought you might love this stunning artwork! Check it out. 🎨",
+      "Found the perfect gift idea at Chaitali's Artbizz, take a look! 🎁",
+      "Obsessed with this product from Chaitali's Artbizz. 💖"
     ];
     
     const hook = SHARE_HOOKS[Math.floor(Math.random() * SHARE_HOOKS.length)];
@@ -71,10 +101,6 @@ export default function ProductPage() {
     }
   };
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
-
   if (!product) {
     return (
       <div className="min-h-screen mesh-bg flex flex-col">
@@ -89,30 +115,6 @@ export default function ProductPage() {
       </div>
     );
   }
-
-  const dynamicSizes = React.useMemo(() => {
-    if (!product?.variants) return [];
-    try {
-      return product.variants.split('\n').map(line => {
-        const [label, price] = line.split('|');
-        return { label: label?.trim(), price: Number(price?.trim()) || 0, isDynamic: true };
-      }).filter(v => v.label);
-    } catch(e) { return []; }
-  }, [product?.variants]);
-
-  const sizeOptions = dynamicSizes.length > 0 
-    ? [...dynamicSizes, { label: 'Custom Size', custom: true }]
-    : [
-        { label: 'Standard', multiplier: 1.0 },
-        { label: 'Large', multiplier: 1.5 },
-        { label: 'Premium Finish', multiplier: 2.0 },
-      ];
-
-  useEffect(() => {
-    if (sizeOptions.length > 0 && !sizeOptions.find(o => o.label === selectedWeight)) {
-      setSelectedWeight(sizeOptions[0].label);
-    }
-  }, [sizeOptions, selectedWeight]);
 
   const selectedOpt = sizeOptions.find(w => w.label === selectedWeight);
   let computedPrice = product.price;
@@ -133,8 +135,6 @@ export default function ProductPage() {
     computedPrice = Math.round(product.price * currentMultiplier);
     computedMrp   = product.mrp ? Math.round(product.mrp * currentMultiplier) : Math.round(computedPrice * 1.3);
   }
-
-  const [customSizeText, setCustomSizeText] = useState('');
 
   const gallery = [product.img, ...(product.images ? (typeof product.images === 'string' ? JSON.parse(product.images) : product.images) : [])];
   const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
