@@ -464,9 +464,69 @@ function AdminProductsContent() {
                   </div>
 
                   <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-                    <label htmlFor="variants" className="block text-sm font-bold text-gray-700 mb-1">Custom Sizes / Variants (Optional)</label>
-                    <p className="text-[11px] text-gray-500 mb-2">Format each line as: <code className="bg-gray-200 px-1 rounded text-gray-700">Size/Label|Price</code> (e.g. <code className="bg-gray-200 px-1 rounded text-gray-700">12" × 3"|800</code>)</p>
-                    <textarea id="variants" rows="3" placeholder="12” × 3”|800&#10;15” × 3”|1200" value={editing.variants || ''} onChange={e => setEditing({...editing, variants: e.target.value})} className="w-full p-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm font-mono"></textarea>
+                    <div className="flex justify-between items-center mb-3">
+                      <label className="block text-sm font-bold text-gray-700">Custom Sizes & Rates (Optional)</label>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const current = editing.variants ? editing.variants.split('\n').filter(Boolean) : [];
+                          current.push('|');
+                          setEditing({...editing, variants: current.join('\n')});
+                        }}
+                        className="text-xs font-bold text-[#C9A84C] flex items-center gap-1 hover:bg-[#C9A84C]/10 px-2 py-1 rounded"
+                      >
+                        <Plus size={14} /> Add Variant
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {(!editing.variants || editing.variants.trim() === '') ? (
+                        <p className="text-xs text-gray-400 text-center py-3 border border-dashed border-gray-200 rounded-xl bg-white italic">No variants added yet. Click 'Add Variant' to add sizes.</p>
+                      ) : (
+                        editing.variants.split('\n').map((line, idx) => {
+                          // Ignore empty lines if any managed to slip through during rendering
+                          const [size = '', price = ''] = line.split('|');
+                          return (
+                            <div key={idx} className="flex gap-2 items-center">
+                              <input 
+                                type="text" 
+                                placeholder='Size (e.g. 12" x 3")' 
+                                value={size}
+                                onChange={e => {
+                                  const lines = editing.variants.split('\n');
+                                  lines[idx] = `${e.target.value}|${price}`;
+                                  setEditing({...editing, variants: lines.join('\n')});
+                                }}
+                                className="flex-1 p-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] text-sm"
+                              />
+                              <input 
+                                type="number" 
+                                placeholder="Rate (₹)" 
+                                value={price}
+                                onChange={e => {
+                                  const lines = editing.variants.split('\n');
+                                  lines[idx] = `${size}|${e.target.value}`;
+                                  setEditing({...editing, variants: lines.join('\n')});
+                                }}
+                                className="w-24 p-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] text-sm"
+                              />
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  const lines = editing.variants.split('\n');
+                                  lines.splice(idx, 1);
+                                  setEditing({...editing, variants: lines.join('\n')});
+                                }}
+                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Remove Variant"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
 
                   <div>
