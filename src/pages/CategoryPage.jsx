@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Fuse from 'fuse.js';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useSearchParams } from 'react-router-dom';
 import { Search, Star, ShoppingBag, Heart, LayoutGrid, List } from 'lucide-react';
 import Header from '../components/Header';
 import { useCart } from '../context/CartContext';
@@ -12,10 +12,16 @@ import { ProductCardSkeleton } from '../components/Skeleton';
 
 export default function CategoryPage() {
   const location = useLocation();
-  const [activeBrand, setActiveBrand] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const initialCategory = searchParams.get('category') || location.state?.category || 'All';
+  const initialBrand = searchParams.get('subcategory') || 'All';
+  const initialSearch = searchParams.get('search') || location.state?.searchQuery || '';
+
+  const [activeBrand, setActiveBrand] = useState(initialBrand);
   const [activePrice, setActivePrice] = useState('All');
-  const [activeCategory, setActiveCategory] = useState(location.state?.category || 'All');
-  const [searchQuery, setSearchQuery] = useState(location.state?.searchQuery || '');
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('Popular');
 
@@ -29,6 +35,27 @@ export default function CategoryPage() {
       }
     }
   }, [location.state]);
+
+  React.useEffect(() => {
+    const currentCategory = searchParams.get('category') || 'All';
+    const currentBrand = searchParams.get('subcategory') || 'All';
+    const currentSearch = searchParams.get('search') || '';
+    
+    if (currentCategory !== activeCategory || currentBrand !== activeBrand || currentSearch !== searchQuery) {
+      const params = new URLSearchParams(searchParams);
+      
+      if (activeCategory !== 'All') params.set('category', activeCategory);
+      else params.delete('category');
+      
+      if (activeBrand !== 'All') params.set('subcategory', activeBrand);
+      else params.delete('subcategory');
+      
+      if (searchQuery) params.set('search', searchQuery);
+      else params.delete('search');
+      
+      setSearchParams(params, { replace: true });
+    }
+  }, [activeCategory, activeBrand, searchQuery, searchParams, setSearchParams]);
 
   const { addToCart, toggleWishlist, isInCart, isWishlisted } = useCart();
   const { categories: ALL_CATEGORIES, products: PRODUCTS, loading } = useData();
