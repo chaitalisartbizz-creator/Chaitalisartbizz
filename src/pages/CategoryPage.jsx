@@ -145,7 +145,7 @@ export default function CategoryPage() {
                   <div>
                     <p className="text-stone-900 font-bold text-sm mb-3 font-cinzel">Categories</p>
                     <button 
-                      onClick={() => { setActiveCategory('All'); setActiveBrand('All'); }}
+                      onClick={() => { setActiveCategory('All'); setActiveBrand('All'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeCategory === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}
                     >
                       🌟 All Categories
@@ -158,7 +158,7 @@ export default function CategoryPage() {
                       
                       return (
                         <div key={c.label}>
-                          <button onClick={() => { setActiveCategory(c.label); setActiveBrand('All'); }}
+                          <button onClick={() => { setActiveCategory(c.label); setActiveBrand('All'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                             className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeCategory === c.label ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}>
                             <span>{c.emoji}</span> {c.label}
                           </button>
@@ -167,7 +167,7 @@ export default function CategoryPage() {
                           {cSubs.length > 0 && (
                             <div className="pl-9 pr-2 pb-2 flex flex-col gap-1">
                               {cSubs.map(sub => (
-                                <button key={sub} onClick={() => { setActiveCategory(c.label); setActiveBrand(sub); }}
+                                <button key={sub} onClick={() => { setActiveCategory(c.label); setActiveBrand(sub); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                   className={`text-left text-xs font-bold px-2 py-1.5 rounded-lg transition-all ${activeCategory === c.label && activeBrand === sub ? 'text-[#C9A84C] bg-[#2C2C2C]' : 'text-stone-500 hover:text-stone-800 hover:bg-[#F2EDE4]/50'}`}>
                                   • {sub}
                                 </button>
@@ -200,12 +200,12 @@ export default function CategoryPage() {
               {/* Category Pills */}
               <ScrollReveal animation="fade-down" delay={100}>
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-4">
-                  <button onClick={() => setActiveCategory('All')}
+                  <button onClick={() => { setActiveCategory('All'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className={`flex-shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${activeCategory === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C]' : 'bg-white text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C]'}`}>
                     🌟 All Items
                   </button>
                   {ALL_CATEGORIES.map(cat => (
-                    <button key={cat.label} onClick={() => setActiveCategory(cat.label)}
+                    <button key={cat.label} onClick={() => { setActiveCategory(cat.label); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       className={`flex-shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${activeCategory === cat.label ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C]' : 'bg-white text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C]'}`}>
                       {cat.emoji} {cat.label}
                     </button>
@@ -213,12 +213,12 @@ export default function CategoryPage() {
                 </div>
                 {availableSubcategories.length > 0 && (
                   <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-4">
-                    <button onClick={() => setActiveBrand('All')}
+                    <button onClick={() => { setActiveBrand('All'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       className={`flex-shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${activeBrand === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C]' : 'bg-white text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C]'}`}>
                       All
                     </button>
                     {availableSubcategories.map(sub => (
-                      <button key={sub} onClick={() => setActiveBrand(sub)}
+                      <button key={sub} onClick={() => { setActiveBrand(sub); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                         className={`flex-shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${activeBrand === sub ? 'bg-[#2C2C2C] text-[#C9A84C] border-[#2C2C2C]' : 'bg-white text-stone-700 border-[#C9A84C]/30 hover:border-[#C9A84C]'}`}>
                         {sub}
                       </button>
