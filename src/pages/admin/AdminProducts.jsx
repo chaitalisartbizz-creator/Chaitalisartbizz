@@ -166,7 +166,8 @@ function AdminProductsContent() {
                     <span className="text-gray-800 font-bold text-sm">₹{p.price}</span>
                     {p.mrp && <span className="text-xs text-gray-400 line-through">₹{p.mrp}</span>}
                   </div>
-                  <div className="flex gap-2 text-[10px] uppercase font-bold tracking-wider">
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase font-bold tracking-wider">
+                    <span className="font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded normal-case tracking-normal">ID: {p.id}</span>
                     {p.tag && <span className="text-[#C9A84C]">{p.tag}</span>}
                     {p.badge && <span className="text-white bg-[#C9A84C] px-1.5 py-0.5 rounded">{p.badge}</span>}
                   </div>
@@ -220,7 +221,10 @@ function AdminProductsContent() {
                       </div>
                       <div>
                         <span className="font-bold text-gray-800 block">{p.name}</span>
-                        {p.tag && <span className="text-xs text-[#C9A84C] font-medium">{p.tag}</span>}
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">ID: {p.id}</span>
+                          {p.tag && <span className="text-xs text-[#C9A84C] font-medium">{p.tag}</span>}
+                        </div>
                       </div>
                     </td>
                     <td className="p-4 text-gray-600 font-medium">{p.brand || '-'}</td>
