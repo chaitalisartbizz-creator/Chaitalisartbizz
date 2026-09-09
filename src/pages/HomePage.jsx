@@ -19,13 +19,13 @@ function HeroCarousel() {
   const [cur, setCur] = useState(0);
   const [auto, setAuto] = useState(true);
   const ref = useRef(null);
-  const next = () => setCur(c => (c + 1) % (slides.length || 1));
+  const next = React.useCallback(() => setCur(c => (c + 1) % (slides.length || 1)), [slides.length]);
   const prev = () => setCur(c => (c - 1 + slides.length) % (slides.length || 1));
   
   useEffect(() => {
     if (auto && slides.length > 0) { ref.current = setInterval(next, 4800); }
     return () => clearInterval(ref.current);
-  }, [auto, cur, slides.length]);
+  }, [auto, cur, slides.length, next]);
   
   if (!slides || slides.length === 0) return null;
   const s = slides[cur] || slides[0];
@@ -374,7 +374,7 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
 }
 
 /* ── DIGITAL DESIGNS SECTION ── */
-function DigitalDesignsSection({ cat, products, addToCart, toggleWishlist, isInCart, isWishlisted, navigate }) {
+function DigitalDesignsSection({ cat, products, addToCart, isInCart, navigate }) {
   const topTwo = products.slice(0, 2);
   const bottomFour = products.slice(2);
 
@@ -546,7 +546,7 @@ function PersonalisedGiftsSection({ cat, products, addToCart, toggleWishlist, is
 }
 
 /* ── DECOR ART SECTION ── */
-function DecorArtSection({ cat, products, addToCart, toggleWishlist, isInCart, isWishlisted, navigate }) {
+function DecorArtSection({ cat, products, addToCart, isInCart, navigate }) {
   const hero = products[0];
   const rest = products.slice(1);
 
@@ -869,7 +869,7 @@ function ResinArtStandalone() {
 }
 
 export default function HomePage() {
-  const { loading, categories } = useData();
+  const { categories } = useData();
   const navigate = useNavigate();
 
   return (

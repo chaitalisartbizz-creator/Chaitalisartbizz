@@ -11,8 +11,7 @@ async function main() {
   await prisma.frontendSetting.deleteMany({});
   await prisma.banner.deleteMany({});
 
-  // 2. Categories
-  const categories = await prisma.category.createMany({
+  await prisma.category.createMany({
     data: [
       { label: 'Custom Portraits', emoji: '🖼️', img: 'https://images.unsplash.com/photo-1547756536-cde3673fa2e5?w=500&h=500&fit=crop', bg: 'bg-[#2C2C2C]' },
       { label: 'Resin Art', emoji: '✨', img: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500&h=500&fit=crop', bg: 'bg-[#8B5E7A]' },

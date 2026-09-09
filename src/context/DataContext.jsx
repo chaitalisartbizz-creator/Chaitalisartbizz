@@ -14,7 +14,6 @@ export function DataProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const [fcmToken, setFcmToken] = useState(null);
-  const hasRequestedPermission = useRef(false);
 
   const [visitorId] = useState(() => {
     let vid = localStorage.getItem('chaitali-artbizz-vid');
@@ -25,7 +24,7 @@ export function DataProvider({ children }) {
     return vid;
   });
 
-  const [activityLog, setActivityLog] = useState([]);
+  const [activityLog] = useState([]);
 
   const logActivity = (action, details = '') => {
     const type = action === 'Page View' ? 'pageview' : 'interaction';

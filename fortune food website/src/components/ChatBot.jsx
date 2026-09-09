@@ -2,13 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, X, Send, Sparkles, ShieldCheck } from 'lucide-react';
+import { MessageSquare, X, Send, ShieldCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function ChatBot() {
   const { user, login, register, checkUserExists, isAuthenticated } = useAuth();
   const { frontendSettings } = useData();
-  const settings = frontendSettings || {};
   const navigate = useNavigate();
   
   const [isOpen, setIsOpen] = useState(false);

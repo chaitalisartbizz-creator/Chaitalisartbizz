@@ -8,7 +8,6 @@ export default function AdminCustomers() {
   const auth = useAuth?.() || {};
   const [usersDb, setUsersDb] = useState(auth.usersDb || []);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -17,8 +16,6 @@ export default function AdminCustomers() {
         if (Array.isArray(response.data)) setUsersDb(response.data);
       } catch (error) {
         console.error('Error fetching customers:', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchCustomers();

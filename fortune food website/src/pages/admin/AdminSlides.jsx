@@ -8,7 +8,7 @@ import { useCart } from '../../context/CartContext';
 import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, LayoutTemplate, Loader2 } from 'lucide-react';
 
 export default function AdminSlides() {
-  const { slides, banners, refreshData } = useData();
+  const { slides, refreshData } = useData();
   const { showToast } = useCart();
   const [editingSlide, setEditingSlide] = useState(null);
   const [isSlideModalOpen, setIsSlideModalOpen] = useState(false);

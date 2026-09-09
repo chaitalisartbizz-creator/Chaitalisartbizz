@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Package, Image, Percent,
+  LayoutDashboard, Image, Percent,
   Menu, X, Settings, Users, ShoppingBag, CreditCard, Music2, Activity, Palette, Bell, Layout, Video, Mail
 } from 'lucide-react';
 import LiveBackground from '../components/LiveBackground';

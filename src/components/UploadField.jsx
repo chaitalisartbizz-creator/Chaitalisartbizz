@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { UploadCloud, Image as ImageIcon, Video, X, Loader2, Info } from 'lucide-react';
+import { Image as ImageIcon, Video, X, Loader2, Info } from 'lucide-react';
 import { handleImageUpload } from '../utils/imageUpload';
 
 export default function UploadField({ 

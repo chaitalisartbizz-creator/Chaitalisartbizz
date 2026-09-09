@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import CheckoutModal from './CheckoutModal';
@@ -19,7 +19,7 @@ export default function CartDrawer() {
 
   if (!cartOpen && !checkoutOpen) return null;
 
-  const handleOrderSuccess = (orderId) => {
+  const handleOrderSuccess = () => {
     setCheckoutOpen(false);
     setCartOpen(false);
     clearCart();

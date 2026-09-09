@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
     });
     res.json(feeds);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error fetching instagram feeds' });
   }
 });
@@ -26,6 +27,7 @@ router.post('/', async (req, res) => {
     });
     res.json(feed);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error creating feed' });
   }
 });
@@ -40,6 +42,7 @@ router.put('/:id/pin', async (req, res) => {
     });
     res.json(feed);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error pinning feed' });
   }
 });
@@ -52,6 +55,7 @@ router.delete('/:id', async (req, res) => {
     });
     res.json({ message: 'Deleted successfully' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error deleting feed' });
   }
 });

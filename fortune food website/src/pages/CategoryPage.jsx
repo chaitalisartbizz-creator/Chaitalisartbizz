@@ -11,7 +11,6 @@ import { ProductCardSkeleton } from '../components/Skeleton';
 
 export default function CategoryPage() {
   const location = useLocation();
-  const [activeBrand, setActiveBrand] = useState('All');
   const [activePrice, setActivePrice] = useState('All');
   const [activeCategory, setActiveCategory] = useState(location.state?.category || 'All');
   const [searchQuery, setSearchQuery] = useState(location.state?.searchQuery || '');
@@ -21,7 +20,6 @@ export default function CategoryPage() {
   React.useEffect(() => {
     if (location.state) {
       if (location.state.category !== undefined) setActiveCategory(location.state.category || 'All');
-      setActiveBrand('All');
       setActivePrice('All');
       if (location.state.searchQuery !== undefined) {
         setSearchQuery(location.state.searchQuery);
@@ -31,8 +29,6 @@ export default function CategoryPage() {
 
   const { addToCart, toggleWishlist, isInCart, isWishlisted } = useCart();
   const { categories: ALL_CATEGORIES, products: PRODUCTS, loading } = useData();
-
-  const BRANDS = ['All', ...new Set(PRODUCTS.map(p => p.brand).filter(Boolean))];
 
   const getSynonymQuery = (q) => {
     const qLower = q.toLowerCase();

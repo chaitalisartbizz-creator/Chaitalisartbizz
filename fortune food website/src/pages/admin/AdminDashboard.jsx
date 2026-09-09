@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useData } from '../../context/DataContext';
-import { useAuth } from '../../context/AuthContext';
-import { Package, Tag, Image as ImageIcon, Percent, Plus, TrendingUp, Users, Activity, Calendar, Loader2, Award, Sparkles } from 'lucide-react';
+import { Package, Tag, Image as ImageIcon, Percent, Plus, TrendingUp, Users, Activity, Calendar, Loader2, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import ScrollReveal from '../../components/ScrollReveal';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -11,8 +9,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [serverStats, setServerStats] = useState(null);
   const [dateRange, setDateRange] = useState('7d');
-  const [customStart, setCustomStart] = useState('');
-  const [customEnd, setCustomEnd] = useState('');
   const [analyticsData, setAnalyticsData] = useState([]);
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
 
@@ -31,10 +27,7 @@ export default function AdminDashboard() {
   const fetchAnalytics = async () => {
     setIsAnalyticsLoading(true);
     try {
-      let url = `/api/analytics/stats?range=${dateRange}`;
-      if (dateRange === 'custom' && customStart && customEnd) {
-        url += `&start=${customStart}&end=${customEnd}`;
-      }
+      const url = `/api/analytics/stats?range=${dateRange}`;
       const response = await axios.get(url);
       setAnalyticsData(response.data);
     } catch (error) {
@@ -45,9 +38,8 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (dateRange === 'custom' && (!customStart || !customEnd)) return;
     fetchAnalytics();
-  }, [dateRange, customStart, customEnd]);
+  }, [dateRange]);
 
   const formatBytes = (bytes) => {
     if (bytes === 0) return '0 B';

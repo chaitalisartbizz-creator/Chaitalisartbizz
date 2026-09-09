@@ -221,7 +221,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
 
   const [payMethod, setPayMethod] = useState('COD');
   const [loading, setLoading]     = useState(false);
-  const [orderStep, setOrderStep] = useState(null);
+  const [, setOrderStep] = useState(null);
   const [toast, setToast]         = useState(null);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
@@ -279,7 +279,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       setOrderStep('whatsapp');
       await new Promise(r => setTimeout(r, 500));
       goTo(2);
-      onOrderSuccess && onOrderSuccess(orderId);
+      if (onOrderSuccess) onOrderSuccess(orderId);
       // Removed automatic window.open to prevent mobile popup blockers.
       // The user can click the "Track Order via WhatsApp" button on the success screen.
     } catch (err) {
@@ -323,7 +323,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
             const orderId = saveRes.data?.orderId || saveRes.data?.order?.id || saveRes.data?.id || `ARTBIZZ${Date.now()}`;
             setConfirmedOrder({ orderId, paymentMethod: 'Online Payment' });
             goTo(2);
-            onOrderSuccess && onOrderSuccess(orderId);
+            if (onOrderSuccess) onOrderSuccess(orderId);
           } catch (verifyErr) {
             showToast('Payment successful but order saving failed. Contact customer care.');
           } finally { setLoading(false); }
@@ -338,7 +338,11 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   }
 
   async function handlePlaceOrder() {
-    payMethod === 'COD' ? await placeCOD() : await placeOnline();
+    if (payMethod === 'COD') {
+      await placeCOD();
+    } else {
+      await placeOnline();
+    }
   }
 
   function openWhatsApp() {

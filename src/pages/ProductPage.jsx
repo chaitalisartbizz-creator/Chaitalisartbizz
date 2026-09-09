@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, RotateCcw, Plus, Minus, Award, Sparkles, CheckCircle2, Share2 } from 'lucide-react';
+import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, Plus, Minus, Award, CheckCircle2, Share2 } from 'lucide-react';
 import Header from '../components/Header';
 import ScrollReveal from '../components/ScrollReveal';
 import MediaDisplay from '../components/MediaDisplay';
@@ -30,13 +30,15 @@ export default function ProductPage() {
     } catch(e) { return []; }
   }, [product?.variants]);
 
-  const sizeOptions = dynamicSizes.length > 0 
-    ? [...dynamicSizes, { label: 'Custom Size', custom: true }]
-    : [
-        { label: 'Standard', multiplier: 1.0 },
-        { label: 'Large', multiplier: 1.5 },
-        { label: 'Premium Finish', multiplier: 2.0 },
-      ];
+  const sizeOptions = React.useMemo(() => {
+    return dynamicSizes.length > 0 
+      ? [...dynamicSizes, { label: 'Custom Size', custom: true }]
+      : [
+          { label: 'Standard', multiplier: 1.0 },
+          { label: 'Large', multiplier: 1.5 },
+          { label: 'Premium Finish', multiplier: 2.0 },
+        ];
+  }, [dynamicSizes]);
 
   useEffect(() => {
     if (sizeOptions.length > 0 && !sizeOptions.find(o => o.label === selectedWeight)) {
