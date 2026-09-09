@@ -145,37 +145,39 @@ export default function CategoryPage() {
                   <div>
                     <p className="text-stone-900 font-bold text-sm mb-3 font-cinzel">Categories</p>
                     <button 
-                      onClick={() => setActiveCategory('All')}
+                      onClick={() => { setActiveCategory('All'); setActiveBrand('All'); }}
                       className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeCategory === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}
                     >
                       🌟 All Categories
                     </button>
-                    {ALL_CATEGORIES.map(c => (
-                      <button key={c.label} onClick={() => setActiveCategory(c.label)}
-                        className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeCategory === c.label ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}>
-                        <span>{c.emoji}</span> {c.label}
-                      </button>
-                    ))}
+                    {ALL_CATEGORIES.map(c => {
+                      const cSubs = [...new Set([
+                        ...(c.sub ? c.sub.split(',').map(s => s.trim()).filter(Boolean) : []),
+                        ...(PRODUCTS.filter(p => p.category === c.label).map(p => p.brand).filter(Boolean))
+                      ])];
+                      
+                      return (
+                        <div key={c.label}>
+                          <button onClick={() => { setActiveCategory(c.label); setActiveBrand('All'); }}
+                            className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeCategory === c.label ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}>
+                            <span>{c.emoji}</span> {c.label}
+                          </button>
+                          
+                          {/* Nested Sub-categories */}
+                          {cSubs.length > 0 && (
+                            <div className="pl-9 pr-2 pb-2 flex flex-col gap-1">
+                              {cSubs.map(sub => (
+                                <button key={sub} onClick={() => { setActiveCategory(c.label); setActiveBrand(sub); }}
+                                  className={`text-left text-xs font-bold px-2 py-1.5 rounded-lg transition-all ${activeCategory === c.label && activeBrand === sub ? 'text-[#C9A84C] bg-[#2C2C2C]' : 'text-stone-500 hover:text-stone-800 hover:bg-[#F2EDE4]/50'}`}>
+                                  • {sub}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-
-                  {/* Sub-categories */}
-                  {availableSubcategories.length > 0 && (
-                    <div className="border-t border-[#C9A84C]/30 pt-4">
-                      <p className="text-stone-900 font-bold text-sm mb-3 font-cinzel">Sub-categories</p>
-                      <button 
-                        onClick={() => setActiveBrand('All')}
-                        className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeBrand === 'All' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}
-                      >
-                        All
-                      </button>
-                      {availableSubcategories.map(sub => (
-                        <button key={sub} onClick={() => setActiveBrand(sub)}
-                          className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all mb-1 ${activeBrand === sub ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600 hover:bg-[#F2EDE4]'}`}>
-                          {sub}
-                        </button>
-                      ))}
-                    </div>
-                  )}
 
 
                   {/* Price Filter */}
