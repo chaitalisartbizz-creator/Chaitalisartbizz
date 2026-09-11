@@ -95,6 +95,7 @@ export default function AdminSettings() {
   const tabs = [
     { id: 'general', label: 'General Info', icon: Layout },
     { id: 'about', label: 'About Us Page', icon: Users },
+    { id: 'banking', label: 'Banking Details', icon: CreditCard },
     { id: 'footer', label: 'Footer & Text', icon: MessageSquare },
     { id: 'social', label: 'Social Links', icon: Globe },
     { id: 'contact', label: 'Contact & WhatsApp', icon: Phone },
@@ -244,6 +245,27 @@ export default function AdminSettings() {
                     <input type="text" name="eventPartner" value={aboutUsDataObj.eventPartner || ''} onChange={handleAboutUsChange}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all" />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'banking' && (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">UPI ID</label>
+                  <input type="text" name="upiId" value={formData.upiId || ''} onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all"
+                    placeholder="e.g. chaitaliselot93@okhdfc" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">UPI QR Code URL</label>
+                  <input type="text" name="upiQrImage" value={formData.upiQrImage || ''} onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C9A84C] transition-all"
+                    placeholder="e.g. /qr.png or https://..." />
+                  <p className="text-xs text-gray-400 mt-2">This QR code will be shown at checkout for Cash on Delivery / UPI QR payments.</p>
+                  {formData.upiQrImage && (
+                    <img src={formData.upiQrImage} alt="QR Code Preview" className="mt-4 w-32 h-32 object-contain border-2 border-gray-200 rounded-xl" />
+                  )}
                 </div>
               </div>
             )}

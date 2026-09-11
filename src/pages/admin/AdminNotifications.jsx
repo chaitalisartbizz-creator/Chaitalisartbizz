@@ -10,8 +10,13 @@ export default function AdminNotifications() {
   const [url, setUrl] = useState('/');
   const [isSending, setIsSending] = useState(false);
   const [result, setResult] = useState(null);
+  const [subscribers, setSubscribers] = useState([]);
   
   const { showToast } = useCart();
+
+  React.useEffect(() => {
+    axios.get('/api/analytics/subscribers').then(res => setSubscribers(res.data)).catch(console.error);
+  }, []);
 
   const handleBroadcast = async (e) => {
     e.preventDefault();
@@ -130,6 +135,27 @@ export default function AdminNotifications() {
           </div>
         </div>
       )}
+
+      {/* Subscribed Users */}
+      <div className="bg-[#2C2C2C] border border-[#C9A84C]/20 rounded-xl p-6 shadow-xl">
+        <h3 className="text-[#F0DFA0] font-cinzel font-bold text-xl mb-4">Subscribed Users</h3>
+        <p className="text-stone-400 text-sm mb-4">These users have allowed notifications on their devices.</p>
+        
+        {subscribers.length === 0 ? (
+          <p className="text-stone-500 italic">No subscribers yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {subscribers.map((sub, idx) => (
+              <div key={idx} className="bg-[#1A1A1A] border border-[#C9A84C]/10 rounded-lg p-3">
+                <p className="text-[#F0DFA0] font-semibold text-sm truncate">{sub.name || 'Anonymous Visitor'}</p>
+                <p className="text-stone-400 text-xs mt-1 truncate">{sub.device} • {sub.os}</p>
+                {sub.phone && <p className="text-stone-500 text-xs mt-1">📞 {sub.phone}</p>}
+                {sub.ip && <p className="text-stone-600 text-[10px] mt-1 font-mono">{sub.ip}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

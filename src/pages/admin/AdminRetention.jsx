@@ -15,9 +15,12 @@ function ScrollReveal({ children, delay = 0 }) {
   );
 }
 
-const StatCard = ({ title, value, subtitle, icon: Icon, color, delay }) => (
+const StatCard = ({ title, value, subtitle, icon: Icon, color, delay, onClick }) => (
   <ScrollReveal delay={delay}>
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-start gap-4">
+    <div 
+      onClick={onClick}
+      className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-start gap-4 ${onClick ? 'cursor-pointer hover:shadow-md transition-all active:scale-[0.98]' : ''}`}
+    >
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white bg-gradient-to-br ${color} shadow-sm flex-shrink-0`}>
         <Icon size={24} />
       </div>
@@ -34,6 +37,7 @@ export default function AdminRetention() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalType, setModalType] = useState(null); // 'REPEAT', 'RATE', 'LTV'
 
   useEffect(() => {
     fetchRetention();
@@ -82,6 +86,7 @@ export default function AdminRetention() {
               icon={Repeat} 
               color="from-purple-500 to-purple-600"
               delay={0.1}
+              onClick={() => setModalType('REPEAT')}
             />
             <StatCard 
               title="Retention Rate" 
@@ -90,6 +95,7 @@ export default function AdminRetention() {
               icon={TrendingUp} 
               color="from-green-500 to-green-600"
               delay={0.2}
+              onClick={() => setModalType('RATE')}
             />
             <StatCard 
               title="Total LTV Revenue" 
@@ -97,6 +103,7 @@ export default function AdminRetention() {
               icon={DollarSign} 
               color="from-[#C9A84C] to-[#C9A84C]"
               delay={0.3}
+              onClick={() => setModalType('LTV')}
             />
           </div>
 
@@ -174,6 +181,60 @@ export default function AdminRetention() {
           </div>
         </>
       ) : null}
+
+      {/* Modals */}
+      {modalType && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[80vh] flex flex-col">
+            <button 
+              onClick={() => setModalType(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+              {modalType === 'REPEAT' && <><Repeat size={20} className="text-purple-500"/> Repeat Customers Data</>}
+              {modalType === 'RATE' && <><TrendingUp size={20} className="text-green-500"/> Retention Rate Breakdown</>}
+              {modalType === 'LTV' && <><DollarSign size={20} className="text-[#C9A84C]"/> LTV Revenue Breakdown</>}
+            </h2>
+            
+            <div className="flex-1 overflow-y-auto pr-2 mt-4 space-y-4">
+              {modalType === 'REPEAT' && (
+                <div>
+                  <p className="text-gray-600 mb-4">You have <span className="font-bold">{data?.repeatCustomers}</span> customers who have ordered more than once.</p>
+                  <div className="space-y-2">
+                    {data?.topCustomers.filter(c => c.orderCount > 1).map((c, i) => (
+                      <div key={i} className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <span className="font-medium text-gray-800">{c.name}</span>
+                        <span className="text-sm font-bold text-purple-600">{c.orderCount} Orders</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {modalType === 'RATE' && (
+                <div>
+                  <p className="text-gray-600 mb-4">Your current retention rate is <span className="font-bold text-green-600">{data?.retentionRate}%</span>.</p>
+                  <p className="text-sm text-gray-500">This means that out of {data?.totalCustomers} total unique customers, {data?.repeatCustomers} have returned to make a second purchase or more. An excellent retention rate is typically around 20-30% in e-commerce.</p>
+                </div>
+              )}
+              {modalType === 'LTV' && (
+                <div>
+                  <p className="text-gray-600 mb-4">Total Lifetime Value (LTV) Revenue is <span className="font-bold text-[#C9A84C]">₹{data?.totalRevenue.toLocaleString()}</span>.</p>
+                  <div className="space-y-2">
+                    {data?.topCustomers.slice(0, 10).map((c, i) => (
+                      <div key={i} className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <span className="font-medium text-gray-800">{c.name}</span>
+                        <span className="text-sm font-bold text-green-600">₹{c.totalSpent.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

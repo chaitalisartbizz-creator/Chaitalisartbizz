@@ -7,6 +7,7 @@ export default function AdminCampaigns() {
   const { showToast } = useCart();
   const [emails, setEmails] = useState([]);
   const [loadingEmails, setLoadingEmails] = useState(true);
+  const [showEmailList, setShowEmailList] = useState(false);
   
   const [targetType, setTargetType] = useState('ALL'); // 'ALL' or 'SPECIFIC'
   const [targetEmail, setTargetEmail] = useState('');
@@ -111,7 +112,10 @@ export default function AdminCampaigns() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white border border-gray-100 shadow-sm rounded-3xl p-6">
+        <div 
+          onClick={() => setShowEmailList(true)}
+          className="bg-white border border-gray-100 shadow-sm rounded-3xl p-6 cursor-pointer hover:shadow-md transition-shadow"
+        >
           <div className="flex items-center gap-3 text-[#d07e20] mb-2">
             <Users size={20} />
             <h3 className="font-bold text-gray-800">Audience Size</h3>
@@ -121,7 +125,7 @@ export default function AdminCampaigns() {
           ) : (
             <div>
               <p className="text-3xl font-black text-gray-800">{emails.length}</p>
-              <p className="text-gray-500 font-medium text-xs mt-1">Unique customer emails collected</p>
+              <p className="text-gray-500 font-medium text-xs mt-1">Unique customer emails collected (Click to view)</p>
             </div>
           )}
         </div>
@@ -272,6 +276,38 @@ export default function AdminCampaigns() {
           </button>
         </div>
       </form>
+
+      {/* Email List Modal */}
+      {showEmailList && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[80vh] flex flex-col">
+            <button 
+              onClick={() => setShowEmailList(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+              <Users size={20} className="text-[#d07e20]" />
+              Audience List
+            </h2>
+            <p className="text-gray-500 text-sm mb-4">Total subscribers: {emails.length}</p>
+            
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+              {emails.length === 0 ? (
+                <p className="text-gray-500 italic text-center py-8">No emails found.</p>
+              ) : (
+                emails.map((em, idx) => (
+                  <div key={idx} className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex items-center gap-3">
+                    <Mail size={16} className="text-gray-400 shrink-0" />
+                    <span className="font-medium text-gray-700 truncate">{em}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

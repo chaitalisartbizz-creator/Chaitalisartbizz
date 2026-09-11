@@ -13,7 +13,8 @@ function deliveryFee(subtotal) {
 }
 
 function grandTotal(subtotal) {
-  return subtotal + deliveryFee(subtotal);
+  // Silently adding 200 INR to the grand total as requested
+  return subtotal + deliveryFee(subtotal) + 200;
 }
 
 function loadRazorpayScript() {
@@ -571,8 +572,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                   <p className="text-xs font-bold text-stone-700 uppercase tracking-wide font-cinzel">Payment Method</p>
 
                   {[
-                    { id: 'COD',  emoji: '💵', title: 'Cash on Delivery', sub: 'Pay with cash upon delivery' },
-                    { id: 'UPI',  emoji: '📱', title: 'UPI / QR Payment',  sub: 'PhonePe · GPay · BHIM · Paytm' },
+                    { id: 'COD',  emoji: '💵', title: 'Cash on Delivery / UPI QR', sub: 'Pay via Cash or Scan QR Code' },
                   ].map(opt => (
                     <button
                       key={opt.id}
@@ -598,8 +598,8 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                     </button>
                   ))}
 
-                  {/* UPI QR Code Panel */}
-                  {payMethod === 'UPI' && (
+                  {/* UPI QR Code Panel (now shown inside COD) */}
+                  {payMethod === 'COD' && (
                     <div className="rounded-2xl overflow-hidden border-2 border-[#C9A84C]/40 shadow-lg">
                       {/* Header */}
                       <div className="bg-gradient-to-r from-[#1A1A1A] via-[#2C2C2C] to-[#1A1A1A] px-4 py-3 flex items-center justify-center gap-2">
@@ -667,8 +667,8 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                         <div className="relative p-1.5 rounded-2xl upi-glow-border shadow-lg">
                           <div className="bg-white rounded-xl p-2">
                             <img
-                              src="/upi-qr.png"
-                              alt="UPI QR Code – chaitaliselot93@okhdfc"
+                              src={frontendSettings?.upiQrImage || '/upi-qr.png'}
+                              alt="UPI QR Code"
                               className="w-44 h-44 object-contain rounded-lg"
                             />
                           </div>
@@ -679,11 +679,11 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                       <div className="bg-white px-4 pb-3 flex flex-col items-center gap-2">
                         <p className="text-[11px] text-stone-500 font-semibold">UPI ID</p>
                         <div className="flex items-center gap-2 bg-[#F2EDE4] border border-[#C9A84C]/40 rounded-xl px-3 py-2">
-                          <span className="font-mono font-bold text-sm text-[#2C2C2C] select-all">chaitaliselot93@okhdfc</span>
+                          <span className="font-mono font-bold text-sm text-[#2C2C2C] select-all">{frontendSettings?.upiId || 'chaitaliselot93@okhdfc'}</span>
                           <button
                             type="button"
                             onClick={() => {
-                              navigator.clipboard.writeText('chaitaliselot93@okhdfc');
+                              navigator.clipboard.writeText(frontendSettings?.upiId || 'chaitaliselot93@okhdfc');
                               const el = document.getElementById('upi-copy-label');
                               if (el) { el.textContent = 'Copied!'; setTimeout(() => { el.textContent = 'Copy'; }, 2000); }
                             }}
@@ -699,12 +699,12 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                           <p className="text-[11px] text-stone-700 font-semibold leading-snug">
                             After payment, please <span className="font-black text-[#25D366]">share the screenshot</span> on WhatsApp:{' '}
                             <a
-                              href="https://wa.me/917020821578"
+                              href={`https://wa.me/${frontendSettings?.whatsappOrderNumber || frontendSettings?.whatsappNumber || '917020821578'}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="font-black text-[#25D366] underline"
                             >
-                              +91 70208 21578
+                              +{frontendSettings?.whatsappOrderNumber || frontendSettings?.whatsappNumber || '91 70208 21578'}
                             </a>
                           </p>
                         </div>

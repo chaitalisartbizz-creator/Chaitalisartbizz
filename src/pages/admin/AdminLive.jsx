@@ -138,6 +138,18 @@ export default function AdminLive() {
                             </div>
                           )}
 
+                          {log.timeOnScreen && (
+                            <div className="flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs px-2.5 py-1.5 rounded-lg border border-amber-200">
+                              <span className="font-bold">⏱️ {log.timeOnScreen}</span>
+                            </div>
+                          )}
+
+                          {log.visitedPages && log.visitedPages.length > 0 && (
+                            <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs px-2.5 py-1.5 rounded-lg border border-emerald-200 w-full mt-1">
+                              <span className="font-bold">📍 Pages: {log.visitedPages.join(' ➔ ')}</span>
+                            </div>
+                          )}
+
                           {log.visitor.fcmToken && (
                             <button 
                               onClick={() => setNotifyState(prev => ({ ...prev, token: log.visitor.fcmToken }))}

@@ -96,6 +96,8 @@ model FrontendSetting {
   siteAudioUrl        String?
   contactEmail        String?
   contactPhone        String?
+  upiId               String?
+  upiQrImage          String?
 }
 
 model Banner {

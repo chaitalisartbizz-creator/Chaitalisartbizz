@@ -156,34 +156,71 @@ router.get('/live', async (req, res) => {
   try {
     const recentVisits = await prisma.siteVisit.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 20
+      take: 100
     });
 
     const recentLogs = await prisma.activityLog.findMany({
       orderBy: { timestamp: 'desc' },
-      take: 20
+      take: 100
     });
 
-    // Fetch visitor details for these visits
     const visitorIds = [...new Set(recentVisits.map(v => v.visitorId))];
     let visitorMap = {};
+    let siteVisitsMap = {};
+    
     if (visitorIds.length > 0) {
       const visitors = await prisma.visitor.findMany({
         where: { visitorId: { in: visitorIds } }
       });
       visitors.forEach(v => visitorMap[v.visitorId] = v);
+
+      const allVisits = await prisma.siteVisit.findMany({
+        where: { visitorId: { in: visitorIds } },
+        orderBy: { createdAt: 'asc' }
+      });
+      
+      allVisits.forEach(v => {
+        if (!siteVisitsMap[v.visitorId]) siteVisitsMap[v.visitorId] = [];
+        siteVisitsMap[v.visitorId].push(v);
+      });
     }
+
+    let visitorCounter = 1;
+    const nameMap = {};
 
     const combined = [
       ...recentVisits.map(v => {
-        let name = "Anonymous";
+        let name = "Visitor";
         if (visitorMap[v.visitorId]) {
           const vis = visitorMap[v.visitorId];
           if (vis.name) {
             name = vis.name;
           } else {
-            name = `Anonymous ${vis.visitorId.replace('vid_', '').substring(0,4)}`;
+            if (!nameMap[v.visitorId]) {
+              nameMap[v.visitorId] = `Visitor ${visitorCounter++}`;
+            }
+            name = nameMap[v.visitorId];
           }
+        } else {
+          if (!nameMap[v.visitorId]) {
+            nameMap[v.visitorId] = `Visitor ${visitorCounter++}`;
+          }
+          name = nameMap[v.visitorId];
+        }
+
+        // Calculate time on screen (first visit vs last visit)
+        const visits = siteVisitsMap[v.visitorId] || [];
+        let timeOnScreen = 'Just joined';
+        let visitedPages = [];
+        
+        if (visits.length > 1) {
+          const first = new Date(visits[0].createdAt);
+          const last = new Date(visits[visits.length - 1].createdAt);
+          const diffMins = Math.round((last - first) / 60000);
+          timeOnScreen = diffMins > 0 ? `${diffMins} min` : '< 1 min';
+          visitedPages = [...new Set(visits.map(vx => vx.page))].slice(-3); // last 3 unique pages
+        } else if (visits.length === 1) {
+          visitedPages = [visits[0].page];
         }
         
         return {
@@ -193,13 +230,12 @@ router.get('/live', async (req, res) => {
           details: `Visited ${v.page}`,
           timestamp: v.createdAt,
           visitor: visitorMap[v.visitorId] || null,
-          displayName: name
+          displayName: name,
+          timeOnScreen,
+          visitedPages
         };
       }),
       ...recentLogs.map(l => {
-        let name = "Anonymous";
-        // Attempt to find the visitor for logs if we eventually add visitorId to ActivityLog
-        // For now, it will be anonymous.
         return {
           id: `l_${l.id}`,
           type: 'interaction',
@@ -207,14 +243,31 @@ router.get('/live', async (req, res) => {
           details: l.details,
           timestamp: l.timestamp,
           visitor: null,
-          displayName: name
+          displayName: 'System / Log',
+          timeOnScreen: '',
+          visitedPages: []
         };
       })
     ];
 
-    combined.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    // deduplicate by visitorId so we don't spam the UI with 100 rows for 1 guy
+    // (Assuming we want one row per active user in the 'Live' view)
+    const uniqueLiveUsersMap = {};
+    combined.forEach(item => {
+      const vId = item.visitor?.visitorId || item.id; // use item.id as fallback for logs
+      if (!uniqueLiveUsersMap[vId]) {
+        uniqueLiveUsersMap[vId] = item;
+      } else {
+        if (new Date(item.timestamp) > new Date(uniqueLiveUsersMap[vId].timestamp)) {
+          uniqueLiveUsersMap[vId] = item; // keep the most recent action
+        }
+      }
+    });
 
-    res.json(combined.slice(0, 50));
+    let finalCombined = Object.values(uniqueLiveUsersMap);
+    finalCombined.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    res.json(finalCombined.slice(0, 50));
   } catch (error) {
     console.error("Failed to fetch live analytics:", error);
     res.status(500).json({ error: "Failed to fetch live analytics" });
@@ -300,6 +353,22 @@ router.get('/retention', async (req, res) => {
       console.error('Error fetching retention analytics:', error);
       res.status(500).json({ error: 'Failed to fetch retention analytics' });
     }
+});
+
+// GET /api/analytics/subscribers
+router.get('/subscribers', async (req, res) => {
+  try {
+    const { db } = require('../db'); // actually it's just prisma above
+    const visitors = await prisma.visitor.findMany({
+      where: { fcmToken: { not: null } },
+      orderBy: { updatedAt: 'desc' },
+      take: 50
+    });
+    res.json(visitors);
+  } catch (error) {
+    console.error('Error fetching subscribers:', error);
+    res.status(500).json({ error: 'Failed to fetch subscribers' });
+  }
 });
 
 // POST /api/analytics/broadcast

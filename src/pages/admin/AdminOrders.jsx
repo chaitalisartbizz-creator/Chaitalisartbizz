@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   Package, ChevronDown, ChevronUp, Trash2, MessageCircle,
   ShoppingBag, Clock, CheckCircle, TrendingUp, RefreshCw,
-  IndianRupee, Phone, User, Hash, Filter, Loader2, Download
+  IndianRupee, Phone, User, Hash, Filter, Loader2, Download, Mail
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useData } from '../../context/DataContext';
@@ -421,6 +421,15 @@ export default function AdminOrders() {
                           >
                             {downloadingOrderId === order.id ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                           </button>
+                          {order.customerEmail && (
+                            <a
+                              href={`mailto:${order.customerEmail}?subject=Update on your Order #${order.id}`}
+                              title="Email Customer"
+                              className="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-500 rounded-xl flex items-center justify-center transition-colors shrink-0"
+                            >
+                              <Mail size={16} />
+                            </a>
+                          )}
                           <button
                             onClick={() => handleDelete(order.id)}
                             className="w-10 h-10 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl flex items-center justify-center transition-colors shrink-0"
@@ -622,6 +631,16 @@ export default function AdminOrders() {
                                 >
                                   <MessageCircle size={17} />
                                 </a>
+                                {/* Email */}
+                                {order.customerEmail && (
+                                  <a
+                                    href={`mailto:${order.customerEmail}?subject=Update on your Order #${order.id}`}
+                                    title="Email Customer"
+                                    className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors"
+                                  >
+                                    <Mail size={17} />
+                                  </a>
+                                )}
                                 {/* Delete */}
                                 <button
                                   title="Delete order"
