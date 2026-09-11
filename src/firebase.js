@@ -78,4 +78,4 @@ export const onMessageListener = () =>
   });
 
 export default app;
-console.log('FIREBASE.JS LOADED');
+
