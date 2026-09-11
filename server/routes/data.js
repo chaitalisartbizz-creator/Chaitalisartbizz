@@ -29,7 +29,8 @@ router.get('/', async (req, res) => {
     const settings = await prisma.frontendSetting.findFirst();
     const banners = await prisma.banner.findMany();
     const instagramFeeds = await prisma.instagramFeed.findMany({ orderBy: { createdAt: 'desc' } });
-    const promoCodes = await prisma.promoCode.findMany();
+    let promoCodes = [];
+    try { promoCodes = await prisma.promoCode.findMany(); } catch(e) { /* table may not exist in prod yet */ }
 
     res.json({
       slides,
