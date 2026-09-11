@@ -104,27 +104,30 @@ export default function AdminSlides() {
                   </button>
                 </div>
                 <UploadField 
-                  label="Desktop Image"
+                  label="Desktop Image / Video"
                   value={slide.heroImage}
                   onChange={(url) => {
                     const newSlides = [...localSlides];
                     newSlides[idx].heroImage = url;
                     setLocalSlides(newSlides);
                   }}
-                  recommendedSize="1920x700px"
-                  maxSize="3MB"
+                  recommendedSize="1920×700px (Image) | 1920×700 MP4 (Video)"
+                  maxSize="10MB"
+                  formats="JPG, PNG, WEBP, MP4"
+                  isVideo={false}
                 />
                 <div className="mt-4">
                   <UploadField 
-                    label="Mobile Image (Optional)"
+                    label="Mobile Image / Video (Optional)"
                     value={slide.mobileImage}
                     onChange={(url) => {
                       const newSlides = [...localSlides];
                       newSlides[idx].mobileImage = url;
                       setLocalSlides(newSlides);
                     }}
-                    recommendedSize="800x1000px"
-                    maxSize="2MB"
+                    recommendedSize="800×1000px (Image) | 800×1000 MP4 (Video)"
+                    maxSize="5MB"
+                    formats="JPG, PNG, WEBP, MP4"
                   />
                 </div>
                 <div className="mt-4">

@@ -192,7 +192,9 @@ export default function AdminSettings() {
                     <div>
                       <input type="file" accept="image/*" onChange={handleLogoUpload} disabled={isUploading}
                         className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#F2EDE4]/50 file:text-[#C9A84C] hover:file:bg-[#F2EDE4] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" />
-                      <p className="text-xs text-gray-400 mt-1">Recommended size: 200x200px. Max size: 200KB.</p>
+                      <p className="text-xs text-amber-600 mt-2 font-medium flex items-center gap-1 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                        <span className="font-bold">📐 Recommended:</span> 200×200px PNG (transparent bg). Max: 200KB
+                      </p>
                     </div>
                   </div>
                 </div>

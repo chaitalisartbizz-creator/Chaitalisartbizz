@@ -180,7 +180,7 @@ export default function AdminFlashDeals() {
                             />
                           )}
                           {isUploading ? <><Loader2 className="animate-spin text-[#C9A84C]" size={16} /> <span className="font-bold">{uploadProgress}%</span></> : 'Upload'}
-                          <input type="file" accept="image/*" className="hidden" disabled={isUploading} onChange={async (e) => {
+                          <input type="file" accept="image/*,video/mp4,video/webm" className="hidden" disabled={isUploading} onChange={async (e) => {
                               if (e.target.files && e.target.files[0]) {
                                 setIsUploading(true);
                                 setUploadProgress(0);
@@ -198,7 +198,9 @@ export default function AdminFlashDeals() {
                           }} />
                         </label>
                       </div>
-                      <p className="text-[10px] text-gray-500 mt-1">Recommended size: 400x300px (Transparent PNG)</p>
+                      <p className="text-xs text-amber-600 mt-2 font-medium flex items-center gap-1 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                        <span className="font-bold">📐 Recommended:</span> 400×300px image or MP4 video. Max: 3MB
+                      </p>
                     </div>
                   </div>
                 </div>

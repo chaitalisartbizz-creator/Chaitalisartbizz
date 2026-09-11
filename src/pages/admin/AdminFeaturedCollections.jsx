@@ -4,7 +4,7 @@ import axios from 'axios';
 import { handleImageUpload } from '../../utils/imageUpload';
 import { useData } from '../../context/DataContext';
 import { useCart } from '../../context/CartContext';
-import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Loader2, Info } from 'lucide-react';
 
 export default function AdminFeaturedCollections() {
   const { banners, refreshData } = useData();
@@ -152,7 +152,11 @@ export default function AdminFeaturedCollections() {
                 <div className="flex gap-4">
                   <div className="w-40 h-24 rounded-xl border shadow-sm flex items-center justify-center overflow-hidden shrink-0 bg-white">
                     {editing.mediaUrl ? (
-                      <img src={editing.mediaUrl} alt="Preview" className="w-full h-full object-cover" />
+                      editing.mediaUrl.match(/\.(mp4|webm|mov)$/i) || editing.mediaUrl.includes('video') ? (
+                        <video src={editing.mediaUrl} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                      ) : (
+                        <img src={editing.mediaUrl} alt="Preview" className="w-full h-full object-cover" />
+                      )
                     ) : (
                       <ImageIcon size={32} className="text-gray-300" />
                     )}
@@ -168,8 +172,8 @@ export default function AdminFeaturedCollections() {
                             style={{ width: `${uploadProgress}%` }}
                           />
                         )}
-                        {isUploading ? <><Loader2 className="animate-spin text-[#C9A84C]" size={16} /> <span className="font-bold">{uploadProgress}%</span></> : 'Upload Image'}
-                        <input type="file" accept="image/*" className="hidden" disabled={isUploading} onChange={async (e) => {
+                        {isUploading ? <><Loader2 className="animate-spin text-[#C9A84C]" size={16} /> <span className="font-bold">{uploadProgress}%</span></> : 'Upload Media'}
+                        <input type="file" accept="image/*,video/mp4,video/webm" className="hidden" disabled={isUploading} onChange={async (e) => {
                             if (e.target.files && e.target.files[0]) {
                               setIsUploading(true);
                               setUploadProgress(0);
@@ -178,7 +182,7 @@ export default function AdminFeaturedCollections() {
                                 setEditing({...editing, mediaUrl: base64});
                               } catch(err) {
                                 console.error("Upload failed", err);
-                                alert("Image upload failed");
+                                alert("Media upload failed");
                               } finally {
                                 setIsUploading(false);
                                 setUploadProgress(0);
@@ -187,6 +191,9 @@ export default function AdminFeaturedCollections() {
                         }} />
                       </label>
                     </div>
+                    <p className="text-xs text-amber-600 mt-2 font-medium flex items-center gap-1 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                      <Info size={14} className="shrink-0" /> Recommended: 1920×1080px (Image) or 1080p (Video). Max: 5MB
+                    </p>
                   </div>
                 </div>
               </div>

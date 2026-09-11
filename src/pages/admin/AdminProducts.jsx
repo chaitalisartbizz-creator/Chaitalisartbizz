@@ -337,7 +337,9 @@ function AdminProductsContent() {
                         }} />
                       </label>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Recommended size: 400x400px (1:1 Square)</p>
+                    <p className="text-xs text-amber-600 mt-2 font-medium flex items-center gap-1 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                      <span className="font-bold">📐 Recommended:</span> 400×400px (square) image or MP4 video. Max: 5MB
+                    </p>
                   </div>
                 </div>
 

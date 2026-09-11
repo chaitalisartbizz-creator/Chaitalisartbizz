@@ -194,7 +194,7 @@ export default function AdminCategories() {
                         <span className="text-sm text-gray-500 flex items-center">OR</span>
                         <label className={`cursor-pointer ${isUploading ? 'bg-gray-200 opacity-70' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 text-sm font-medium transition-colors text-gray-700`}>
                           {isUploading ? <><Loader2 className="animate-spin" size={16} /> Uploading...</> : 'Upload'}
-                          <input type="file" accept="image/*" className="hidden" disabled={isUploading} onChange={async (e) => {
+                          <input type="file" accept="image/*,video/mp4,video/webm" className="hidden" disabled={isUploading} onChange={async (e) => {
                               if (e.target.files && e.target.files[0]) {
                                 setIsUploading(true);
                                 try {
@@ -210,7 +210,9 @@ export default function AdminCategories() {
                           }} />
                         </label>
                       </div>
-                      <p className="text-[10px] text-gray-500 mt-1">Recommended size: 200x200px (Transparent PNG)</p>
+                      <p className="text-xs text-amber-600 mt-2 font-medium flex items-center gap-1 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                        <span className="font-bold">📐 Recommended:</span> 200×200px (Square PNG with transparent bg). Max: 1MB
+                      </p>
                     </div>
                   </div>
                 </div>

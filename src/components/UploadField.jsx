@@ -106,7 +106,7 @@ export default function UploadField({
           type="file"
           ref={fileInputRef}
           className="hidden"
-          accept={isVideo ? "video/mp4,video/webm" : "image/jpeg,image/png,image/webp"}
+          accept={isVideo ? "video/mp4,video/webm" : formats.includes('MP4') ? "image/jpeg,image/png,image/webp,video/mp4,video/webm" : "image/jpeg,image/png,image/webp"}
           onChange={handleFileChange}
         />
 
