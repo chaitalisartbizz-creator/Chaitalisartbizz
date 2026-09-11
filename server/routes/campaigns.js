@@ -80,12 +80,8 @@ router.post('/send', upload.single('attachment'), async (req, res) => {
     // Send emails
     let successCount = 0;
     let failCount = 0;
+    let errors = [];
 
-    // To prevent hitting rate limits with hundreds of emails, 
-    // we send them in a simple sequential loop or use Promise.all for small batches.
-    // Nodemailer supports bcc, but some spam filters punish large bcc lists.
-    // For simplicity, we'll send individual emails.
-    
     // Using a simple HTML wrapper to make it look decent
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; color: #333;">
@@ -101,11 +97,16 @@ router.post('/send', upload.single('attachment'), async (req, res) => {
           html: emailHtml,
           attachments: attachments
         });
-        if (result.success) successCount++;
-        else failCount++;
+        if (result.success) {
+          successCount++;
+        } else {
+          failCount++;
+          errors.push({ email, error: result.error?.message || 'Unknown error' });
+        }
       } catch (err) {
         console.error(`Failed to send to ${email}:`, err);
         failCount++;
+        errors.push({ email, error: err.message || 'Server error' });
       }
     }
 
@@ -113,7 +114,8 @@ router.post('/send', upload.single('attachment'), async (req, res) => {
       success: true,
       message: `Campaign finished. Sent: ${successCount}, Failed: ${failCount}`,
       successCount,
-      failCount
+      failCount,
+      errors
     });
 
   } catch (error) {

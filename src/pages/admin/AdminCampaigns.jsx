@@ -16,6 +16,7 @@ export default function AdminCampaigns() {
   const [attachment, setAttachment] = useState(null);
   
   const [sending, setSending] = useState(false);
+  const [campaignReport, setCampaignReport] = useState(null);
 
   useEffect(() => {
     fetchEmails();
@@ -84,8 +85,11 @@ export default function AdminCampaigns() {
         }
       });
 
-      showToast(res.data.message || 'Campaign sent successfully!');
+      showToast(res.data.message || 'Campaign finished processing!');
       
+      // Show report modal
+      setCampaignReport(res.data);
+
       // Reset form on success
       setSubject('');
       setBody('');
@@ -303,6 +307,52 @@ export default function AdminCampaigns() {
                     <span className="font-medium text-gray-700 truncate">{em}</span>
                   </div>
                 ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {campaignReport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 max-h-[85vh] flex flex-col relative animate-scale-in">
+            <button 
+              onClick={() => setCampaignReport(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+              <AlertCircle size={20} className={campaignReport.failCount > 0 ? "text-red-500" : "text-green-500"} />
+              Campaign Report
+            </h2>
+            <div className="flex gap-4 mb-4 mt-2">
+              <div className="flex-1 bg-green-50 text-green-700 p-3 rounded-xl border border-green-100">
+                <p className="text-xs font-bold uppercase tracking-wide opacity-80">Sent</p>
+                <p className="text-2xl font-black">{campaignReport.successCount}</p>
+              </div>
+              <div className="flex-1 bg-red-50 text-red-700 p-3 rounded-xl border border-red-100">
+                <p className="text-xs font-bold uppercase tracking-wide opacity-80">Failed</p>
+                <p className="text-2xl font-black">{campaignReport.failCount}</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2 mt-2">
+              {campaignReport.errors && campaignReport.errors.length > 0 ? (
+                <>
+                  <p className="font-bold text-sm text-gray-800 mb-2">Error Details:</p>
+                  {campaignReport.errors.map((err, idx) => (
+                    <div key={idx} className="bg-red-50 border border-red-100 rounded-xl p-3">
+                      <p className="font-semibold text-gray-800 text-sm">{err.email}</p>
+                      <p className="text-xs text-red-600 mt-1 break-words">{err.error}</p>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <p className="text-green-600 font-medium text-center py-4 bg-green-50 rounded-xl">
+                  All emails sent successfully! 🎉
+                </p>
               )}
             </div>
           </div>
