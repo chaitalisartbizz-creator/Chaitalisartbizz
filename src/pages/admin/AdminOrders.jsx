@@ -423,8 +423,10 @@ export default function AdminOrders() {
                           </button>
                           {order.customerEmail && (
                             <a
-                              href={`mailto:${order.customerEmail}?subject=Update on your Order #${order.id}`}
-                              title="Email Customer"
+                              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${order.customerEmail}&su=${encodeURIComponent('Update on your Order #' + order.id)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Email Customer via Gmail"
                               className="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-500 rounded-xl flex items-center justify-center transition-colors shrink-0"
                             >
                               <Mail size={16} />
@@ -634,8 +636,10 @@ export default function AdminOrders() {
                                 {/* Email */}
                                 {order.customerEmail && (
                                   <a
-                                    href={`mailto:${order.customerEmail}?subject=Update on your Order #${order.id}`}
-                                    title="Email Customer"
+                                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${order.customerEmail}&su=${encodeURIComponent('Update on your Order #' + order.id)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Email Customer via Gmail"
                                     className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors"
                                   >
                                     <Mail size={17} />
