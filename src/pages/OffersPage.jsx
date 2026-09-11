@@ -16,14 +16,7 @@ const COUPONS = [
   { id: 4, title: 'RESIN MAGIC', sub: '15% Off All Resin Art Pieces', expiry: '4 Days Left', color1: '#6B7FA3', color2: '#4A5D8A', emoji: '🌟', code: 'RESIN15' },
 ];
 
-const FLASH_PRODUCTS = [
-  { id: 1, name: 'Custom Pet Portrait (A4)', price: 799, mrp: 999, img: 'https://images.unsplash.com/photo-1547756536-cde3673fa2e5?w=250&h=250&fit=crop', rating: 4.9, off: '20% OFF', left: 8 },
-  { id: 2, name: 'Resin Art Tray (Handmade)', price: 649, mrp: 849, img: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=250&h=250&fit=crop', rating: 4.8, off: '23% OFF', left: 14 },
-  { id: 3, name: 'Digital Logo Design', price: 499, mrp: 699, img: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=250&h=250&fit=crop', rating: 4.7, off: '28% OFF', left: 19 },
-  { id: 4, name: 'Personalised Name Plate', price: 599, mrp: 799, img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=250&h=250&fit=crop', rating: 4.9, off: '25% OFF', left: 5 },
-  { id: 5, name: 'Mandala Wall Art (Framed)', price: 1199, mrp: 1599, img: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=250&h=250&fit=crop', rating: 4.8, off: '25% OFF', left: 11 },
-  { id: 6, name: 'Festive Gift Hamper (Custom)', price: 1499, mrp: 1999, img: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=250&h=250&fit=crop', rating: 4.9, off: '25% OFF', left: 6 },
-];
+
 
 function CouponCard({ item, delay }) {
   const [copied, setCopied] = useState(false);
@@ -55,9 +48,19 @@ function CouponCard({ item, delay }) {
 }
 
 export default function OffersPage() {
-  const { frontendSettings, promoCodes } = useData();
+  const { frontendSettings, promoCodes, products } = useData();
   const { addToCart, isInCart } = useCart();
   const [timeLeft, setTimeLeft] = useState({ hrs: 6, min: 24, sec: 45 });
+
+  // Pick up to 6 random real products, stable per session (only shuffles once on mount)
+  const flashProducts = React.useMemo(() => {
+    if (!products || products.length === 0) return [];
+    const shuffled = [...products].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 6).map(p => ({
+      ...p,
+      off: p.mrp && p.price ? `${Math.round((1 - p.price / p.mrp) * 100)}% OFF` : null,
+    }));
+  }, [products]);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -208,25 +211,31 @@ export default function OffersPage() {
                   </div>
                 </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {FLASH_PRODUCTS.map((p, idx) => (
+                {flashProducts.length === 0 ? (
+                  <p className="col-span-6 text-center text-sm text-stone-400 py-6">No products available yet.</p>
+                ) : flashProducts.map((p, idx) => (
                   <ScrollReveal key={p.id} delay={(idx % 6) * 80} className="h-full">
                     <Link to={`/product/${p.id}`} className="block bg-white rounded-2xl border border-[#C9A84C]/30 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer h-full flex flex-col">
                       <div className="relative bg-[#F2EDE4] overflow-hidden" style={{ height: 135 }}>
                         <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover" />
-                        <span className="absolute top-2 left-2 bg-[#C9A84C] text-[#2C2C2C] text-[9px] font-bold px-2 py-0.5 rounded-md">{p.off}</span>
-                        <div className="absolute bottom-0 left-0 right-0 bg-[#2C2C2C]/80 text-[#C9A84C] text-[9px] font-bold text-center py-0.5">
-                          Only {p.left} spots left!
-                        </div>
+                        {p.off && (
+                          <span className="absolute top-2 left-2 bg-[#C9A84C] text-[#2C2C2C] text-[9px] font-bold px-2 py-0.5 rounded-md">{p.off}</span>
+                        )}
+                        {p.tag && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#2C2C2C]/80 text-[#C9A84C] text-[9px] font-bold text-center py-0.5">
+                            {p.tag}
+                          </div>
+                        )}
                       </div>
                       <div className="p-3 flex flex-col flex-1">
                         <p className="text-stone-800 text-xs font-bold leading-tight line-clamp-2">{p.name}</p>
                         <div className="flex items-center gap-1 mt-1">
                           <Star size={9} className="text-[#C9A84C] fill-[#C9A84C]" />
-                          <span className="text-stone-600 text-[10px] font-bold">{p.rating}</span>
+                          <span className="text-stone-600 text-[10px] font-bold">{p.rating || '4.8'}</span>
                         </div>
                         <div className="flex items-baseline gap-1 mt-1.5">
                           <span className="text-[#2C2C2C] font-black text-sm">₹{p.price}</span>
-                          <span className="text-stone-400 text-[10px] line-through">₹{p.mrp}</span>
+                          {p.mrp && <span className="text-stone-400 text-[10px] line-through">₹{p.mrp}</span>}
                         </div>
                         <div className="mt-auto pt-2">
                           <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(p); }}
