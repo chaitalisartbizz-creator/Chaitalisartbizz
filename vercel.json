@@ -19,6 +19,13 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/resin-doorframe",
+      "destination": "/category?category=Resin+Art&subcategory=%E0%A4%85%E0%A4%B8%E0%A4%BF%E0%A4%86%E0%A4%89%E0%A4%B8%E0%A4%BE+Door+Frame",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
