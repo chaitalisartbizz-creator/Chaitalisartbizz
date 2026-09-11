@@ -340,6 +340,31 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   async function handlePlaceOrder() {
     if (payMethod === 'COD') {
       await placeCOD();
+    } else if (payMethod === 'UPI') {
+      // For UPI, we save the order with UPI payment method
+      // The user pays via QR scan and shares screenshot via WhatsApp
+      setLoading(true);
+      try {
+        const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
+        const res = await axios.post('/api/orders', {
+          visitorId:       'anonymous',
+          customerName:    form.name.trim(),
+          customerPhone:   form.phone.trim(),
+          customerEmail:   form.email.trim(),
+          customerAddress: fullAddress,
+          items:           JSON.stringify(cartItems.map(i => ({ id: i.id, name: i.name, weight: i.selectedWeight || '', qty: i.qty, price: i.price }))),
+          total:           grandTotal(cartTotal),
+          paymentMethod:   'UPI',
+        });
+        const orderId = res.data?.orderId || res.data?.order?.id || res.data?.id || `ARTBIZZ${Date.now()}`;
+        setConfirmedOrder({ orderId, paymentMethod: 'UPI / QR Payment' });
+        goTo(2);
+        if (onOrderSuccess) onOrderSuccess(orderId);
+      } catch (err) {
+        showToast(err?.response?.data?.message || 'Failed to place order. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     } else {
       await placeOnline();
     }
@@ -546,8 +571,8 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                   <p className="text-xs font-bold text-stone-700 uppercase tracking-wide font-cinzel">Payment Method</p>
 
                   {[
-                    { id: 'COD',    emoji: '💵', title: 'Cash on Delivery',  sub: 'Pay with cash upon delivery' },
-                    { id: 'ONLINE', emoji: '💳', title: 'Online Payment',    sub: 'UPI, Credit/Debit Card, Net Banking' },
+                    { id: 'COD',  emoji: '💵', title: 'Cash on Delivery', sub: 'Pay with cash upon delivery' },
+                    { id: 'UPI',  emoji: '📱', title: 'UPI / QR Payment',  sub: 'PhonePe · GPay · BHIM · Paytm' },
                   ].map(opt => (
                     <button
                       key={opt.id}
@@ -572,7 +597,122 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                       </div>
                     </button>
                   ))}
+
+                  {/* UPI QR Code Panel */}
+                  {payMethod === 'UPI' && (
+                    <div className="rounded-2xl overflow-hidden border-2 border-[#C9A84C]/40 shadow-lg">
+                      {/* Header */}
+                      <div className="bg-gradient-to-r from-[#1A1A1A] via-[#2C2C2C] to-[#1A1A1A] px-4 py-3 flex items-center justify-center gap-2">
+                        <span className="text-[#C9A84C] font-cinzel font-black text-sm tracking-wider">Scan & Pay</span>
+                      </div>
+
+                      {/* UPI App logos */}
+                      <div className="bg-white px-4 pt-3 pb-2 flex items-center justify-center gap-4 border-b border-[#C9A84C]/20">
+
+                        {/* PhonePe */}
+                        <div className="flex flex-col items-center gap-0.5">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md overflow-hidden" style={{ background: '#5f259f' }}>
+                            <svg viewBox="0 0 60 60" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M30 5C16.2 5 5 16.2 5 30s11.2 25 25 25 25-11.2 25-25S43.8 5 30 5z" fill="#5f259f"/>
+                              <path d="M38.5 18h-10c-.8 0-1.5.7-1.5 1.5v5H24c-2.2 0-4 1.8-4 4v12c0 .6.4 1 1 1h3c.6 0 1-.4 1-1v-3h2l4.5 4.5c.2.2.5.3.7.3h4c.8 0 1.2-1 .7-1.7L33 36h1.5c2.2 0 4-1.8 4-4v-12.5c0-.8-.7-1.5-1.5-1.5h-.5zm-1.5 14c0 .6-.4 1-1 1H27v-8.5h8.5c.6 0 1 .4 1 1V32z" fill="white"/>
+                            </svg>
+                          </div>
+                          <span className="text-[9px] text-stone-500 font-semibold">PhonePe</span>
+                        </div>
+
+                        {/* Google Pay */}
+                        <div className="flex flex-col items-center gap-0.5">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md bg-white border border-gray-100 overflow-hidden">
+                            <svg viewBox="0 0 48 48" width="34" height="34" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M24 9.5c3.9 0 7.4 1.4 10.1 3.7l7.5-7.5C37.4 3.2 31.1 1 24 1 14.6 1 6.5 6.3 2.4 14l8.7 6.8C13.2 14.1 18.1 9.5 24 9.5z" fill="#EA4335"/>
+                              <path d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 6.9-10 6.9-17z" fill="#4285F4"/>
+                              <path d="M11.1 28.3A14.6 14.6 0 0 1 9.5 24c0-1.5.3-2.9.7-4.3L1.5 13C.5 15.6 0 18.7 0 22c0 3.8.8 7.4 2.3 10.7l8.8-4.4z" fill="#FBBC05"/>
+                              <path d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.2-8.4 2.2-5.9 0-10.9-4-12.7-9.3l-8.7 6.8C6.5 42 14.6 47 24 47z" fill="#34A853"/>
+                            </svg>
+                          </div>
+                          <span className="text-[9px] text-stone-500 font-semibold">GPay</span>
+                        </div>
+
+                        {/* BHIM UPI */}
+                        <div className="flex flex-col items-center gap-0.5">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md overflow-hidden" style={{ background: '#00529B' }}>
+                            <svg viewBox="0 0 60 60" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                              <rect width="60" height="60" rx="10" fill="#00529B"/>
+                              <text x="30" y="24" textAnchor="middle" fill="white" fontWeight="900" fontSize="13" fontFamily="sans-serif">BHIM</text>
+                              <text x="30" y="40" textAnchor="middle" fill="#FF9800" fontWeight="900" fontSize="10" fontFamily="sans-serif">UPI</text>
+                            </svg>
+                          </div>
+                          <span className="text-[9px] text-stone-500 font-semibold">BHIM UPI</span>
+                        </div>
+
+                        {/* Paytm */}
+                        <div className="flex flex-col items-center gap-0.5">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md overflow-hidden bg-[#00B9F1]">
+                            <svg viewBox="0 0 60 60" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                              <rect width="60" height="60" rx="10" fill="#00B9F1"/>
+                              <rect x="10" y="10" width="18" height="18" rx="2" fill="white"/>
+                              <rect x="32" y="10" width="18" height="18" rx="2" fill="#002970"/>
+                              <rect x="10" y="32" width="18" height="18" rx="2" fill="#002970"/>
+                              <rect x="32" y="32" width="18" height="18" rx="2" fill="white"/>
+                            </svg>
+                          </div>
+                          <span className="text-[9px] text-stone-500 font-semibold">Paytm</span>
+                        </div>
+
+                      </div>
+
+
+                      {/* QR Code */}
+                      <div className="bg-white flex flex-col items-center px-4 pt-3 pb-2">
+                        <div className="relative p-1.5 rounded-2xl upi-glow-border shadow-lg">
+                          <div className="bg-white rounded-xl p-2">
+                            <img
+                              src="/upi-qr.png"
+                              alt="UPI QR Code – chaitaliselot93@okhdfc"
+                              className="w-44 h-44 object-contain rounded-lg"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* UPI ID + Copy */}
+                      <div className="bg-white px-4 pb-3 flex flex-col items-center gap-2">
+                        <p className="text-[11px] text-stone-500 font-semibold">UPI ID</p>
+                        <div className="flex items-center gap-2 bg-[#F2EDE4] border border-[#C9A84C]/40 rounded-xl px-3 py-2">
+                          <span className="font-mono font-bold text-sm text-[#2C2C2C] select-all">chaitaliselot93@okhdfc</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText('chaitaliselot93@okhdfc');
+                              const el = document.getElementById('upi-copy-label');
+                              if (el) { el.textContent = 'Copied!'; setTimeout(() => { el.textContent = 'Copy'; }, 2000); }
+                            }}
+                            className="ml-1 bg-[#C9A84C] hover:bg-[#A8873A] text-white text-[10px] font-black px-2.5 py-1 rounded-lg transition-all shadow"
+                          >
+                            <span id="upi-copy-label">Copy</span>
+                          </button>
+                        </div>
+
+                        {/* WhatsApp screenshot note */}
+                        <div className="mt-1 w-full bg-[#25D366]/10 border border-[#25D366]/40 rounded-xl px-3 py-2.5 flex items-start gap-2">
+                          <span className="text-base flex-shrink-0">📸</span>
+                          <p className="text-[11px] text-stone-700 font-semibold leading-snug">
+                            After payment, please <span className="font-black text-[#25D366]">share the screenshot</span> on WhatsApp:{' '}
+                            <a
+                              href="https://wa.me/917020821578"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-black text-[#25D366] underline"
+                            >
+                              +91 70208 21578
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
 
                 <OrderSummary cartItems={cartItems} cartTotal={cartTotal} />
 
@@ -639,6 +779,28 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                 <p className="text-stone-500 text-xs">
                   Thank you for choosing Artbizz. We are dispatching your 100% pure artworks! ✨
                 </p>
+
+                {/* UPI screenshot reminder */}
+                {confirmedOrder.paymentMethod === 'UPI / QR Payment' && (
+                  <div className="w-full bg-[#25D366]/10 border border-[#25D366]/40 rounded-2xl px-4 py-3 flex items-start gap-3">
+                    <span className="text-xl flex-shrink-0">📸</span>
+                    <div>
+                      <p className="text-xs font-black text-stone-800">Payment Pending — Action Required!</p>
+                      <p className="text-[11px] text-stone-600 mt-0.5 leading-snug">
+                        Please complete the UPI payment and <span className="font-black text-[#25D366]">share the payment screenshot</span> on WhatsApp to confirm your order:
+                      </p>
+                      <a
+                        href="https://wa.me/917020821578"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-1.5 font-black text-[#25D366] text-xs underline"
+                      >
+                        +91 70208 21578 →
+                      </a>
+                    </div>
+                  </div>
+                )}
+
 
                 <button
                   onClick={openWhatsApp}

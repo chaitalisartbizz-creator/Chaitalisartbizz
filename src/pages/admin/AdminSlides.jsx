@@ -132,7 +132,7 @@ export default function AdminSlides() {
                   <input 
                     type="text" 
                     list="slide-links"
-                    placeholder="e.g., /category/Resin Art or /product/123" 
+                    placeholder="e.g., /category?category=Resin%20Art or /product/123" 
                     value={slide.linkUrl || ''} 
                     onChange={e => {
                       const newSlides = [...localSlides];
@@ -142,7 +142,22 @@ export default function AdminSlides() {
                     className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" 
                   />
                   <datalist id="slide-links">
-                    {categories?.map(c => <option key={`cat-${c.id}`} value={`/category/${encodeURIComponent(c.label)}`}>Category: {c.label}</option>)}
+                    {categories?.map(c => {
+                      const cSubs = [...new Set([
+                        ...(c.sub ? c.sub.split(',').map(s => s.trim()).filter(Boolean) : []),
+                        ...(products?.filter(p => p.category === c.label).map(p => p.brand).filter(Boolean) || [])
+                      ])];
+                      return (
+                        <React.Fragment key={`cat-frag-${c.id}`}>
+                          <option key={`cat-${c.id}`} value={`/category?category=${encodeURIComponent(c.label)}`}>Category: {c.label}</option>
+                          {cSubs.map(sub => (
+                            <option key={`sub-${c.id}-${sub}`} value={`/category?category=${encodeURIComponent(c.label)}&subcategory=${encodeURIComponent(sub)}`}>
+                              Sub-category: {c.label} &gt; {sub}
+                            </option>
+                          ))}
+                        </React.Fragment>
+                      );
+                    })}
                     {products?.map(p => <option key={`prod-${p.id}`} value={`/product/${p.id}`}>Product: {p.name}</option>)}
                   </datalist>
                 </div>

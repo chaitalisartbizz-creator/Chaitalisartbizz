@@ -55,6 +55,7 @@ function CouponCard({ item, delay }) {
 }
 
 export default function OffersPage() {
+  const { frontendSettings, promoCodes } = useData();
   const { addToCart, isInCart } = useCart();
   const [timeLeft, setTimeLeft] = useState({ hrs: 6, min: 24, sec: 45 });
   
@@ -191,7 +192,7 @@ export default function OffersPage() {
                 <h2 className="text-[#F0DFA0] font-cinzel font-black text-2xl">Active Artbizz Promo Codes</h2>
               </div>
               <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {COUPONS.map((c, idx) => <CouponCard key={c.id} item={c} delay={idx * 100} />)}
+                { (promoCodes && promoCodes.length > 0 ? promoCodes : COUPONS).map((c, idx) => <CouponCard key={c.id} item={c} delay={idx * 100} />)}
               </div>
             </section>
           </ScrollReveal>

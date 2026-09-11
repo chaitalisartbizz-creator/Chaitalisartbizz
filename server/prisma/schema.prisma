@@ -162,3 +162,14 @@ model InstagramFeed {
   pinned    Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model PromoCode {
+  id      Int    @id @default(autoincrement())
+  title   String
+  sub     String
+  expiry  String
+  color1  String
+  color2  String
+  emoji   String
+  code    String
+}

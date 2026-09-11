@@ -1,11 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, Plus, Minus, Award, CheckCircle2, Share2 } from 'lucide-react';
+import { motion, animate } from 'framer-motion';
 import Header from '../components/Header';
 import ScrollReveal from '../components/ScrollReveal';
 import MediaDisplay from '../components/MediaDisplay';
 import { useCart } from '../context/CartContext';
 import { useData } from '../context/DataContext';
+
+function AnimatedNumber({ value, prefix = "", className = "" }) {
+  const nodeRef = React.useRef(null);
+  const prevValue = React.useRef(value);
+
+  React.useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return;
+    
+    if (prevValue.current !== value) {
+      const controls = animate(prevValue.current, value, {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        onUpdate(v) {
+          node.textContent = `${prefix}${Math.round(v)}`;
+        },
+      });
+
+      animate(node, { scale: [1, 1.15, 1] }, { duration: 0.4 });
+      
+      prevValue.current = value;
+      return () => controls.stop();
+    }
+  }, [value, prefix]);
+
+  return (
+    <motion.span ref={nodeRef} className={`inline-block origin-left ${className}`}>
+      {prefix}{value}
+    </motion.span>
+  );
+}
+
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -230,10 +263,10 @@ export default function ProductPage() {
 
                 {/* Pricing Calculation */}
                 <div className="flex items-baseline gap-3 mb-6 bg-[#F2EDE4]/80 p-4 rounded-2xl border border-[#C9A84C]/30">
-                  <span className="text-3xl md:text-4xl font-black text-[#2C2C2C]">₹{computedPrice}</span>
-                  {computedMrp && <span className="text-base md:text-lg text-stone-400 line-through font-semibold">₹{computedMrp}</span>}
-                  <span className="ml-auto text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-lg">
-                    Save ₹{computedMrp - computedPrice}
+                  <AnimatedNumber value={computedPrice} prefix="₹" className="text-3xl md:text-4xl font-black text-[#2C2C2C]" />
+                  {computedMrp && <AnimatedNumber value={computedMrp} prefix="₹" className="text-base md:text-lg text-stone-400 line-through font-semibold origin-bottom" />}
+                  <span className="ml-auto text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    Save <AnimatedNumber value={computedMrp - computedPrice} prefix="₹" />
                   </span>
                 </div>
 
@@ -441,7 +474,10 @@ export default function ProductPage() {
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0 pr-2">
             <p className="text-xs font-bold text-stone-800 truncate">{product.name}</p>
-            <p className="font-black text-[#2C2C2C] text-base leading-tight">₹{computedPrice} <span className="text-xs text-[#2C2C2C] font-bold bg-[#C9A84C]/30 px-1.5 py-0.5 rounded">{selectedWeight}</span></p>
+            <p className="font-black text-[#2C2C2C] text-base leading-tight flex items-center gap-1">
+              <AnimatedNumber value={computedPrice} prefix="₹" /> 
+              <span className="text-xs text-[#2C2C2C] font-bold bg-[#C9A84C]/30 px-1.5 py-0.5 rounded ml-1">{selectedWeight}</span>
+            </p>
           </div>
           <div className="flex items-center border border-[#C9A84C]/30 rounded-lg overflow-hidden flex-shrink-0 h-9 bg-[#F2EDE4]">
             <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2.5 text-stone-600 font-bold"><Minus size={13}/></button>

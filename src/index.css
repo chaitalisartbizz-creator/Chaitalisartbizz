@@ -307,3 +307,16 @@ body {
 #nprogress .peg { box-shadow: 0 0 10px #C9A84C, 0 0 5px #C9A84C !important; }
 #nprogress .spinner-icon { border-top-color: #C9A84C !important; border-left-color: #C9A84C !important; }
 
+/* UPI QR Glow Border */
+@keyframes upi-glow-rotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.upi-glow-border {
+  background: linear-gradient(270deg, #C9A84C, #F0DFA0, #c9a84c88, #C9A84C);
+  background-size: 300% 300%;
+  animation: upi-glow-rotate 3s ease infinite;
+}
+
+

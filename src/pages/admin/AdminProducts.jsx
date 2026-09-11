@@ -6,7 +6,7 @@ import MediaDisplay from '../../components/MediaDisplay';
 import { TableRowSkeleton } from '../../components/Skeleton';
 import { useData } from '../../context/DataContext';
 import { useCart } from '../../context/CartContext';
-import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Package, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Package, Loader2, Copy, Star } from 'lucide-react';
 import AdminCategories from './AdminCategories';
 
 function AdminProductsContent() {
@@ -103,6 +103,14 @@ function AdminProductsContent() {
     }
   };
 
+  const handleDuplicate = (p) => {
+    const duplicatedProduct = { ...p };
+    delete duplicatedProduct.id;
+    duplicatedProduct.name = `${duplicatedProduct.name} (Copy)`;
+    setEditing(duplicatedProduct);
+    setIsModalOpen(true);
+  };
+
   const filteredProducts = products.filter(p => {
     const search = (searchQuery || '').toLowerCase();
     const name = p.name ? String(p.name).toLowerCase() : '';
@@ -174,10 +182,13 @@ function AdminProductsContent() {
                 </div>
 
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button onClick={() => { setEditing(p); setIsModalOpen(true); }} className="p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
+                  <button title="Edit Product" onClick={() => { setEditing(p); setIsModalOpen(true); }} className="p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
                     <Edit2 size={16} />
                   </button>
-                  <button onClick={() => handleDelete(p.id)} className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
+                  <button title="Duplicate Product" onClick={() => handleDuplicate(p)} className="p-2 text-green-500 bg-green-50 hover:bg-green-100 rounded-xl transition-colors">
+                    <Copy size={16} />
+                  </button>
+                  <button title="Delete Product" onClick={() => handleDelete(p.id)} className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -243,6 +254,9 @@ function AdminProductsContent() {
                       <div className="flex items-center justify-end gap-2">
                         <button title="Edit Product" data-testid={`edit-btn-${p.id}`} onClick={() => { setEditing(p); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors">
                           <Edit2 size={18} />
+                        </button>
+                        <button title="Duplicate Product" data-testid={`dup-btn-${p.id}`} onClick={() => handleDuplicate(p)} className="p-2 text-green-500 hover:bg-green-100 rounded-xl transition-colors">
+                          <Copy size={18} />
                         </button>
                         <button title="Delete Product" data-testid={`del-btn-${p.id}`} onClick={() => handleDelete(p.id)} className="p-2 text-red-500 hover:bg-red-100 rounded-xl transition-colors">
                           <Trash2 size={18} />
@@ -381,13 +395,31 @@ function AdminProductsContent() {
                       {editing.images.map((imgUrl, idx) => (
                         <div key={idx} className="relative w-16 h-16 rounded-xl border bg-white overflow-hidden group">
                           <MediaDisplay src={imgUrl} className="w-full h-full object-cover" alt="Additional" />
-                          <button 
-                            type="button" 
-                            onClick={() => setEditing({ ...editing, images: editing.images.filter((_, i) => i !== idx) })}
-                            className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"
-                          >
-                            <X size={16} />
-                          </button>
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col">
+                            <button 
+                              type="button"
+                              title="Set as Primary"
+                              onClick={() => {
+                                const newImages = [...editing.images];
+                                newImages.splice(idx, 1);
+                                if (editing.img) {
+                                  newImages.push(editing.img); // move old primary to gallery
+                                }
+                                setEditing({ ...editing, img: imgUrl, images: newImages });
+                              }}
+                              className="flex-1 text-white flex items-center justify-center hover:bg-black/30 transition-colors pb-0"
+                            >
+                              <Star size={14} />
+                            </button>
+                            <button 
+                              type="button" 
+                              title="Remove"
+                              onClick={() => setEditing({ ...editing, images: editing.images.filter((_, i) => i !== idx) })}
+                              className="flex-1 text-white flex items-center justify-center hover:bg-black/30 transition-colors pt-0"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>

@@ -28,6 +28,7 @@ app.use('/api/categories', require('./routes/categories'));
 app.use('/api/deals', require('./routes/deals'));
 app.use('/api/slides', require('./routes/slides'));
 app.use('/api/banners', require('./routes/banners'));
+app.use('/api/promoCodes', require('./routes/promoCodes'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/data', require('./routes/data'));
 app.use('/api/upload', require('./routes/upload'));
