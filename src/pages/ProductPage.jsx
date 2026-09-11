@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, Plus, Minus, Award, CheckCircle2, Share2 } from 'lucide-react';
+import { Star, Heart, ShoppingBag, ChevronRight, ShieldCheck, Truck, Plus, Minus, Award, CheckCircle2, Share2, Ruler, X } from 'lucide-react';
 import { motion, animate } from 'framer-motion';
 import Header from '../components/Header';
 import ScrollReveal from '../components/ScrollReveal';
@@ -52,6 +52,9 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('tab1');
   const [customSizeText, setCustomSizeText] = useState('');
+  const [showSizeChart, setShowSizeChart] = useState(false);
+
+  const isShoe = product?.category?.toLowerCase().includes('shoe') || product?.category?.toLowerCase().includes('footwear') || product?.name?.toLowerCase().includes('shoe');
 
   const dynamicSizes = React.useMemo(() => {
     if (!product?.variants) return [];
@@ -64,14 +67,28 @@ export default function ProductPage() {
   }, [product?.variants]);
 
   const sizeOptions = React.useMemo(() => {
-    return dynamicSizes.length > 0 
-      ? [...dynamicSizes, { label: 'Custom Size', custom: true }]
-      : [
-          { label: 'Standard', multiplier: 1.0 },
-          { label: 'Large', multiplier: 1.5 },
-          { label: 'Premium Finish', multiplier: 2.0 },
-        ];
-  }, [dynamicSizes]);
+    if (dynamicSizes.length > 0) {
+      return [...dynamicSizes, { label: 'Custom Size', custom: true }];
+    }
+    
+    if (isShoe) {
+      return [
+        { label: '6', multiplier: 1.0 },
+        { label: '7', multiplier: 1.0 },
+        { label: '8', multiplier: 1.0 },
+        { label: '9', multiplier: 1.0 },
+        { label: '10', multiplier: 1.0 },
+        { label: '11', multiplier: 1.0 },
+        { label: '12', multiplier: 1.0 },
+      ];
+    }
+
+    return [
+      { label: 'Standard', multiplier: 1.0 },
+      { label: 'Large', multiplier: 1.5 },
+      { label: 'Premium Finish', multiplier: 2.0 },
+    ];
+  }, [dynamicSizes, isShoe]);
 
   useEffect(() => {
     if (sizeOptions.length > 0 && !sizeOptions.find(o => o.label === selectedWeight)) {
@@ -273,7 +290,17 @@ export default function ProductPage() {
                 {/* Pack Size / Weight Variable Selector */}
                 <div className="mb-6">
                   <p className="text-xs font-bold text-stone-700 uppercase tracking-wide mb-2 flex items-center justify-between">
-                    <span>Select Size / Finish</span>
+                    <span className="flex items-center gap-2">
+                      Select Size {isShoe ? '' : '/ Finish'}
+                      {isShoe && (
+                        <button 
+                          onClick={() => setShowSizeChart(true)}
+                          className="text-[#C9A84C] hover:underline flex items-center gap-1 text-[10px] bg-[#C9A84C]/10 px-2 py-0.5 rounded"
+                        >
+                          <Ruler size={12} /> Size Chart
+                        </button>
+                      )}
+                    </span>
                     <span className="text-[#C9A84C]">{selectedWeight}</span>
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -498,6 +525,91 @@ export default function ProductPage() {
             </button>
           </div>
       </div>
+
+      {/* Size Chart Modal */}
+      {showSizeChart && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-100">
+              <h3 className="font-bold text-lg text-stone-900">Size Chart</h3>
+              <button 
+                onClick={() => setShowSizeChart(false)}
+                className="p-1 hover:bg-gray-200 rounded-full transition-colors text-stone-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-4 overflow-y-auto">
+              <h4 className="font-bold text-stone-700 mb-3 text-sm">IN Regular</h4>
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-stone-700 font-bold border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 border-r border-gray-200">Brand Size</th>
+                      <th className="px-4 py-3 border-r border-gray-200">UK/India</th>
+                      <th className="px-4 py-3 border-r border-gray-200">EU</th>
+                      <th className="px-4 py-3 border-r border-gray-200">USA</th>
+                      <th className="px-4 py-3">Heel to toe (in)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">6</td>
+                      <td className="px-4 py-2 border-r border-gray-200">6</td>
+                      <td className="px-4 py-2 border-r border-gray-200">40</td>
+                      <td className="px-4 py-2 border-r border-gray-200">7</td>
+                      <td className="px-4 py-2 text-stone-600">10.6</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">7</td>
+                      <td className="px-4 py-2 border-r border-gray-200">7</td>
+                      <td className="px-4 py-2 border-r border-gray-200">41</td>
+                      <td className="px-4 py-2 border-r border-gray-200">8</td>
+                      <td className="px-4 py-2 text-stone-600">10.8</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">8</td>
+                      <td className="px-4 py-2 border-r border-gray-200">8</td>
+                      <td className="px-4 py-2 border-r border-gray-200">42</td>
+                      <td className="px-4 py-2 border-r border-gray-200">9</td>
+                      <td className="px-4 py-2 text-stone-600">11</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">9</td>
+                      <td className="px-4 py-2 border-r border-gray-200">9</td>
+                      <td className="px-4 py-2 border-r border-gray-200">43</td>
+                      <td className="px-4 py-2 border-r border-gray-200">10</td>
+                      <td className="px-4 py-2 text-stone-600">11.3</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">10</td>
+                      <td className="px-4 py-2 border-r border-gray-200">10</td>
+                      <td className="px-4 py-2 border-r border-gray-200">44</td>
+                      <td className="px-4 py-2 border-r border-gray-200">11</td>
+                      <td className="px-4 py-2 text-stone-600">11.5</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">11</td>
+                      <td className="px-4 py-2 border-r border-gray-200">11</td>
+                      <td className="px-4 py-2 border-r border-gray-200">45</td>
+                      <td className="px-4 py-2 border-r border-gray-200">12</td>
+                      <td className="px-4 py-2 text-stone-600">11.7</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 font-bold text-stone-900 border-r border-gray-200">12</td>
+                      <td className="px-4 py-2 border-r border-gray-200">12</td>
+                      <td className="px-4 py-2 border-r border-gray-200">46</td>
+                      <td className="px-4 py-2 border-r border-gray-200">13</td>
+                      <td className="px-4 py-2 text-stone-600">12</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

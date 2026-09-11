@@ -504,17 +504,32 @@ function AdminProductsContent() {
                   <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100">
                     <div className="flex justify-between items-center mb-3">
                       <label className="block text-sm font-bold text-gray-700">Custom Sizes & Rates (Optional)</label>
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          const current = editing.variants ? editing.variants.split('\n').filter(Boolean) : [];
-                          current.push('|');
-                          setEditing({...editing, variants: current.join('\n')});
-                        }}
-                        className="text-xs font-bold text-[#C9A84C] flex items-center gap-1 hover:bg-[#C9A84C]/10 px-2 py-1 rounded"
-                      >
-                        <Plus size={14} /> Add Variant
-                      </button>
+                      <div className="flex gap-2">
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const shoeSizes = [6, 7, 8, 9, 10, 11, 12];
+                            const basePrice = editing.price || 0;
+                            const newVariants = shoeSizes.map(size => `${size}|${basePrice}`).join('\n');
+                            const current = editing.variants ? editing.variants + '\n' + newVariants : newVariants;
+                            setEditing({...editing, variants: current});
+                          }}
+                          className="text-xs font-bold text-emerald-600 flex items-center gap-1 hover:bg-emerald-50 px-2 py-1 rounded"
+                        >
+                          <Plus size={14} /> Add Shoe Sizes
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const current = editing.variants ? editing.variants.split('\n').filter(Boolean) : [];
+                            current.push('|');
+                            setEditing({...editing, variants: current.join('\n')});
+                          }}
+                          className="text-xs font-bold text-[#C9A84C] flex items-center gap-1 hover:bg-[#C9A84C]/10 px-2 py-1 rounded"
+                        >
+                          <Plus size={14} /> Add Variant
+                        </button>
+                      </div>
                     </div>
                     
                     <div className="space-y-2">
