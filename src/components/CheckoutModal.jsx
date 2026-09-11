@@ -276,13 +276,16 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       setOrderStep('confirmed');
       await new Promise(r => setTimeout(r, 700));
       const orderId = res.data?.orderId || res.data?.order?.id || res.data?.id || `ARTBIZZ${Date.now()}`;
-      setConfirmedOrder({ orderId, paymentMethod: 'Cash on Delivery (COD)' });
+      const order = { orderId, paymentMethod: 'Cash on Delivery (COD)' };
+      setConfirmedOrder(order);
       setOrderStep('whatsapp');
       await new Promise(r => setTimeout(r, 500));
       goTo(2);
       if (onOrderSuccess) onOrderSuccess(orderId);
-      // Removed automatic window.open to prevent mobile popup blockers.
-      // The user can click the "Track Order via WhatsApp" button on the success screen.
+      // Auto-open WhatsApp with full order details
+      const phone = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
+      const message = buildWhatsAppMessage(orderId, form, cartItems, grandTotal(cartTotal), 'Cash on Delivery (COD)');
+      setTimeout(() => window.open(`https://wa.me/${phone}?text=${message}`, '_blank'), 800);
     } catch (err) {
       showToast(err?.response?.data?.message || 'Failed to place order. Please try again.');
     } finally {
@@ -361,6 +364,10 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
         setConfirmedOrder({ orderId, paymentMethod: 'UPI / QR Payment' });
         goTo(2);
         if (onOrderSuccess) onOrderSuccess(orderId);
+        // Auto-open WhatsApp so user can share payment screenshot
+        const phone = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
+        const message = buildWhatsAppMessage(orderId, form, cartItems, grandTotal(cartTotal), 'UPI / QR Payment');
+        setTimeout(() => window.open(`https://wa.me/${phone}?text=${message}`, '_blank'), 800);
       } catch (err) {
         showToast(err?.response?.data?.message || 'Failed to place order. Please try again.');
       } finally {
@@ -373,7 +380,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
 
   function openWhatsApp() {
     if (!confirmedOrder) return;
-    const phone   = (frontendSettings?.whatsappOrderNumber || '919876543210').replace(/\D/g, '');
+    const phone   = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
     const message = buildWhatsAppMessage(confirmedOrder.orderId, form, cartItems, grandTotal(cartTotal), confirmedOrder.paymentMethod);
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
   }
@@ -743,19 +750,26 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                 exit="exit"
                 className="p-6 flex flex-col items-center text-center space-y-4"
               >
+                {/* ✅ Big success indicator */}
                 <motion.div
                   initial={{ scale: 0, rotate: -20 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 220, damping: 16, delay: 0.1 }}
-                  className="w-20 h-20 bg-[#F2EDE4] rounded-full flex items-center justify-center shadow-lg border-2 border-[#C9A84C]"
+                  className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center shadow-lg border-2 border-emerald-500"
                 >
-                  <CheckCircle2 size={46} className="text-[#C9A84C]" strokeWidth={2} />
+                  <CheckCircle2 size={46} className="text-emerald-500" strokeWidth={2} />
                 </motion.div>
 
-                <div>
-                  <h2 className="text-2xl font-cinzel font-bold text-stone-900 leading-tight">Order Confirmed!</h2>
-                  <p className="text-[#C9A84C] font-bold text-sm mt-1">Order ID: #{confirmedOrder.orderId}</p>
-                </div>
+                {/* Order Confirmed Banner */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="w-full bg-emerald-600 rounded-2xl px-4 py-3 text-white"
+                >
+                  <p className="font-black text-lg">🎉 Order Placed Successfully!</p>
+                  <p className="text-emerald-100 text-xs mt-0.5 font-semibold">Order ID: #{confirmedOrder.orderId}</p>
+                </motion.div>
 
                 <div className="bg-[#F2EDE4]/70 border border-[#C9A84C]/30 rounded-2xl w-full px-4 py-3.5 text-left space-y-2">
                   {[
@@ -790,7 +804,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                         Please complete the UPI payment and <span className="font-black text-[#25D366]">share the payment screenshot</span> on WhatsApp to confirm your order:
                       </p>
                       <a
-                        href="https://wa.me/917020821578"
+                        href={`https://wa.me/${(frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block mt-1.5 font-black text-[#25D366] text-xs underline"
@@ -801,13 +815,17 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                   </div>
                 )}
 
-
+                {/* WhatsApp CTA — primary action */}
                 <button
                   onClick={openWhatsApp}
                   className="w-full bg-[#25D366] hover:bg-[#1fb855] text-white font-bold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
                 >
-                  <span className="text-base">💬</span> Track Order via WhatsApp
+                  <span className="text-base">💬</span>
+                  {confirmedOrder.paymentMethod === 'UPI / QR Payment'
+                    ? 'Send Payment Screenshot on WhatsApp'
+                    : 'Send Order Details on WhatsApp'}
                 </button>
+                <p className="text-[10px] text-stone-400 -mt-2">WhatsApp opens automatically — tap above if it didn't</p>
 
                 <button
                   onClick={handleClose}
