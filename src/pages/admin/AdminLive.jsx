@@ -8,22 +8,37 @@ export default function AdminLive() {
   const [isLoading, setIsLoading] = useState(true);
   const [notifyState, setNotifyState] = useState({ token: null, title: '', body: '', url: '', status: 'idle' });
 
+  const [cooldown, setCooldown] = useState(0);
+
+  const fetchLive = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get('/api/analytics/live');
+      setLiveActivity(response.data);
+    } catch (error) {
+      console.error("Failed to fetch live activity:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchLive = async () => {
-      try {
-        const response = await axios.get('/api/analytics/live');
-        setLiveActivity(response.data);
-      } catch (error) {
-        console.error("Failed to fetch live activity:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
     fetchLive();
-    const interval = setInterval(fetchLive, 5000); // refresh every 5s
-    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    let timer;
+    if (cooldown > 0) {
+      timer = setTimeout(() => setCooldown(prev => prev - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [cooldown]);
+
+  const handleManualRefresh = () => {
+    if (cooldown > 0) return;
+    fetchLive();
+    setCooldown(5); // 5 second timeout
+  };
 
   const handleSendNotification = async (e) => {
     e.preventDefault();
@@ -58,7 +73,7 @@ export default function AdminLive() {
   return (
     <div className="space-y-8 animate-fade-in pb-10">
       <ScrollReveal>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
           <div>
             <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
               <div className="relative flex h-4 w-4">
@@ -67,8 +82,21 @@ export default function AdminLive() {
               </div>
               Live Visitors & Activity
             </h1>
-            <p className="text-gray-500 font-medium mt-1">Real-time overview of who is on the site right now.</p>
+            <p className="text-gray-500 font-medium mt-1">Overview of who is on the site right now.</p>
           </div>
+          
+          <button 
+            onClick={handleManualRefresh}
+            disabled={cooldown > 0 || isLoading}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm ${
+              cooldown > 0 || isLoading 
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : 'bg-white border border-gray-200 text-gray-700 hover:border-[#d07e20] hover:text-[#d07e20] hover:shadow-md active:scale-95'
+            }`}
+          >
+            <Loader2 size={18} className={isLoading ? "animate-spin" : ""} />
+            {cooldown > 0 ? `Refresh in ${cooldown}s` : 'Refresh Data'}
+          </button>
         </div>
       </ScrollReveal>
 
