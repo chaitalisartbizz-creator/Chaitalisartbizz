@@ -14,6 +14,19 @@ export function DataProvider({ children }) {
   const [promoCodes, setPromoCodes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Masterclasses — persisted in localStorage so admin edits survive page reloads
+  const [masterclasses, setMasterclasses] = useState(() => {
+    try {
+      const stored = localStorage.getItem('artbizz-masterclasses');
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
+
+  const saveMasterclasses = async (list) => {
+    setMasterclasses(list);
+    localStorage.setItem('artbizz-masterclasses', JSON.stringify(list));
+  };
+
   const [fcmToken, setFcmToken] = useState(null);
 
   const [visitorId] = useState(() => {
@@ -80,6 +93,7 @@ export function DataProvider({ children }) {
       frontendSettings, setFrontendSettings,
       instagramFeeds, setInstagramFeeds,
       promoCodes, setPromoCodes,
+      masterclasses, saveMasterclasses,
       activityLog, logActivity,
       loading,
       refreshData

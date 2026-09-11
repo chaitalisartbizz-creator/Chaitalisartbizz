@@ -360,7 +360,7 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
                       className={`w-full mt-2 text-[11px] font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1 ${
                         isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#8B5E7A] hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-white'
                       }`}>
-                      <ShoppingBag size={11} /> {isInCart(p.id) ? 'Added ✓' : 'Order Now'}
+                      <ShoppingBag size={11} /> {isInCart(p.id) ? 'Added ✓' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>
@@ -429,7 +429,7 @@ function DigitalDesignsSection({ cat, products, addToCart, isInCart, navigate })
                       className={`text-xs font-bold px-4 py-2 rounded-xl transition-all ${
                         isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#6B7FA3] hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-white'
                       }`}>
-                      {isInCart(p.id) ? 'Added ✓' : 'Order Now'}
+                      {isInCart(p.id) ? 'Added ✓' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>

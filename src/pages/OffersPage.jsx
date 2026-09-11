@@ -240,7 +240,7 @@ export default function OffersPage() {
                         <div className="mt-auto pt-2">
                           <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(p); }}
                             className={`w-full text-[10px] font-bold py-1.5 rounded-xl transition-all ${isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#2C2C2C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#2C2C2C]'}`}>
-                            {isInCart(p.id) ? '✓ Added' : '+ Order Now'}
+                            {isInCart(p.id) ? '✓ Added' : '+ Add to Cart'}
                           </button>
                         </div>
                       </div>

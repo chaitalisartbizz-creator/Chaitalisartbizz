@@ -65,6 +65,7 @@ const AdminSiteEditor = lazyWithRetry(() => import('./pages/admin/AdminSiteEdito
 const AdminRetention = lazyWithRetry(() => import('./pages/admin/AdminRetention'));
 const AdminNotifications = lazyWithRetry(() => import('./pages/admin/AdminNotifications'));
 const AdminFeaturedCollections = lazyWithRetry(() => import('./pages/admin/AdminFeaturedCollections'));
+const AdminMasterclass = lazyWithRetry(() => import('./pages/admin/AdminMasterclass'));
 
 // Protected Admin Route Component
 const ProtectedAdminRoute = ({ children }) => {
@@ -209,6 +210,7 @@ function AppInner() {
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="instagram" element={<AdminInstagram />} />
                 <Route path="collections" element={<AdminFeaturedCollections />} />
+                <Route path="masterclass" element={<AdminMasterclass />} />
                 <Route path="slides" element={<AdminSlides />} />
                 <Route path="deals" element={<AdminDeals />} />
                 <Route path="orders" element={<AdminOrders />} />
