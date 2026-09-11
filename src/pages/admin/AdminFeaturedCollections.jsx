@@ -5,6 +5,7 @@ import { handleImageUpload } from '../../utils/imageUpload';
 import { useData } from '../../context/DataContext';
 import { useCart } from '../../context/CartContext';
 import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Loader2, Info } from 'lucide-react';
+import LinkUrlInput from '../../components/LinkUrlInput';
 
 export default function AdminFeaturedCollections() {
   const { banners, refreshData } = useData();
@@ -213,7 +214,11 @@ export default function AdminFeaturedCollections() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1">Link URL</label>
-                  <input type="text" placeholder="e.g. /category/Resin Art" value={editing.link || ''} onChange={e => setEditing({...editing, link: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] text-sm font-mono" />
+                  <LinkUrlInput 
+                    placeholder="e.g. /category/Resin Art" 
+                    value={editing.link} 
+                    onChange={(val) => setEditing({...editing, link: val})} 
+                  />
                 </div>
               </div>
             </div>

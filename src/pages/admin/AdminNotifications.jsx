@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Bell, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 import { useCart } from '../../context/CartContext';
+import LinkUrlInput from '../../components/LinkUrlInput';
 
 export default function AdminNotifications() {
   const [title, setTitle] = useState('');
@@ -82,10 +83,9 @@ export default function AdminNotifications() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-[#C9A84C] font-semibold mb-2">Redirect URL (Optional)</label>
-              <input 
-                type="text" 
+              <LinkUrlInput 
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(val) => setUrl(val)}
                 placeholder="/category/portraits"
                 className="w-full bg-[#1A1A1A] border border-stone-700 rounded-lg px-4 py-3 text-stone-100 focus:outline-none focus:border-[#C9A84C] transition-colors"
               />
