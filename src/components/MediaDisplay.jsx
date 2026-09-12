@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { VideoCard } from './VideoGallery';
 
 /**
  * Universal media component to render an image or a video 
@@ -51,9 +52,9 @@ function getCloudinaryProps(src) {
 
     const uploadSplit = src.split('/upload/');
     if (uploadSplit.length === 2) {
-      const optimizedSrc = `${uploadSplit[0]}/upload/q_auto,f_auto/${uploadSplit[1]}`;
+      const optimizedSrc = `${uploadSplit[0]}/upload/w_600,c_scale,q_auto,f_auto/${uploadSplit[1]}`;
       
-      // We can also create basic responsive sizes if we wanted, but q_auto,f_auto alone gives 60-70% savings
+      // We can also create basic responsive sizes if we wanted, but w_600,q_auto,f_auto alone gives 60-70% savings
       return { src: optimizedSrc };
     }
   } catch (e) {
@@ -87,16 +88,20 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
   const isVideo = src.match(/\.(mp4|webm|ogg|mov)$/i) || src.includes('/video/upload/');
 
   if (isVideo) {
+    let posterUrl = '';
+    if (src.includes('res.cloudinary.com') && src.includes('/video/upload/')) {
+      posterUrl = src.replace(/\.(mp4|webm|ogg|mov)$/i, '.jpg');
+      if (!posterUrl.includes('.jpg')) posterUrl += '.jpg';
+    }
+    
     return (
-      <video
-        src={src}
-        className={className}
-        autoPlay
-        loop
-        muted
-        playsInline
-        {...props}
-      />
+      <div className={className}>
+        <VideoCard 
+          videoUrl={src} 
+          posterUrl={posterUrl} 
+          title={alt}
+        />
+      </div>
     );
   }
 

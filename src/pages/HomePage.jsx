@@ -801,7 +801,7 @@ function TrustBadges() {
                   <p className="font-cinzel font-bold text-sm md:text-base text-[#2C2C2C] mb-1 uppercase">
                     <TypewriterText text={b.title} delay={(i * 100) + 300} />
                   </p>
-                  <p className="text-xs text-stone-500 font-medium">{b.sub}</p>
+                  <p className="text-xs text-stone-600 font-medium">{b.sub}</p>
                 </div>
               </div>
           ))}

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chaitalisartbizzz.vercel.app/sitemap.xml
+
