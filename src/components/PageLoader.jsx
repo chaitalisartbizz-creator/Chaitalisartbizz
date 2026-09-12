@@ -160,7 +160,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                 className="mb-8"
               >
                 <div className="w-40 h-40 md:w-56 md:h-56 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#C9A84C]/50 shadow-2xl mb-6 mx-auto">
-                  <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" />
+                  <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" width="224" height="224" fetchpriority="high" />
                 </div>
                 <h1 className="text-2xl md:text-4xl font-cinzel font-bold tracking-widest text-[#F0DFA0] mb-2 drop-shadow-md">
                   CHAITALI'S ARTBIZZ

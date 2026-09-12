@@ -126,7 +126,7 @@ export default function Header() {
           {/* Brand Logo */}
           <button onClick={() => navigate('/')} className="flex-shrink-0 flex items-center gap-3 group">
             <div className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#C9A84C] shadow-md bg-[#F2EDE4] p-0.5 group-hover:scale-105 transition-transform duration-300">
-              <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" />
+              <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" width="64" height="64" fetchpriority="high" />
             </div>
             <div className="flex flex-col leading-none text-left hidden sm:flex">
               <span className="text-[#2C2C2C] font-cinzel font-bold text-lg md:text-xl tracking-tight group-hover:text-[#C9A84C] transition-colors">CHAITALI'S</span>
