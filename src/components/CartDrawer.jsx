@@ -20,8 +20,9 @@ export default function CartDrawer() {
   if (!cartOpen && !checkoutOpen) return null;
 
   const handleOrderSuccess = () => {
-    setCheckoutOpen(false);
-    setCartOpen(false);
+    // We only clear the cart here. 
+    // We do NOT close the checkout modal, so the user can see the "Order Success" screen 
+    // and click the WhatsApp redirection button. The modal's own "Return to Store" button will close it.
     clearCart();
   };
 
