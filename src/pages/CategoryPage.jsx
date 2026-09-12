@@ -85,7 +85,17 @@ export default function CategoryPage() {
   }
 
   if (activeBrand !== 'All') {
-    filteredProducts = filteredProducts.filter(p => p.brand === activeBrand);
+    filteredProducts = filteredProducts.filter(p => {
+      // Check primary brand (backward compat)
+      if (p.brand === activeBrand) return true;
+      // Check subcategories array (new multi-subcategory)
+      const subs = Array.isArray(p.subcategories)
+        ? p.subcategories
+        : (typeof p.subcategories === 'string' && p.subcategories.startsWith('[')
+            ? (() => { try { return JSON.parse(p.subcategories); } catch { return []; } })()
+            : []);
+      return subs.includes(activeBrand);
+    });
   }
 
   if (searchQuery.trim() !== '') {

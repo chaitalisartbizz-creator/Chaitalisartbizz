@@ -23,7 +23,7 @@ function AdminProductsContent() {
   const [galleryProgress, setGalleryProgress] = useState(0);
 
   const defaultProduct = { 
-    name: '', brand: '', petType: 'Resin Art', category: '', price: '', mrp: '', 
+    name: '', brand: '', subcategories: [], petType: 'Resin Art', category: '', price: '', mrp: '', 
     rating: 4.5, reviews: 0, img: '', images: [], tag: '', badge: '',
     description: '', features: '', customization: '', quality: '',
     tab1Name: '', tab2Name: '', tab3Name: '', variants: ''
@@ -55,15 +55,24 @@ function AdminProductsContent() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const payload = { ...editing, price: Number(editing.price), mrp: Number(editing.mrp) };
+      const subs = Array.isArray(editing.subcategories) ? editing.subcategories : [];
+      // brand = primary subcategory (first checked) for backward compatibility
+      const primaryBrand = subs[0] || editing.brand || '';
+      const payload = {
+        ...editing,
+        price: Number(editing.price),
+        mrp: Number(editing.mrp),
+        brand: primaryBrand,
+        subcategories: JSON.stringify(subs),
+      };
       if (editing.id) {
         await axios.put(`/api/products/${editing.id}`, payload).catch(err => console.warn('API error:', err));
         if (typeof setProducts === 'function') {
-          setProducts(prev => prev.map(p => p.id === editing.id ? { ...p, ...payload } : p));
+          setProducts(prev => prev.map(p => p.id === editing.id ? { ...p, ...payload, subcategories: subs } : p));
         }
         showToast('Product updated successfully!');
       } else {
-        const newProd = { ...payload, id: Date.now() };
+        const newProd = { ...payload, id: Date.now(), subcategories: subs };
         await axios.post('/api/products', payload).catch(err => console.warn('API error:', err));
         if (typeof setProducts === 'function') {
           setProducts(prev => [...prev, newProd]);
@@ -103,8 +112,23 @@ function AdminProductsContent() {
     }
   };
 
+  // Parse subcategories from JSON string (stored in DB) → array (used in UI)
+  const parseSubcategories = (p) => {
+    if (Array.isArray(p.subcategories)) return p.subcategories;
+    if (typeof p.subcategories === 'string' && p.subcategories.startsWith('[')) {
+      try { return JSON.parse(p.subcategories); } catch { /* fall through */ }
+    }
+    // Legacy: single brand string → wrap in array
+    return p.brand ? [p.brand] : [];
+  };
+
+  const openEdit = (p) => {
+    setEditing({ ...p, subcategories: parseSubcategories(p) });
+    setIsModalOpen(true);
+  };
+
   const handleDuplicate = (p) => {
-    const duplicatedProduct = { ...p };
+    const duplicatedProduct = { ...p, subcategories: parseSubcategories(p) };
     delete duplicatedProduct.id;
     duplicatedProduct.name = `${duplicatedProduct.name} (Copy)`;
     setEditing(duplicatedProduct);
@@ -182,7 +206,7 @@ function AdminProductsContent() {
                 </div>
 
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button title="Edit Product" onClick={() => { setEditing(p); setIsModalOpen(true); }} className="p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
+                  <button title="Edit Product" onClick={() => { openEdit(p); }} className="p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors">
                     <Edit2 size={16} />
                   </button>
                   <button title="Duplicate Product" onClick={() => handleDuplicate(p)} className="p-2 text-green-500 bg-green-50 hover:bg-green-100 rounded-xl transition-colors">
@@ -238,7 +262,23 @@ function AdminProductsContent() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-gray-600 font-medium">{p.brand || '-'}</td>
+                    <td className="p-4">
+                      {(() => {
+                        const subs = Array.isArray(p.subcategories)
+                          ? p.subcategories
+                          : (typeof p.subcategories === 'string' && p.subcategories.startsWith('[')
+                              ? (() => { try { return JSON.parse(p.subcategories); } catch { return []; } })()
+                              : p.brand ? [p.brand] : []);
+                        if (subs.length === 0) return <span className="text-gray-400">-</span>;
+                        return (
+                          <div className="flex flex-wrap gap-1">
+                            {subs.map((s, i) => (
+                              <span key={s} className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${i === 0 ? 'bg-[#C9A84C]/20 text-[#A8873A]' : 'bg-gray-100 text-gray-500'}`}>{s}</span>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </td>
                     <td className="p-4">
                       <span className="text-gray-800 font-bold block">₹{p.price}</span>
                       {p.mrp && <span className="text-xs text-gray-400 line-through">₹{p.mrp}</span>}
@@ -252,7 +292,7 @@ function AdminProductsContent() {
                     </td>
                     <td className="p-4 pr-6">
                       <div className="flex items-center justify-end gap-2">
-                        <button title="Edit Product" data-testid={`edit-btn-${p.id}`} onClick={() => { setEditing(p); setIsModalOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors">
+                        <button title="Edit Product" data-testid={`edit-btn-${p.id}`} onClick={() => { openEdit(p); }} className="p-2 text-blue-500 hover:bg-blue-100 rounded-xl transition-colors">
                           <Edit2 size={18} />
                         </button>
                         <button title="Duplicate Product" data-testid={`dup-btn-${p.id}`} onClick={() => handleDuplicate(p)} className="p-2 text-green-500 hover:bg-green-100 rounded-xl transition-colors">
@@ -442,24 +482,82 @@ function AdminProductsContent() {
                     </datalist>
                   </div>
 
-                  <div>
-                    <label htmlFor="brand" className="block text-sm font-bold text-gray-700 mb-1">Sub-Category / Collection <span className="text-red-500">*</span></label>
-                    <div className="flex gap-2">
-                      <input id="brand" list="brand-list" required type="text" placeholder="Select or type a custom one..." value={editing.brand || ''} onChange={e => setEditing({...editing, brand: e.target.value})} className="flex-1 p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
-                      <datalist id="brand-list">
-                        {availableSubCategories.map(b => <option key={b} value={b} />)}
-                      </datalist>
-                      <button 
-                        type="button" 
-                        onClick={() => {
-                          const val = prompt('Enter new sub-category or collection name:');
-                          if (val) setEditing({...editing, brand: val});
+                  <div className="md:col-span-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-bold text-gray-700">
+                        Sub-Categories / Collections <span className="text-red-500">*</span>
+                      </label>
+                      {(editing.subcategories || []).length > 0 && (
+                        <span className="text-xs font-bold text-[#C9A84C] bg-[#C9A84C]/10 px-2 py-0.5 rounded-full">
+                          {(editing.subcategories || []).length} selected
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Checkbox grid */}
+                    <div className="border border-gray-200 rounded-xl p-3 bg-gray-50 max-h-44 overflow-y-auto space-y-1">
+                      {availableSubCategories.length === 0 && (
+                        <p className="text-xs text-gray-400 text-center py-2">Select a Main Category first to see sub-categories</p>
+                      )}
+                      {availableSubCategories.map(sub => {
+                        const checked = (editing.subcategories || []).includes(sub);
+                        return (
+                          <label key={sub} className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors ${checked ? 'bg-[#C9A84C]/15 border border-[#C9A84C]/40' : 'hover:bg-gray-100 border border-transparent'}`}>
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => {
+                                const current = editing.subcategories || [];
+                                const updated = checked
+                                  ? current.filter(s => s !== sub)
+                                  : [...current, sub];
+                                setEditing({ ...editing, subcategories: updated });
+                              }}
+                              className="w-4 h-4 accent-[#C9A84C] rounded"
+                            />
+                            <span className={`text-sm ${checked ? 'font-bold text-[#2C2C2C]' : 'text-gray-700'}`}>{sub}</span>
+                            {checked && (editing.subcategories || [])[0] === sub && (
+                              <span className="ml-auto text-[9px] font-black bg-[#C9A84C] text-white px-1.5 py-0.5 rounded-full uppercase tracking-wide">Primary</span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+
+                    {/* Add custom subcategory */}
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        placeholder="+ Type a new sub-category and press Add"
+                        className="flex-1 p-2 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all"
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const val = e.target.value.trim();
+                            if (val && !(editing.subcategories || []).includes(val)) {
+                              setEditing({ ...editing, subcategories: [...(editing.subcategories || []), val] });
+                            }
+                            e.target.value = '';
+                          }
                         }}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 transition-colors whitespace-nowrap"
+                        id="custom-sub-input"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const inp = document.getElementById('custom-sub-input');
+                          const val = inp?.value.trim();
+                          if (val && !(editing.subcategories || []).includes(val)) {
+                            setEditing({ ...editing, subcategories: [...(editing.subcategories || []), val] });
+                          }
+                          if (inp) inp.value = '';
+                        }}
+                        className="px-3 py-2 bg-[#2C2C2C] hover:bg-[#C9A84C] text-[#C9A84C] hover:text-[#2C2C2C] border border-[#2C2C2C]/20 rounded-xl text-xs font-bold transition-colors whitespace-nowrap"
                       >
                         + Add
                       </button>
                     </div>
+                    <p className="text-[10px] text-gray-400 mt-1">First checked = Primary (shown in filters). Product appears in ALL selected sub-categories.</p>
                   </div>
 
                   <div>
