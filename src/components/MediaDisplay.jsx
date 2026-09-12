@@ -90,7 +90,13 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
   if (isVideo) {
     let posterUrl = '';
     if (src.includes('res.cloudinary.com') && src.includes('/video/upload/')) {
-      posterUrl = src.replace(/\.(mp4|webm|ogg|mov)$/i, '.jpg');
+      const uploadSplit = src.split('/upload/');
+      if (uploadSplit.length === 2) {
+        posterUrl = `${uploadSplit[0]}/video/upload/w_600,c_scale,q_auto,f_auto/${uploadSplit[1]}`;
+      } else {
+        posterUrl = src;
+      }
+      posterUrl = posterUrl.replace(/\.(mp4|webm|ogg|mov)$/i, '.jpg');
       if (!posterUrl.includes('.jpg')) posterUrl += '.jpg';
     }
     
