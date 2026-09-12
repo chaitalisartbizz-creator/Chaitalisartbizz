@@ -50,6 +50,20 @@ function AdminProductsContent() {
     return [];
   }, [editing?.category, editing?.subcategories, categories, products]);
 
+  const allStoreSubCategories = React.useMemo(() => {
+    let allSubs = [];
+    (categories || []).forEach(c => {
+      if (c.sub) {
+        allSubs.push(...c.sub.split(',').map(s => s.trim()).filter(Boolean));
+      }
+    });
+    (products || []).forEach(p => {
+      if (p.subcategories && p.subcategories.length > 0) allSubs.push(...p.subcategories);
+      else if (p.brand) allSubs.push(p.brand);
+    });
+    return [...new Set(allSubs)].sort();
+  }, [categories, products]);
+
   const DEFAULT_MEDIUMS = ['Resin Art', 'Acrylic', 'MDF Board', 'Digital Portrait', 'Oil Painting', 'Watercolor', 'Mixed Media', 'Charcoal', 'Pencil Sketch', 'Alcohol Ink', 'Fluid Art', 'Lippan Art'];
   const uniqueMediums = [...new Set([...DEFAULT_MEDIUMS, ...(products || []).map(p => p.petType).filter(Boolean)])];
 
@@ -536,7 +550,8 @@ function AdminProductsContent() {
                     <div className="flex gap-2 mt-2">
                       <input
                         type="text"
-                        placeholder="+ Type a new sub-category and press Add"
+                        list="all-subs-list"
+                        placeholder="+ Type or select a new sub-category and press Add"
                         className="flex-1 p-2 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all"
                         onKeyDown={e => {
                           if (e.key === 'Enter') {
@@ -550,6 +565,11 @@ function AdminProductsContent() {
                         }}
                         id="custom-sub-input"
                       />
+                      <datalist id="all-subs-list">
+                        {allStoreSubCategories.map(sub => (
+                          <option key={sub} value={sub} />
+                        ))}
+                      </datalist>
                       <button
                         type="button"
                         onClick={() => {
