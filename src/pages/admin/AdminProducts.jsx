@@ -41,12 +41,14 @@ function AdminProductsContent() {
       }
       const productSubs = (products || [])
         .filter(p => p.category?.toLowerCase() === editing.category.toLowerCase())
-        .map(p => p.brand)
+        .flatMap(p => p.subcategories && p.subcategories.length > 0 ? p.subcategories : (p.brand ? [p.brand] : []))
         .filter(Boolean);
-      return [...new Set([...catSubs, ...productSubs])];
+      
+      const currentSubs = editing?.subcategories || [];
+      return [...new Set([...catSubs, ...productSubs, ...currentSubs])];
     }
-    return uniqueBrands;
-  }, [editing?.category, categories, products, uniqueBrands]);
+    return [];
+  }, [editing?.category, editing?.subcategories, categories, products]);
 
   const DEFAULT_MEDIUMS = ['Resin Art', 'Acrylic', 'MDF Board', 'Digital Portrait', 'Oil Painting', 'Watercolor', 'Mixed Media', 'Charcoal', 'Pencil Sketch', 'Alcohol Ink', 'Fluid Art', 'Lippan Art'];
   const uniqueMediums = [...new Set([...DEFAULT_MEDIUMS, ...(products || []).map(p => p.petType).filter(Boolean)])];
@@ -481,7 +483,7 @@ function AdminProductsContent() {
                       required 
                       value={editing.category || ''} 
                       onChange={e => setEditing({...editing, category: e.target.value})} 
-                      className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm appearance-none"
+                      className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm"
                     >
                       <option value="" disabled>Select the main category</option>
                       {categories.map(c => <option key={c.label} value={c.label}>{c.label}</option>)}
