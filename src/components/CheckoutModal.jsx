@@ -253,7 +253,13 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   }
 
   function handleContinue() {
-    if (validateForm()) goTo(1);
+    if (validateForm()) {
+      goTo(1);
+      const vid = localStorage.getItem('chaitali-artbizz-vid');
+      if (vid && form.name) {
+        axios.post('/api/analytics/identify', { visitorId: vid, name: form.name.trim(), email: form.email.trim() }).catch(()=>{});
+      }
+    }
   }
 
   async function placeCOD() {
@@ -262,7 +268,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
     try {
       const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
       const res = await axios.post('/api/orders', {
-        visitorId:       user ? (localStorage.getItem('chaitali-artbizz-vid') || 'anonymous') : 'anonymous',
+        visitorId: localStorage.getItem('chaitali-artbizz-vid') || 'anonymous',
         customerName:    form.name.trim(),
         customerPhone:   form.phone.trim(),
         customerEmail:   form.email.trim(),
@@ -280,11 +286,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       await new Promise(r => setTimeout(r, 500));
       goTo(2);
       if (onOrderSuccess) onOrderSuccess(orderId);
-      // Auto-open WhatsApp with full order details
-      const phone = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
-      const message = buildWhatsAppMessage(orderId, form, cartItems, grandTotal(cartTotal), 'Cash on Delivery (COD)');
-      setTimeout(() => window.open(`https://wa.me/${phone}?text=${message}`, '_blank'), 800);
-    } catch (err) {
+          } catch (err) {
       showToast(err?.response?.data?.message || 'Failed to place order. Please try again.');
     } finally {
       setLoading(false);
@@ -316,7 +318,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
             });
             const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
             const saveRes = await axios.post('/api/orders', {
-              visitorId: user ? (localStorage.getItem('chaitali-artbizz-vid') || 'anonymous') : 'anonymous', customerName: form.name.trim(),
+              visitorId: localStorage.getItem('chaitali-artbizz-vid') || 'anonymous', customerName: form.name.trim(),
               customerPhone: form.phone.trim(), customerEmail: form.email.trim(), customerAddress: fullAddress,
               items: JSON.stringify(cartItems.map(i => ({ id: i.id, name: i.name, weight: i.selectedWeight || '', qty: i.qty, price: i.price }))),
               total: grandTotal(cartTotal), paymentMethod: 'ONLINE',
@@ -349,7 +351,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       try {
         const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
         const res = await axios.post('/api/orders', {
-          visitorId:       user ? (localStorage.getItem('chaitali-artbizz-vid') || 'anonymous') : 'anonymous',
+          visitorId: localStorage.getItem('chaitali-artbizz-vid') || 'anonymous',
           customerName:    form.name.trim(),
           customerPhone:   form.phone.trim(),
           customerEmail:   form.email.trim(),
@@ -362,11 +364,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
         setConfirmedOrder({ orderId, paymentMethod: 'UPI / QR Payment' });
         goTo(2);
         if (onOrderSuccess) onOrderSuccess(orderId);
-        // Auto-open WhatsApp so user can share payment screenshot
-        const phone = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
-        const message = buildWhatsAppMessage(orderId, form, cartItems, grandTotal(cartTotal), 'UPI / QR Payment');
-        setTimeout(() => window.open(`https://wa.me/${phone}?text=${message}`, '_blank'), 800);
-      } catch (err) {
+              } catch (err) {
         showToast(err?.response?.data?.message || 'Failed to place order. Please try again.');
       } finally {
         setLoading(false);
