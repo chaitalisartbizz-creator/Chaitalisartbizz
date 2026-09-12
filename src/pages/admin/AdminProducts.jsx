@@ -476,10 +476,16 @@ function AdminProductsContent() {
                   
                   <div className="md:col-span-2">
                     <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-1">Main Category <span className="text-red-500">*</span></label>
-                    <input id="category" list="category-list" required type="text" placeholder="Select the main category" value={editing.category || ''} onChange={e => setEditing({...editing, category: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm" />
-                    <datalist id="category-list">
-                      {categories.map(c => <option key={c.label} value={c.label} />)}
-                    </datalist>
+                    <select 
+                      id="category" 
+                      required 
+                      value={editing.category || ''} 
+                      onChange={e => setEditing({...editing, category: e.target.value})} 
+                      className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20 focus:border-[#C9A84C] transition-all text-sm appearance-none"
+                    >
+                      <option value="" disabled>Select the main category</option>
+                      {categories.map(c => <option key={c.label} value={c.label}>{c.label}</option>)}
+                    </select>
                   </div>
 
                   <div className="md:col-span-2">

@@ -99,6 +99,7 @@ model FrontendSetting {
   contactPhone        String?
   upiId               String?
   upiQrImage          String?
+  aboutUsData         String?
 }
 
 model Banner {

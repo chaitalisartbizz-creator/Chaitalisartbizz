@@ -17,11 +17,20 @@ router.get('/', async (req, res) => {
           parsedFeatures = JSON.parse(p.features); 
         }
       } catch(e) {}
-      
+      let parsedSubcategories = [];
+      try {
+        if (p.subcategories && p.subcategories.startsWith('[')) {
+          parsedSubcategories = JSON.parse(p.subcategories);
+        } else if (p.brand) {
+          parsedSubcategories = [p.brand]; // legacy fallback
+        }
+      } catch(e) { parsedSubcategories = p.brand ? [p.brand] : []; }
+
       return {
         ...p,
         images: parsedImages,
         features: parsedFeatures,
+        subcategories: parsedSubcategories,
         img: p.img || (parsedImages.length > 0 ? parsedImages[0] : null)
       };
     });
