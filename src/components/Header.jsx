@@ -7,6 +7,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
+import MediaDisplay from './MediaDisplay';
 import Fuse from 'fuse.js';
 
 const NAV_LINKS = [
@@ -248,23 +249,23 @@ export default function Header() {
                   {suggestions.length > 0 ? (
                     <div className="py-2">
                       {suggestions.map((item, idx) => (
-                        <div 
-                          key={idx} 
-                          className="px-4 py-2 hover:bg-black/5 cursor-pointer flex items-center gap-3 transition-colors"
+                        <button
+                          key={`search-${item.id}`}
                           onClick={() => {
                             navigate(`/product/${item.id}`);
+                            setShopOpen(false);
                             setShowSuggestions(false);
-                            setQuery('');
                           }}
+                          className="w-full text-left px-3 py-2 hover:bg-[#F2EDE4] transition-colors flex items-center gap-3 group/item border-b border-black/5 last:border-0"
                         >
                           {item.img && (
-                            <img src={item.img} alt={item.name} className="w-9 h-9 object-cover rounded-md flex-shrink-0 border border-[#C9A84C]/30" />
+                            <MediaDisplay src={item.img} alt={item.name} className="w-9 h-9 object-cover rounded-md flex-shrink-0 border border-[#C9A84C]/30" />
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-stone-800 truncate">{item.name}</p>
                             <p className="text-xs text-[#C9A84C] font-medium truncate">{item.category} • ₹{item.price}</p>
                           </div>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   ) : (

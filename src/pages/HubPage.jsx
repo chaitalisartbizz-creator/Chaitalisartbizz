@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Play, Sparkles, ArrowRight, Video, Calendar, Star, CheckCircle, ChevronRight, GraduationCap, ShoppingBag } from 'lucide-react';
 import Header from '../components/Header';
+import MediaDisplay from '../components/MediaDisplay';
 import ScrollReveal from '../components/ScrollReveal';
 import LiveBackground from '../components/LiveBackground';
 import { useData } from '../context/DataContext';
@@ -125,7 +126,7 @@ export default function HubPage() {
               </h2>
               <div className="bg-white rounded-[2rem] border border-[#C9A84C]/30 overflow-hidden shadow-2xl mb-12 flex flex-col lg:flex-row group relative">
                 <div className="lg:w-1/2 relative overflow-hidden" style={{ minHeight: 300 }}>
-                  <img src={featured.img} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <MediaDisplay src={featured.img} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#1A1A1A] via-[#1A1A1A]/80 to-transparent" />
                   <div className="absolute top-4 left-4">
                     <span className="bg-[#C9A84C] text-[#2C2C2C] text-xs font-black uppercase px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5">
@@ -189,7 +190,7 @@ export default function HubPage() {
                 {rest.map((course, idx) => (
                   <div key={course.id} className="bg-white rounded-2xl border border-[#C9A84C]/30 overflow-hidden shadow-lg hover:shadow-xl hover:border-[#C9A84C] transition-all group flex flex-col">
                     <div className="relative h-48 overflow-hidden">
-                      <img src={course.img} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <MediaDisplay src={course.img} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-stone-800 text-[10px] font-black uppercase px-2.5 py-1 rounded-md shadow">
                         {course.tag}
                       </div>

@@ -181,7 +181,7 @@ function QuickCategories() {
               <button key={`${cat.label}-${idx}`} onClick={() => navigate('/category', { state: { category: cat.label } })}
                 className="flex-shrink-0 flex flex-col items-center gap-3 group focus:outline-none w-24 sm:w-32 md:w-44 cursor-pointer">
                 <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 rounded-2xl md:rounded-3xl border-2 border-[#C9A84C]/40 bg-[#1A1A1A] overflow-hidden shadow-lg group-hover:border-[#C9A84C] group-hover:scale-105 transition-all duration-300 relative">
-                  <img src={cat.img} alt={cat.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <MediaDisplay src={cat.img} alt={cat.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-xs md:text-sm font-bold text-[#F0DFA0] text-center leading-tight group-hover:text-[#C9A84C] transition-colors">{cat.label}</span>
               </button>

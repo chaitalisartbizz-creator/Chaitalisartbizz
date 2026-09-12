@@ -478,7 +478,7 @@ export default function ProductPage() {
                   {relatedProducts.map((p, idx) => (
                     <div key={idx} onClick={() => navigate(`/product/${p.id}`)} className="bg-white rounded-2xl p-3 border border-[#C9A84C]/30 shadow-sm hover:shadow-xl transition-all cursor-pointer">
                       <div className="relative bg-[#F2EDE4]/50 rounded-xl overflow-hidden aspect-square mb-2">
-                        <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                        <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover" />
                       </div>
                       <p className="text-xs font-bold text-[#A8873A]">{p.brand}</p>
                       <h4 className="font-bold text-stone-800 text-xs line-clamp-1 mt-0.5">{p.name}</h4>
