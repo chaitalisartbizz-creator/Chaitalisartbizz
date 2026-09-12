@@ -7,10 +7,10 @@ const { uploadToCloudinary } = require('../utils/cloudinary');
 router.get('/', async (req, res) => {
   try {
     const products = await prisma.product.findMany();
-    // Parse the JSON string of images back to an array for the frontend
     const parsedProducts = products.map(p => ({
         ...p,
-        images: p.images ? JSON.parse(p.images) : []
+        images: p.images ? (() => { try { return JSON.parse(p.images); } catch { return []; } })() : [],
+        subcategories: p.subcategories ? (() => { try { return JSON.parse(p.subcategories); } catch { return p.brand ? [p.brand] : []; } })() : (p.brand ? [p.brand] : []),
     }));
     res.json(parsedProducts);
   } catch (error) {
@@ -22,11 +22,26 @@ router.get('/', async (req, res) => {
 // POST new product
 router.post('/', async (req, res) => {
   try {
-    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality, tab1Name, tab2Name, tab3Name, variants } = req.body;
-    
+    const {
+      name, brand, subcategories, price, mrp, rating, reviews,
+      img, images, tag, badge, category, petType,
+      description, features, customization, quality,
+      tab1Name, tab2Name, tab3Name, variants
+    } = req.body;
+
+    // Normalise subcategories → JSON string stored in DB
+    const subsArray = Array.isArray(subcategories)
+      ? subcategories
+      : (typeof subcategories === 'string' && subcategories.startsWith('[')
+          ? (() => { try { return JSON.parse(subcategories); } catch { return []; } })()
+          : (brand ? [brand] : []));
+    const subsJson = JSON.stringify(subsArray);
+    // Primary brand = first selected subcategory (for backward compat)
+    const primaryBrand = subsArray[0] || brand || '';
+
     // Upload main image to Cloudinary if it's base64
     const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
-    
+
     // Upload additional images
     const uploadedImages = [];
     if (images && Array.isArray(images)) {
@@ -39,7 +54,8 @@ router.post('/', async (req, res) => {
     const product = await prisma.product.create({
       data: {
         name,
-        brand: brand || '',
+        brand: primaryBrand,
+        subcategories: subsJson,
         price: Number(price),
         mrp: Number(mrp),
         rating: Number(rating) || 4.5,
@@ -60,8 +76,12 @@ router.post('/', async (req, res) => {
         variants
       }
     });
-    
-    res.status(201).json(product);
+
+    res.status(201).json({
+      ...product,
+      images: uploadedImages,
+      subcategories: subsArray,
+    });
   } catch (error) {
     console.error('Create product error:', error);
     res.status(500).json({ error: 'Failed to create product' });
@@ -72,11 +92,25 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, brand, price, mrp, rating, reviews, img, images, tag, badge, category, petType, description, features, customization, quality, tab1Name, tab2Name, tab3Name, variants } = req.body;
-    
+    const {
+      name, brand, subcategories, price, mrp, rating, reviews,
+      img, images, tag, badge, category, petType,
+      description, features, customization, quality,
+      tab1Name, tab2Name, tab3Name, variants
+    } = req.body;
+
+    // Normalise subcategories
+    const subsArray = Array.isArray(subcategories)
+      ? subcategories
+      : (typeof subcategories === 'string' && subcategories.startsWith('[')
+          ? (() => { try { return JSON.parse(subcategories); } catch { return []; } })()
+          : (brand ? [brand] : []));
+    const subsJson = JSON.stringify(subsArray);
+    const primaryBrand = subsArray[0] || brand || '';
+
     // Upload main image if it's base64 (newly uploaded)
     const uploadedImg = await uploadToCloudinary(img, 'artbizz_media/products');
-    
+
     // Upload additional images if any are base64
     const uploadedImages = [];
     if (images && Array.isArray(images)) {
@@ -90,7 +124,8 @@ router.put('/:id', async (req, res) => {
       where: { id: Number(id) },
       data: {
         name,
-        brand: brand || '',
+        brand: primaryBrand,
+        subcategories: subsJson,
         price: Number(price),
         mrp: Number(mrp),
         rating: Number(rating) || 4.5,
@@ -111,8 +146,12 @@ router.put('/:id', async (req, res) => {
         variants
       }
     });
-    
-    res.json({ ...product, images: uploadedImages });
+
+    res.json({
+      ...product,
+      images: uploadedImages,
+      subcategories: subsArray,
+    });
   } catch (error) {
     console.error('Error updating product:', error);
     res.status(500).json({ error: 'Failed to update product' });
