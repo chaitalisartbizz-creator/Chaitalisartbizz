@@ -4,10 +4,24 @@ const prisma = require('../db');
 
 router.get('/', async (req, res) => {
   try {
-    const slides = await prisma.slide.findMany();
-    const categories = await prisma.category.findMany();
-    const deals = await prisma.deal.findMany();
-    const productsRaw = await prisma.product.findMany();
+    const [
+      slides,
+      categories,
+      deals,
+      productsRaw,
+      settings,
+      banners,
+      instagramFeeds
+    ] = await Promise.all([
+      prisma.slide.findMany(),
+      prisma.category.findMany(),
+      prisma.deal.findMany(),
+      prisma.product.findMany(),
+      prisma.frontendSetting.findFirst(),
+      prisma.banner.findMany(),
+      prisma.instagramFeed.findMany({ orderBy: { createdAt: 'desc' } })
+    ]);
+
     const products = productsRaw.map(p => {
       let parsedImages = [];
       try { parsedImages = p.images ? JSON.parse(p.images) : []; } catch(e) {}
@@ -35,9 +49,6 @@ router.get('/', async (req, res) => {
       };
     });
 
-    const settings = await prisma.frontendSetting.findFirst();
-    const banners = await prisma.banner.findMany();
-    const instagramFeeds = await prisma.instagramFeed.findMany({ orderBy: { createdAt: 'desc' } });
     let promoCodes = [];
     try { promoCodes = await prisma.promoCode.findMany(); } catch(e) { /* table may not exist in prod yet */ }
 

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Music, Link2, Upload, Save, RotateCcw, AlertTriangle, Volume2, CheckCircle2 } from 'lucide-react';
+import { Music, Link2, Upload, Save, RotateCcw, AlertTriangle, Volume2, CheckCircle2, Loader2 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import ScrollReveal from '../../components/ScrollReveal';
+import { handleImageUpload } from '../../utils/imageUpload';
 
 const DEFAULT_AUDIO_URL = '/background.mp3';
 
@@ -26,6 +27,8 @@ export default function AdminMusic() {
 
   // File name display
   const [fileName, setFileName] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const fileInputRef = useRef(null);
   const audioRef = useRef(null);
@@ -68,14 +71,20 @@ export default function AdminMusic() {
     if (!file) return;
 
     setFileName(file.name);
+    setIsUploading(true);
+    setUploadProgress(0);
 
-    // Convert to base64 for preview & saving (small files)
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const base64 = ev.target.result; // data:audio/...;base64,...
-      setPreviewUrl(base64);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const url = await handleImageUpload(file, setUploadProgress);
+      setPreviewUrl(url);
+    } catch (err) {
+      console.error(err);
+      window.dispatchEvent(
+        new CustomEvent('toast', { detail: { message: 'Failed to upload audio file.' } })
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleReset = () => {
