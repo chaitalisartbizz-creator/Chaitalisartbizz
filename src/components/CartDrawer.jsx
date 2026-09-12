@@ -3,6 +3,7 @@ import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck } from 'lu
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import CheckoutModal from './CheckoutModal';
+import MediaDisplay from './MediaDisplay';
 
 export default function CartDrawer() {
   const {
@@ -105,7 +106,7 @@ export default function CartDrawer() {
                     className="bg-white rounded-2xl border border-[#C9A84C]/20 p-3 flex items-center gap-3 shadow-sm hover:border-[#C9A84C]/50 transition-all">
                     {/* Product Image */}
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#F2EDE4]/50 flex-shrink-0 border border-[#C9A84C]/20 p-0.5">
-                      <img src={item.img} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                      <MediaDisplay src={item.img} alt={item.name} className="w-full h-full object-cover rounded-lg" />
                     </div>
 
                     {/* Product Details */}

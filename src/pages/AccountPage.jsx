@@ -183,7 +183,7 @@ export default function AccountPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {wishlistItems.map((item) => (
                         <div key={item.id} className="border border-[#C9A84C]/30 rounded-2xl p-3 flex gap-3 items-center">
-                          <img src={item.img} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
+                          <MediaDisplay src={item.img} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
                           <div className="flex-1">
                             <p className="font-bold text-stone-900 text-xs">{item.name}</p>
                             <p className="font-black text-[#2C2C2C] text-sm">₹{item.price}</p>

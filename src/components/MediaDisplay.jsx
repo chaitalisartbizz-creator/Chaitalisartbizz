@@ -35,6 +35,33 @@ function getUnsplashProps(src) {
   }
 }
 
+function getCloudinaryProps(src) {
+  if (!src || !src.includes('res.cloudinary.com')) return {};
+
+  try {
+    // A standard Cloudinary URL format: 
+    // https://res.cloudinary.com/<cloud_name>/image/upload/v1234567/sample.jpg
+    // We want to insert 'q_auto,f_auto' into the URL transformations, e.g.:
+    // https://res.cloudinary.com/<cloud_name>/image/upload/q_auto,f_auto/v1234567/sample.jpg
+    
+    // If it already has q_auto or f_auto, skip to avoid double injecting
+    if (src.includes('q_auto') || src.includes('f_auto')) {
+      return { src };
+    }
+
+    const uploadSplit = src.split('/upload/');
+    if (uploadSplit.length === 2) {
+      const optimizedSrc = `${uploadSplit[0]}/upload/q_auto,f_auto/${uploadSplit[1]}`;
+      
+      // We can also create basic responsive sizes if we wanted, but q_auto,f_auto alone gives 60-70% savings
+      return { src: optimizedSrc };
+    }
+  } catch (e) {
+    console.error("Error building Cloudinary optimized URL:", e);
+  }
+  return {};
+}
+
 function ArtPlaceholder({ className = '' }) {
   return (
     <div
@@ -73,16 +100,17 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
     );
   }
 
-  const responsiveProps = getUnsplashProps(src);
+  const unsplashProps = getUnsplashProps(src);
+  const cloudinaryProps = getCloudinaryProps(src);
 
   return (
     <img
-      src={src}
+      src={cloudinaryProps.src || src}
       alt={alt}
       className={className}
       loading={loading}
       onError={() => setHasError(true)}
-      {...responsiveProps}
+      {...unsplashProps}
       {...props}
     />
   );

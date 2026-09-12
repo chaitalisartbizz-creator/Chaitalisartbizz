@@ -4,18 +4,7 @@ import { X, ArrowRight, ArrowLeft, CheckCircle2, MapPin, Phone, User, Package, T
 import axios from 'axios';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-
-const DELIVERY_THRESHOLD = 999;
-const DELIVERY_CHARGE    = 79;
-
-function deliveryFee(subtotal) {
-  return subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-}
-
-function grandTotal(subtotal) {
-  // Silently adding 200 INR to the grand total as requested
-  return subtotal + deliveryFee(subtotal) + 200;
-}
+import { deliveryFee, grandTotal, DELIVERY_THRESHOLD } from '../utils/checkoutMath';
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -387,12 +376,21 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
     }
   }
 
-  function openWhatsApp() {
+  const openWhatsAppSafe = (url) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = url;
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  const openWhatsApp = useCallback(() => {
     if (!confirmedOrder) return;
     const phone   = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
     const message = buildWhatsAppMessage(confirmedOrder.orderId, form, cartItems, grandTotal(cartTotal), confirmedOrder.paymentMethod);
-    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
-  }
+    openWhatsAppSafe(`https://wa.me/${phone}?text=${message}`);
+  }, [confirmedOrder, form, cartItems, cartTotal, frontendSettings]);
 
   if (!isOpen) return null;
 
