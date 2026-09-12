@@ -518,10 +518,10 @@ function AdminProductsContent() {
 
                     {/* Checkbox grid */}
                     <div className="border border-gray-200 rounded-xl p-3 bg-gray-50 max-h-44 overflow-y-auto space-y-1">
-                      {availableSubCategories.length === 0 && (
-                        <p className="text-xs text-gray-400 text-center py-2">Select a Main Category first to see sub-categories</p>
+                      {allStoreSubCategories.length === 0 && (
+                        <p className="text-xs text-gray-400 text-center py-2">No sub-categories found.</p>
                       )}
-                      {availableSubCategories.map(sub => {
+                      {allStoreSubCategories.map(sub => {
                         const checked = (editing.subcategories || []).includes(sub);
                         return (
                           <label key={sub} className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors ${checked ? 'bg-[#C9A84C]/15 border border-[#C9A84C]/40' : 'hover:bg-gray-100 border border-transparent'}`}>
