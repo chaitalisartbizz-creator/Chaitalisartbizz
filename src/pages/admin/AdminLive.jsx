@@ -116,8 +116,7 @@ export default function AdminLive() {
             </div>
           ) : (
             liveActivity.map((log) => (
-              <ScrollReveal key={log.id}>
-                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+              <div key={log.id} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                   <div className="flex flex-col sm:flex-row gap-5 relative z-10">
                     
                     {/* Icon */}
@@ -192,7 +191,6 @@ export default function AdminLive() {
                     </div>
                   </div>
                 </div>
-              </ScrollReveal>
             ))
           )}
         </div>

@@ -214,8 +214,7 @@ export default function OffersPage() {
                 {flashProducts.length === 0 ? (
                   <p className="col-span-6 text-center text-sm text-stone-400 py-6">No products available yet.</p>
                 ) : flashProducts.map((p, idx) => (
-                  <ScrollReveal key={p.id} delay={(idx % 6) * 80} className="h-full">
-                    <Link to={`/product/${p.id}`} className="block bg-white rounded-2xl border border-[#C9A84C]/30 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer h-full flex flex-col">
+                  <Link key={p.id} to={`/product/${p.id}`} className="block bg-white rounded-2xl border border-[#C9A84C]/30 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer h-full flex flex-col">
                       <div className="relative bg-[#F2EDE4] overflow-hidden" style={{ height: 135 }}>
                         <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover" />
                         {p.off && (
@@ -245,7 +244,6 @@ export default function OffersPage() {
                         </div>
                       </div>
                     </Link>
-                  </ScrollReveal>
                 ))}
               </div>
             </section>

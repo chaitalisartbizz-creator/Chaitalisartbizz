@@ -114,8 +114,7 @@ function SiteHeroBannersSection() {
 
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
           {banners.map((b, idx) => (
-            <ScrollReveal key={b.id || idx} delay={idx * 150} animation="scale-up-smooth" className="h-full">
-              <div 
+            <div key={b.id || idx} 
                 onClick={() => navigate(b.link || '/category')}
                 className="group relative overflow-hidden rounded-2xl h-[280px] md:h-[340px] shadow-xl border-2 border-[#C9A84C]/20 hover:border-[#C9A84C] cursor-pointer bg-[#2C2C2C] transition-all duration-500 hover:shadow-2xl hover:shadow-[#C9A84C]/20"
               >
@@ -134,7 +133,6 @@ function SiteHeroBannersSection() {
                   <p className="text-stone-300 text-sm font-medium line-clamp-2 max-w-md drop-shadow-md">{b.subtitle}</p>
                 </div>
               </div>
-            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -270,8 +268,7 @@ function CustomPortraitsSection({ cat, products, addToCart, toggleWishlist, isIn
           {/* Right Grid */}
           <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5 content-start">
             {rest.map((p, idx) => (
-              <ScrollReveal key={p.id} delay={idx * 60} animation="scale-up" className="h-full">
-                <div className="bg-[#1A1A1A]/70 rounded-2xl border border-[#C9A84C]/30 overflow-hidden hover:border-[#C9A84C] transition-all group flex flex-col h-full shadow-lg">
+              <div key={p.id} className="bg-[#1A1A1A]/70 rounded-2xl border border-[#C9A84C]/30 overflow-hidden hover:border-[#C9A84C] transition-all group flex flex-col h-full shadow-lg">
                   <Link to={`/product/${p.id}`} className="relative h-36 bg-[#2C2C2C] overflow-hidden block">
                     <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     <div className="absolute top-1.5 left-1.5 bg-[#C9A84C]/90 text-[#2C2C2C] text-[8px] font-extrabold px-1.5 py-0.5 rounded">{p.tag || 'CUSTOM'}</div>
@@ -292,7 +289,6 @@ function CustomPortraitsSection({ cat, products, addToCart, toggleWishlist, isIn
                     </div>
                   </div>
                 </div>
-              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -329,8 +325,7 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
         {/* Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {products.map((p, idx) => (
-            <ScrollReveal key={p.id} delay={idx * 70} animation="scale-up" className="h-full">
-              <div className="bg-[#1A0F18]/90 rounded-2xl border border-[#8B5E7A]/40 overflow-hidden shadow-md hover:border-[#C9A84C] transition-all cursor-pointer group flex flex-col h-full">
+            <div key={p.id} className="bg-[#1A0F18]/90 rounded-2xl border border-[#8B5E7A]/40 overflow-hidden shadow-md hover:border-[#C9A84C] transition-all cursor-pointer group flex flex-col h-full">
                 <Link to={`/product/${p.id}`} className="relative h-40 bg-[#2E1728] overflow-hidden block">
                   <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <span className="absolute top-2 left-2 bg-[#8B5E7A]/90 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">
@@ -365,7 +360,6 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -439,8 +433,7 @@ function DigitalDesignsSection({ cat, products, addToCart, isInCart, navigate })
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {bottomFour.map((p, idx) => (
-              <ScrollReveal key={p.id} delay={idx * 60} animation="scale-up" className="h-full">
-                <div className="bg-[#0A1220]/70 rounded-2xl border border-[#6B7FA3]/30 overflow-hidden p-3 hover:border-[#C9A84C] transition-all group flex flex-col h-full shadow-md">
+              <div key={p.id} className="bg-[#0A1220]/70 rounded-2xl border border-[#6B7FA3]/30 overflow-hidden p-3 hover:border-[#C9A84C] transition-all group flex flex-col h-full shadow-md">
                   <Link to={`/product/${p.id}`} className="relative h-32 rounded-xl overflow-hidden bg-[#111B2E] block mb-2">
                     <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </Link>
@@ -464,7 +457,6 @@ function DigitalDesignsSection({ cat, products, addToCart, isInCart, navigate })
                     </div>
                   </div>
                 </div>
-              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -501,8 +493,7 @@ function PersonalisedGiftsSection({ cat, products, addToCart, toggleWishlist, is
         {/* 6 Clean Cards Grid */}
         <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {products.map((p, idx) => (
-            <ScrollReveal key={p.id} delay={idx * 65} animation="scale-up" className="h-full">
-              <div className="bg-white rounded-2xl border border-[#C0737A]/20 p-3 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full">
+            <div key={p.id} className="bg-white rounded-2xl border border-[#C0737A]/20 p-3 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full">
                 <Link to={`/product/${p.id}`} className="relative h-36 bg-[#F9F5F0] rounded-xl overflow-hidden block mb-2">
                   <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <span className="absolute top-1.5 left-1.5 bg-[#C0737A] text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow">
@@ -537,7 +528,6 @@ function PersonalisedGiftsSection({ cat, products, addToCart, toggleWishlist, is
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -612,8 +602,7 @@ function DecorArtSection({ cat, products, addToCart, isInCart, navigate }) {
           {/* Right 5 Product Cards Grid */}
           <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
             {rest.map((p, idx) => (
-              <ScrollReveal key={p.id} delay={idx * 60} animation="scale-up" className="h-full">
-                <div className="bg-white/90 rounded-2xl border border-[#C9A84C]/30 overflow-hidden hover:border-[#C9A84C] transition-all group flex flex-col h-full shadow-sm p-2.5">
+              <div key={p.id} className="bg-white/90 rounded-2xl border border-[#C9A84C]/30 overflow-hidden hover:border-[#C9A84C] transition-all group flex flex-col h-full shadow-sm p-2.5">
                   <Link to={`/product/${p.id}`} className="relative h-32 bg-[#F9F5F0] rounded-xl overflow-hidden block mb-2">
                     <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     <span className="absolute top-1 left-1 bg-[#C9A84C] text-[#2C2C2C] text-[8px] font-bold px-1.5 py-0.5 rounded">{p.tag || 'HANDMADE'}</span>
@@ -638,7 +627,6 @@ function DecorArtSection({ cat, products, addToCart, isInCart, navigate }) {
                     </div>
                   </div>
                 </div>
-              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -675,8 +663,7 @@ function FestivePackagesSection({ cat, products, addToCart, toggleWishlist, isIn
         {/* 6 Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {products.map((p, idx) => (
-            <ScrollReveal key={p.id} delay={idx * 70} animation="scale-up" className="h-full">
-              <div className="bg-[#1A1410]/90 rounded-2xl border border-[#C9A84C]/40 overflow-hidden shadow-xl hover:border-[#C9A84C] transition-all cursor-pointer group flex flex-col h-full">
+            <div key={p.id} className="bg-[#1A1410]/90 rounded-2xl border border-[#C9A84C]/40 overflow-hidden shadow-xl hover:border-[#C9A84C] transition-all cursor-pointer group flex flex-col h-full">
                 <Link to={`/product/${p.id}`} className="relative h-40 bg-[#2A2010] overflow-hidden block">
                   <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute top-2 left-2 bg-[#C9A84C] text-[#2C2C2C] text-[9px] font-black px-2 py-0.5 rounded shadow flex items-center gap-1">
@@ -711,7 +698,6 @@ function FestivePackagesSection({ cat, products, addToCart, toggleWishlist, isIn
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -768,8 +754,7 @@ function CategorySectionsGrid() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {catProducts.map((p, idx) => (
-                  <ScrollReveal key={p.id} delay={idx * 50} animation="scale-up" className="h-full">
-                    <div className="bg-white/80 rounded-xl border border-[#C9A84C]/20 overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col h-full">
+                  <div key={p.id} className="bg-white/80 rounded-xl border border-[#C9A84C]/20 overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col h-full">
                       <Link to={`/product/${p.id}`} className="h-28 bg-[#F2EDE4] overflow-hidden block">
                         <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       </Link>
@@ -783,7 +768,6 @@ function CategorySectionsGrid() {
                         </div>
                       </div>
                     </div>
-                  </ScrollReveal>
                 ))}
               </div>
             </div>
@@ -808,8 +792,7 @@ function TrustBadges() {
             { icon: <Heart size={28} className="text-[#C9A84C]" />, title: '5000+ Happy Clients', sub: 'Trusted by art lovers across India' },
             { icon: <Award size={28} className="text-[#C9A84C]" />, title: 'Custom Orders', sub: 'Your imagination, our creation' },
           ].map((b, i) => (
-            <ScrollReveal key={i} delay={i * 100} animation="scale-up-smooth" className="h-full">
-              <div className="bg-[#F9F5F0] rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 h-full justify-center border border-[#C9A84C]/20 relative overflow-hidden group">
+            <div key={i} className="bg-[#F9F5F0] rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 h-full justify-center border border-[#C9A84C]/20 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10">
                   <div className="mb-2 inline-flex items-center justify-center p-3 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/20 group-hover:bg-[#C9A84C]/20 transition-colors">
@@ -821,7 +804,6 @@ function TrustBadges() {
                   <p className="text-xs text-stone-500 font-medium">{b.sub}</p>
                 </div>
               </div>
-            </ScrollReveal>
           ))}
         </div>
       </div>

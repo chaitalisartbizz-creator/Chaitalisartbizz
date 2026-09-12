@@ -303,8 +303,7 @@ export default function CategoryPage() {
                   ? 'grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4'
                   : 'flex flex-col gap-3'}>
                   {filteredProducts.map((p, idx) => (
-                    <ScrollReveal key={p.id} delay={(idx % 8) * 80} className="h-full">
-                      <Link to={`/product/${p.id}`} className="product-card block bg-white rounded-2xl border border-[#C9A84C]/20 overflow-hidden shadow-sm hover:shadow-xl hover:border-[#C9A84C] transition-all cursor-pointer group h-full flex flex-col">
+                    <Link key={p.id} to={`/product/${p.id}`} className="product-card block bg-white rounded-2xl border border-[#C9A84C]/20 overflow-hidden shadow-sm hover:shadow-xl hover:border-[#C9A84C] transition-all cursor-pointer group h-full flex flex-col">
                         <div className="relative bg-[#F2EDE4]/50 overflow-hidden flex-shrink-0" style={{ height: 160 }}>
                           <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                           <div className="absolute top-2 left-2 bg-[#2C2C2C] text-[#C9A84C] text-[9px] font-bold px-2 py-0.5 rounded-md">{p.tag || 'PREMIUM'}</div>
@@ -334,7 +333,6 @@ export default function CategoryPage() {
                           </div>
                         </div>
                       </Link>
-                    </ScrollReveal>
                   ))}
                 </div>
               )}
