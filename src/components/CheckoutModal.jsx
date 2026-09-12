@@ -204,7 +204,16 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   const { frontendSettings } = useData();
   const { user, loginWithGoogle } = useAuth();
 
-  const [step, setStep]     = useState(0);
+  const [step, setStep]     = useState(-1);
+
+  useEffect(() => {
+    if (user && step === -1) setStep(0);
+  }, [user, step]);
+  
+  useEffect(() => {
+    if (isOpen && !user && step !== -1 && step !== 2) setStep(-1);
+    if (isOpen && user && step === -1) setStep(0);
+  }, [isOpen, user]);
   const [direction, setDir] = useState(1);
 
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '', pincode: '', city: '' });
@@ -237,7 +246,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   }, [step]);
 
   const handleClose = useCallback(() => {
-    setStep(0); setDir(1);
+    setStep(user ? 0 : -1); setDir(1);
     setForm({ name: '', phone: '', email: '', address: '', pincode: '', city: '' });
     setErrors({}); setPayMethod('COD'); setLoading(false);
     setToast(null); setConfirmedOrder(null);
@@ -264,7 +273,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
     try {
       const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
       const res = await axios.post('/api/orders', {
-        visitorId:       'anonymous',
+        visitorId:       user ? (localStorage.getItem('chaitali-artbizz-vid') || 'anonymous') : 'anonymous',
         customerName:    form.name.trim(),
         customerPhone:   form.phone.trim(),
         customerEmail:   form.email.trim(),
@@ -318,7 +327,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
             });
             const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
             const saveRes = await axios.post('/api/orders', {
-              visitorId: 'anonymous', customerName: form.name.trim(),
+              visitorId: user ? (localStorage.getItem('chaitali-artbizz-vid') || 'anonymous') : 'anonymous', customerName: form.name.trim(),
               customerPhone: form.phone.trim(), customerEmail: form.email.trim(), customerAddress: fullAddress,
               items: JSON.stringify(cartItems.map(i => ({ id: i.id, name: i.name, weight: i.selectedWeight || '', qty: i.qty, price: i.price }))),
               total: grandTotal(cartTotal), paymentMethod: 'ONLINE',
@@ -351,7 +360,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       try {
         const fullAddress = [form.address.trim(), form.city, form.pincode].filter(Boolean).join(', ');
         const res = await axios.post('/api/orders', {
-          visitorId:       'anonymous',
+          visitorId:       user ? (localStorage.getItem('chaitali-artbizz-vid') || 'anonymous') : 'anonymous',
           customerName:    form.name.trim(),
           customerPhone:   form.phone.trim(),
           customerEmail:   form.email.trim(),
@@ -426,6 +435,55 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
         {/* Body */}
         <div className="flex-1 overflow-y-auto relative">
           <AnimatePresence mode="wait" custom={direction}>
+
+            
+            {/* Step -1: Login */}
+            {step === -1 && (
+              <motion.div
+                key="step-login"
+                custom={direction}
+                variants={stepVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="p-6 flex flex-col items-center justify-center text-center space-y-4"
+              >
+                <div className="w-16 h-16 bg-[#C9A84C]/10 rounded-full flex items-center justify-center mb-2 text-[#C9A84C]">
+                  <User size={32} />
+                </div>
+                <h3 className="font-cinzel text-xl font-bold text-stone-800">Checkout</h3>
+                <p className="text-stone-500 text-xs px-4">
+                  Please log in with Google to quickly fill in your details and earn rewards!
+                </p>
+                
+                <button
+                  onClick={async () => {
+                    try {
+                      await loginWithGoogle();
+                    } catch (err) {
+                       showToast("Failed to login with Google");
+                    }
+                  }}
+                  className="w-full bg-white text-stone-700 font-bold text-sm py-3.5 rounded-2xl shadow-sm border border-stone-200 flex items-center justify-center gap-2 mt-4 hover:bg-stone-50 transition-all"
+                >
+                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+                  Continue with Google
+                </button>
+                
+                <div className="w-full relative flex items-center justify-center mt-2 mb-2">
+                  <div className="border-t border-stone-200 w-full absolute"></div>
+                  <span className="bg-[#F2EDE4] px-3 text-[10px] text-stone-400 font-bold uppercase relative z-10">OR</span>
+                </div>
+                
+                <button 
+                  onClick={() => goTo(0)} 
+                  className="w-full bg-[#E5DFD3] text-stone-700 font-bold text-sm py-3.5 rounded-2xl hover:bg-[#D5CFC3] transition-colors"
+                >
+                  Continue as Guest
+                </button>
+              </motion.div>
+            )}
+
 
             {/* Step 0: Address Details */}
             {step === 0 && (

@@ -28,10 +28,29 @@ export function AuthProvider({ children }) {
           const response = await axios.post('/api/auth/me', {}, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          setUser({ ...firebaseUser, ...response.data.user });
+          const userData = { ...firebaseUser, ...response.data.user };
+          setUser(userData);
+
+          const vid = localStorage.getItem('chaitali-artbizz-vid');
+          if (vid) {
+            axios.post('/api/analytics/identify', {
+              visitorId: vid,
+              name: userData.name || userData.displayName || userData.email,
+              email: userData.email
+            }).catch(console.error);
+          }
         } catch (error) {
           console.error("Error fetching user data:", error);
           setUser(firebaseUser); // Fallback to firebase user
+          
+          const vid = localStorage.getItem('chaitali-artbizz-vid');
+          if (vid) {
+            axios.post('/api/analytics/identify', {
+              visitorId: vid,
+              name: firebaseUser.displayName || firebaseUser.email,
+              email: firebaseUser.email
+            }).catch(console.error);
+          }
         }
       } else {
         setUser(null);

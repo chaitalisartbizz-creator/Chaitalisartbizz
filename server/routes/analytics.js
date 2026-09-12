@@ -71,6 +71,36 @@ router.post('/track', async (req, res) => {
   }
 });
 
+// POST /api/analytics/identify
+// Update visitor with logged-in user details
+router.post('/identify', async (req, res) => {
+  try {
+    const { visitorId, name, email } = req.body;
+    if (!visitorId || visitorId === 'anonymous') {
+      return res.status(400).json({ error: "Invalid visitorId" });
+    }
+
+    await prisma.visitor.upsert({
+      where: { visitorId },
+      update: {
+        ...(name ? { name } : {}),
+        ...(email ? { email } : {})
+      },
+      create: {
+        visitorId,
+        name: name || '',
+        email: email || '',
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || '',
+      }
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Failed to identify visitor:", error);
+    res.status(500).json({ error: "Failed to identify visitor" });
+  }
+});
+
 // GET /api/analytics/stats
 router.get('/stats', async (req, res) => {
   try {
