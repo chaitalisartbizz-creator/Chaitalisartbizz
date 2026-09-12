@@ -7,12 +7,27 @@ import { useCart } from '../../context/CartContext';
 import { Plus, Edit2, Trash2, X, Search, Image as ImageIcon, Tag, Loader2 } from 'lucide-react';
 
 export default function AdminCategories() {
-  const { categories, refreshData } = useData();
+  const { categories, products, refreshData } = useData();
   const { showToast } = useCart();
   const [editing, setEditing] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  
+  const allStoreSubCategories = React.useMemo(() => {
+    let allSubs = [];
+    (categories || []).forEach(c => {
+      if (c.sub) {
+        allSubs.push(...c.sub.split(',').map(s => s.trim()).filter(Boolean));
+      }
+    });
+    (products || []).forEach(p => {
+      if (p.subcategories && p.subcategories.length > 0) allSubs.push(...p.subcategories);
+      else if (p.brand) allSubs.push(p.brand);
+    });
+    return [...new Set(allSubs)].sort();
+  }, [categories, products]);
 
   const defaultCategory = {
     label: '', emoji: '', img: '', bg: '#FFFFFF', sub: ''
