@@ -2,19 +2,23 @@ import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
-import PageTransition from './components/PageTransition';
 import { CartProvider } from './context/CartContext';
 import { DataProvider } from './context/DataContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import CartDrawer from './components/CartDrawer';
-import Toast from './components/Toast';
-import BottomNav from './components/BottomNav';
 import PageLoader from './components/PageLoader';
 import ErrorBoundary from './components/ErrorBoundary';
-import ChatBot from './components/ChatBot';
-import TopBar from './components/TopBar';
-import ActivityTracker from './components/ActivityTracker';
 import { useData } from './context/DataContext';
+
+// Critical path — eagerly loaded
+import Toast from './components/Toast';
+
+// Non-critical UI — lazy loaded after initial paint
+const PageTransition = lazy(() => import('./components/PageTransition'));
+const CartDrawer = lazy(() => import('./components/CartDrawer'));
+const BottomNav = lazy(() => import('./components/BottomNav'));
+const ChatBot = lazy(() => import('./components/ChatBot'));
+const TopBar = lazy(() => import('./components/TopBar'));
+const ActivityTracker = lazy(() => import('./components/ActivityTracker'));
 
 const lazyWithRetry = (componentImport) =>
   lazy(async () => {
