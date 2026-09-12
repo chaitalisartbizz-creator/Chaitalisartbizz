@@ -4,7 +4,7 @@ import { X, ArrowRight, ArrowLeft, CheckCircle2, MapPin, Phone, User, Package, T
 import axios from 'axios';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-import { deliveryFee, grandTotal, DELIVERY_THRESHOLD } from '../utils/checkoutMath';
+import { deliveryFee, grandTotal } from '../utils/checkoutMath';
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -95,7 +95,6 @@ function MiniOrderSummary({ cartItems, cartTotal }) {
   const [open, setOpen] = useState(false);
   const fee   = deliveryFee(cartTotal);
   const total = grandTotal(cartTotal);
-  const toFree = DELIVERY_THRESHOLD - cartTotal;
 
   return (
     <div className="rounded-2xl border border-[#C9A84C]/30 bg-[#F2EDE4]/80 overflow-hidden">
@@ -109,11 +108,6 @@ function MiniOrderSummary({ cartItems, cartTotal }) {
           <span className="text-xs font-bold text-stone-800 uppercase tracking-wide">
             {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
           </span>
-          {toFree > 0 && (
-            <span className="flex items-center gap-1 text-[10px] font-bold text-stone-700 bg-[#C9A84C]/20 px-2 py-0.5 rounded-full">
-              <Truck size={10} /> Add ₹{toFree} for FREE Shipping
-            </span>
-          )}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm font-black text-stone-900">₹{total}</span>
@@ -141,10 +135,13 @@ function MiniOrderSummary({ cartItems, cartTotal }) {
                 <div className="flex justify-between text-xs text-stone-600">
                   <span>Subtotal</span><span>₹{cartTotal}</span>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-stone-600">Priority Delivery</span>
-                  <span className={fee === 0 ? 'text-emerald-700 font-bold' : 'text-stone-600'}>{fee === 0 ? 'FREE 🎉' : `₹${fee}`}</span>
-                </div>
+                  <div className="flex justify-between text-xs">
+                    <div className="flex flex-col">
+                      <span className="text-stone-600">Priority Delivery</span>
+                      <span className="text-[9px] text-stone-500 font-medium">(may be less depending on your location)</span>
+                    </div>
+                    <span className={fee === 0 ? 'text-emerald-700 font-bold' : 'text-stone-600'}>{fee === 0 ? 'FREE 🎁' : `₹${fee}`}</span>
+                  </div>
                 <div className="flex justify-between text-sm font-black text-stone-900 pt-1 border-t border-[#C9A84C]/30">
                   <span>Grand Total</span><span>₹{total}</span>
                 </div>
@@ -177,10 +174,13 @@ function OrderSummary({ cartItems, cartTotal }) {
         <div className="flex justify-between text-xs text-stone-600">
           <span>Subtotal</span><span>₹{cartTotal}</span>
         </div>
-        <div className="flex justify-between text-xs text-stone-600">
-          <span>Priority Delivery</span>
-          <span className={fee === 0 ? 'text-emerald-700 font-bold' : ''}>{fee === 0 ? 'FREE 🎉' : `₹${fee}`}</span>
-        </div>
+          <div className="flex justify-between text-xs text-stone-600">
+            <div className="flex flex-col">
+              <span>Priority Delivery</span>
+              <span className="text-[9px] text-stone-500 font-medium">(may be less depending on your location)</span>
+            </div>
+            <span className={fee === 0 ? 'text-emerald-700 font-bold' : ''}>{fee === 0 ? 'FREE 🎉' : `₹${fee}`}</span>
+          </div>
         <div className="flex justify-between text-sm font-black text-stone-900 pt-1 border-t border-[#C9A84C]/30">
           <span>Grand Total</span><span className="text-[#2C2C2C] font-extrabold text-base">₹{total}</span>
         </div>
