@@ -358,7 +358,7 @@ export default function Header() {
                 <img src="/logo.jpg" alt="Logo" className="w-10 h-10 rounded-full border border-[#C9A84C] object-cover" />
                 <span className="font-cinzel font-bold text-[#2C2C2C]">Menu</span>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-2 bg-[#F2EDE4] text-stone-700 rounded-full">
+              <button aria-label="Close mobile menu" onClick={() => setMobileMenuOpen(false)} className="p-2 bg-[#F2EDE4] text-stone-700 rounded-full">
                 <X size={20} />
               </button>
             </div>

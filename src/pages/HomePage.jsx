@@ -72,20 +72,20 @@ function HeroCarousel() {
         </AnimatePresence>
         
         {/* Navigation Arrows */}
-        <button onClick={prev} className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-[#C9A84C] hover:text-white transition-all z-20">
+        <button aria-label="Previous slide" onClick={prev} className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-[#C9A84C] hover:text-white transition-all z-20">
           <ChevronLeft size={18} className="text-stone-800 hover:text-white" />
         </button>
-        <button onClick={next} className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-[#C9A84C] hover:text-white transition-all z-20">
+        <button aria-label="Next slide" onClick={next} className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md rounded-full p-2 md:p-3 shadow-lg hover:bg-[#C9A84C] hover:text-white transition-all z-20">
           <ChevronRight size={18} className="text-stone-800 hover:text-white" />
         </button>
 
         {/* Indicator Dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {slides.map((_, i) => (
-            <button key={i} onClick={() => setCur(i)}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+            {slides.map((_, i) => (
+              <button key={i} aria-label={`Go to slide ${i + 1}`} onClick={() => setCur(i)}
               className={`h-2.5 rounded-full transition-all duration-300 ${i === cur ? 'bg-[#C9A84C] w-8' : 'bg-white/60 w-2.5'}`} />
-          ))}
-        </div>
+            ))}
+          </div>
       </div>
     </motion.div>
   );
@@ -228,7 +228,7 @@ function CustomPortraitsSection({ cat, products, addToCart, toggleWishlist, isIn
               <div className="absolute top-3 left-3 z-10 bg-[#C9A84C] text-[#2C2C2C] text-[10px] font-black uppercase px-2.5 py-1 rounded-md shadow flex items-center gap-1">
                 <Sparkles size={11} /> SPOTLIGHT ARTWORK
               </div>
-              <button onClick={(e) => { e.preventDefault(); toggleWishlist(hero); }} 
+              <button aria-label="Toggle Wishlist" onClick={(e) => { e.preventDefault(); toggleWishlist(hero); }} 
                 className="absolute top-3 right-3 z-10 bg-[#2C2C2C]/90 rounded-full p-2 text-stone-300 hover:text-red-500 transition-colors">
                 <Heart size={16} className={isWishlisted(hero.id) ? 'fill-red-500 text-red-500' : ''} />
               </button>
@@ -331,7 +331,7 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
                   <span className="absolute top-2 left-2 bg-[#8B5E7A]/90 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">
                     {p.badge || 'RESIN'}
                   </span>
-                  <button onClick={(e) => { e.preventDefault(); toggleWishlist(p); }}
+                  <button aria-label="Toggle Wishlist" onClick={(e) => { e.preventDefault(); toggleWishlist(p); }}
                     className="absolute top-2 right-2 bg-[#1A0F18]/80 rounded-full p-1.5 text-[#C9A84C] hover:text-red-500 transition-colors">
                     <Heart size={13} className={isWishlisted(p.id) ? 'fill-red-500 text-red-500' : ''} />
                   </button>
@@ -499,7 +499,7 @@ function PersonalisedGiftsSection({ cat, products, addToCart, toggleWishlist, is
                   <span className="absolute top-1.5 left-1.5 bg-[#C0737A] text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow">
                     {p.badge || 'PERSONALISED'}
                   </span>
-                  <button onClick={(e) => { e.preventDefault(); toggleWishlist(p); }}
+                  <button aria-label="Toggle Wishlist" onClick={(e) => { e.preventDefault(); toggleWishlist(p); }}
                     className="absolute top-1.5 right-1.5 bg-white/90 rounded-full p-1.5 shadow-sm hover:scale-110 transition-transform">
                     <Heart size={12} className={isWishlisted(p.id) ? 'fill-red-500 text-red-500' : 'text-stone-400'} />
                   </button>
@@ -669,7 +669,7 @@ function FestivePackagesSection({ cat, products, addToCart, toggleWishlist, isIn
                   <div className="absolute top-2 left-2 bg-[#C9A84C] text-[#2C2C2C] text-[9px] font-black px-2 py-0.5 rounded shadow flex items-center gap-1">
                     <Sparkles size={10} /> {p.badge || 'FESTIVE SET'}
                   </div>
-                  <button onClick={(e) => { e.preventDefault(); toggleWishlist(p); }}
+                  <button aria-label="Toggle Wishlist" onClick={(e) => { e.preventDefault(); toggleWishlist(p); }}
                     className="absolute top-2 right-2 bg-[#1A1410]/80 rounded-full p-1.5 text-[#C9A84C] hover:text-red-500 transition-colors">
                     <Heart size={13} className={isWishlisted(p.id) ? 'fill-red-500 text-red-500' : ''} />
                   </button>
