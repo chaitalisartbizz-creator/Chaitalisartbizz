@@ -9,14 +9,19 @@ import ScrollReveal from '../components/ScrollReveal';
 import MediaDisplay from '../components/MediaDisplay';
 import LiveBackground from '../components/LiveBackground';
 import { ProductCardSkeleton } from '../components/Skeleton';
+import { encodeUrlParam, decodeUrlParam } from '../utils/urlEncoder';
 
 export default function CategoryPage() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   
-  const initialCategory = searchParams.get('category') || location.state?.category || 'All';
-  const initialBrand = searchParams.get('subcategory') || 'All';
-  const initialSearch = searchParams.get('search') || location.state?.searchQuery || '';
+  // Support both legacy full words and new short 'c'/'s' params, with decode
+  const urlCat = searchParams.get('c') || searchParams.get('category');
+  const urlSub = searchParams.get('s') || searchParams.get('subcategory');
+  
+  const initialCategory = decodeUrlParam(urlCat) || location.state?.category || 'All';
+  const initialBrand = decodeUrlParam(urlSub) || 'All';
+  const initialSearch = searchParams.get('q') || searchParams.get('search') || location.state?.searchQuery || '';
 
   const [activeBrand, setActiveBrand] = useState(initialBrand);
   const [activePrice, setActivePrice] = useState('All');
@@ -37,21 +42,16 @@ export default function CategoryPage() {
   }, [location.state]);
 
   React.useEffect(() => {
-    const currentCategory = searchParams.get('category') || 'All';
-    const currentBrand = searchParams.get('subcategory') || 'All';
-    const currentSearch = searchParams.get('search') || '';
+    const currentCategory = decodeUrlParam(searchParams.get('c') || searchParams.get('category')) || 'All';
+    const currentBrand = decodeUrlParam(searchParams.get('s') || searchParams.get('subcategory')) || 'All';
+    const currentSearch = searchParams.get('q') || searchParams.get('search') || '';
     
     if (currentCategory !== activeCategory || currentBrand !== activeBrand || currentSearch !== searchQuery) {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams();
       
-      if (activeCategory !== 'All') params.set('category', activeCategory);
-      else params.delete('category');
-      
-      if (activeBrand !== 'All') params.set('subcategory', activeBrand);
-      else params.delete('subcategory');
-      
-      if (searchQuery) params.set('search', searchQuery);
-      else params.delete('search');
+      if (activeCategory !== 'All') params.set('c', encodeUrlParam(activeCategory));
+      if (activeBrand !== 'All') params.set('s', encodeUrlParam(activeBrand));
+      if (searchQuery) params.set('q', searchQuery);
       
       setSearchParams(params, { replace: true });
     }
