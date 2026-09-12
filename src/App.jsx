@@ -178,7 +178,7 @@ function AppInner() {
   return (
     <div className="min-h-screen w-full overflow-x-clip mesh-bg text-gray-800 font-sans relative">
       {/* PageLoader sits on top as a z-500 visual overlay — content always renders beneath it */}
-      <PageLoader skip={false} dataReady={!loading} />
+      <PageLoader skip={location.pathname !== '/'} dataReady={!loading} />
 
       {/* ContentReveal plays dramatic entrance animation when PageLoader fires 'artbizz:loader-done' */}
       <ContentReveal>

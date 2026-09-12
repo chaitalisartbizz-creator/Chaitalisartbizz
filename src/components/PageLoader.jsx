@@ -91,7 +91,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
   useEffect(() => {
     if (phase !== 'loading') return;
     // Max wait: 2.5s normally, 800ms if data already here
-    const delay = dataReady ? 800 : 2500;
+    const delay = dataReady ? 10 : 2500;
     const t = setTimeout(finish, delay);
     return () => clearTimeout(t);
   }, [phase, finish]); // NOTE: dataReady intentionally not in deps — we use the value at transition time
@@ -99,7 +99,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
   // If data arrives while loading, dismiss quickly
   useEffect(() => {
     if (phase !== 'loading' || !dataReady) return;
-    const t = setTimeout(finish, 500);
+    const t = setTimeout(finish, 10);
     return () => clearTimeout(t);
   }, [dataReady, phase, finish]);
 
@@ -142,11 +142,10 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
             background: 'linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 30%, #3D2E1E 60%, #1A1A1A 100%)'
           }}
         >
-          {/* Glowing Artistic Aura */}
-          <div className="absolute inset-0 opacity-25 z-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C9A84C] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
-            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#8B5E7A] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
-            <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-[#C0737A] rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+          {/* Glowing Artistic Aura - Optimized for mobile GPU */}
+          <div className="absolute inset-0 opacity-20 z-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-[#C9A84C] rounded-full blur-[60px] md:blur-[120px] opacity-60" />
+            <div className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-80 md:h-80 bg-[#8B5E7A] rounded-full blur-[60px] md:blur-[120px] opacity-60" />
           </div>
 
           <GoldenArtDust />
@@ -177,11 +176,9 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
                 transition={{ delay: 0.3, duration: 0.8 }}
                 className={`px-10 py-4 border-2 border-[#C9A84C] rounded-full text-[#F0DFA0] font-bold tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(201,168,76,0.3)] transition-all duration-300 ${!dataReady ? 'bg-transparent opacity-60 cursor-wait' : 'bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] hover:shadow-[0_0_30px_rgba(201,168,76,0.6)] hover:scale-105 cursor-pointer'}`}
                 onClick={dataReady ? handleEnter : undefined}
-                onPointerUp={dataReady ? handleEnter : undefined}
-                onTouchEnd={(e) => { e.preventDefault(); if (dataReady) handleEnter(); }}
                 disabled={!dataReady}
               >
-                {!dataReady ? 'Loading Gallery...' : 'Enter Gallery ✨'}
+                {!dataReady ? 'Loading Gallery...' : 'Enter Gallery 🎨'}
               </motion.button>
             </div>
           ) : (
