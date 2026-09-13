@@ -52,9 +52,8 @@ function getCloudinaryProps(src) {
 
     const uploadSplit = src.split('/upload/');
     if (uploadSplit.length === 2) {
-      const optimizedSrc = `${uploadSplit[0]}/upload/w_600,c_scale,q_auto,f_auto/${uploadSplit[1]}`;
+      const optimizedSrc = `${uploadSplit[0]}/upload/q_auto,f_auto/${uploadSplit[1]}`;
       
-      // We can also create basic responsive sizes if we wanted, but w_600,q_auto,f_auto alone gives 60-70% savings
       return { src: optimizedSrc };
     }
   } catch (e) {
@@ -92,7 +91,7 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
     if (src.includes('res.cloudinary.com') && src.includes('/video/upload/')) {
       const uploadSplit = src.split('/upload/');
       if (uploadSplit.length === 2) {
-        posterUrl = `${uploadSplit[0]}/video/upload/w_600,c_scale,q_auto,f_auto/${uploadSplit[1]}`;
+        posterUrl = `${uploadSplit[0]}/video/upload/q_auto,f_auto/${uploadSplit[1]}`;
       } else {
         posterUrl = src;
       }
