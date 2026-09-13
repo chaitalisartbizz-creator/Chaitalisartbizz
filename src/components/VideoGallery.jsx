@@ -3,9 +3,10 @@ import { Play, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function VideoCard({ videoUrl, posterUrl, title = '' }) {
+  const hasPoster = Boolean(posterUrl);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(!hasPoster);
   const videoRef = useRef(null);
 
   const handlePlayClick = () => {
@@ -15,8 +16,9 @@ export function VideoCard({ videoUrl, posterUrl, title = '' }) {
       videoRef.current.pause();
       setIsPlaying(false);
     } else {
-      if (!isLoaded) {
+      if (!isLoaded && hasPoster) {
         videoRef.current.src = videoUrl;
+        videoRef.current.load();
         setIsLoaded(true);
       }
       videoRef.current.play();
@@ -26,9 +28,9 @@ export function VideoCard({ videoUrl, posterUrl, title = '' }) {
   };
 
   return (
-    <div className="relative w-full aspect-[9/16] md:aspect-video rounded-xl overflow-hidden bg-[#111] border border-white/5">
+    <div className="relative w-full aspect-[9/16] md:aspect-video rounded-xl overflow-hidden bg-[#111] border border-white/5 group">
       <AnimatePresence>
-        {(!isPlaying || isBuffering) && !isLoaded && (
+        {(!isPlaying || isBuffering) && hasPoster && !isLoaded && (
           <motion.img 
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -43,14 +45,15 @@ export function VideoCard({ videoUrl, posterUrl, title = '' }) {
 
       <video
         ref={videoRef}
-        className="w-full h-full object-cover"
+        className={`w-full h-full object-cover ${(!hasPoster || isLoaded) ? 'block' : 'hidden'}`}
         playsInline
         onWaiting={() => setIsBuffering(true)}
         onCanPlay={() => setIsBuffering(false)}
         onPause={() => setIsPlaying(false)}
         onPlay={() => { setIsPlaying(true); setIsBuffering(false); }}
         onEnded={() => setIsPlaying(false)}
-        preload="none"
+        preload={hasPoster ? "none" : "metadata"}
+        src={hasPoster ? undefined : (videoUrl.includes('#t=') ? videoUrl : `${videoUrl}#t=0.001`)}
       />
 
       <div 
