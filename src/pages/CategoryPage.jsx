@@ -276,10 +276,10 @@ export default function CategoryPage() {
                       ))}
                     </select>
                     <div className="hidden md:flex items-center gap-1 border border-[#C9A84C]/30 rounded-lg overflow-hidden bg-[#F2EDE4]/30">
-                      <button onClick={() => setViewMode('grid')} className={`p-1.5 ${viewMode === 'grid' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600'}`}>
+                      <button aria-label="Grid View" onClick={() => setViewMode('grid')} className={`p-1.5 ${viewMode === 'grid' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600'}`}>
                         <LayoutGrid size={15} />
                       </button>
-                      <button onClick={() => setViewMode('list')} className={`p-1.5 ${viewMode === 'list' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600'}`}>
+                      <button aria-label="List View" onClick={() => setViewMode('list')} className={`p-1.5 ${viewMode === 'list' ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'text-stone-600'}`}>
                         <List size={15} />
                       </button>
                     </div>
@@ -307,7 +307,7 @@ export default function CategoryPage() {
                         <div className="relative bg-[#F2EDE4]/50 overflow-hidden flex-shrink-0" style={{ height: 160 }}>
                           <MediaDisplay src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                           <div className="absolute top-2 left-2 bg-[#2C2C2C] text-[#C9A84C] text-[9px] font-bold px-2 py-0.5 rounded-md">{p.tag || 'PREMIUM'}</div>
-                          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(p); }} className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm hover:scale-110 transition-transform">
+                          <button aria-label="Toggle Wishlist" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(p); }} className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm hover:scale-110 transition-transform">
                             <Heart size={13} className={isWishlisted(p.id) ? 'fill-red-500 text-red-500' : 'text-stone-400'} />
                           </button>
                         </div>
@@ -325,7 +325,7 @@ export default function CategoryPage() {
                             {p.mrp && <span className="text-stone-400 text-[10px] line-through">₹{p.mrp}</span>}
                           </div>
                           <div className="mt-auto pt-2">
-                            <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(p); }}
+                            <button aria-label="Add to Cart" onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(p); }}
                               className={`w-full text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all ${isInCart(p.id) ? 'bg-[#2C2C2C] text-[#C9A84C]' : 'bg-gradient-to-r from-[#A8873A] to-[#C9A84C] text-[#1A1A1A] shadow-sm hover:shadow-md'}`}>
                               <ShoppingBag size={11} />
                               {isInCart(p.id) ? 'Added ✓' : 'Add to Cart'}

@@ -240,11 +240,11 @@ export default function ProductPage() {
                       {product.tag}
                     </div>
                   )}
-                  <button className="absolute top-4 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-stone-600 transition-all z-10 shadow-md"
+                  <button aria-label="Toggle Wishlist" className="absolute top-4 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-stone-600 transition-all z-10 shadow-md"
                     onClick={() => toggleWishlist(product)}>
                     <Heart size={20} className={isWishlisted(product.id) ? "fill-red-500 text-red-500" : ""} />
                   </button>
-                  <button className="absolute top-16 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-stone-600 transition-all z-10 shadow-md"
+                  <button aria-label="Share Product" className="absolute top-16 right-4 p-2.5 bg-white/90 rounded-full hover:scale-110 text-stone-600 transition-all z-10 shadow-md"
                     onClick={handleShare}
                     title="Share Product">
                     <Share2 size={20} />
@@ -338,9 +338,9 @@ export default function ProductPage() {
                 <div className="mb-8 flex items-center justify-between border-t border-b border-[#C9A84C]/20 py-4">
                   <span className="text-sm font-bold text-stone-700">Quantity</span>
                   <div className="flex items-center border border-[#C9A84C]/30 rounded-xl overflow-hidden bg-[#F2EDE4]/50">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3.5 py-2 text-stone-600 hover:bg-[#C9A84C]/20 transition-colors"><Minus size={14}/></button>
+                    <button aria-label="Decrease quantity" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3.5 py-2 text-stone-600 hover:bg-[#C9A84C]/20 transition-colors"><Minus size={14}/></button>
                     <span className="w-10 text-center font-bold text-stone-900 text-sm">{quantity}</span>
-                    <button onClick={() => setQuantity(quantity + 1)} className="px-3.5 py-2 text-stone-600 hover:bg-[#C9A84C]/20 transition-colors"><Plus size={14}/></button>
+                    <button aria-label="Increase quantity" onClick={() => setQuantity(quantity + 1)} className="px-3.5 py-2 text-stone-600 hover:bg-[#C9A84C]/20 transition-colors"><Plus size={14}/></button>
                   </div>
                 </div>
 
@@ -507,9 +507,9 @@ export default function ProductPage() {
             </p>
           </div>
           <div className="flex items-center border border-[#C9A84C]/30 rounded-lg overflow-hidden flex-shrink-0 h-9 bg-[#F2EDE4]">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2.5 text-stone-600 font-bold"><Minus size={13}/></button>
+            <button aria-label="Decrease quantity" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2.5 text-stone-600 font-bold"><Minus size={13}/></button>
             <span className="w-6 text-center font-bold text-stone-900 text-xs">{quantity}</span>
-            <button onClick={() => setQuantity(quantity + 1)} className="px-2.5 text-stone-600 font-bold"><Plus size={13}/></button>
+            <button aria-label="Increase quantity" onClick={() => setQuantity(quantity + 1)} className="px-2.5 text-stone-600 font-bold"><Plus size={13}/></button>
           </div>
         </div>
           <div className="flex gap-2">
