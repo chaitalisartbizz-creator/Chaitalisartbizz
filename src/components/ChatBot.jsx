@@ -250,6 +250,7 @@ export default function ChatBot() {
 
         {/* Toggle Floating Action Button */}
         <button
+          aria-label="Toggle Chatbot"
           onClick={() => setIsOpen(!isOpen)}
           className="w-14 h-14 bg-gradient-to-tr from-[#2C2C2C] to-[#1A1A1A] text-[#C9A84C] rounded-full flex items-center justify-center shadow-2xl hover:shadow-[0_0_25px_rgba(201,168,76,0.5)] transition-all transform hover:scale-105 active:scale-95 border-2 border-[#C9A84C]/30 relative z-10"
         >
