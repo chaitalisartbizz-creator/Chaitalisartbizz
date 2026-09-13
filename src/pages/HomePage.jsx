@@ -280,7 +280,7 @@ function CustomPortraitsSection({ cat, products, addToCart, toggleWishlist, isIn
                     </Link>
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#C9A84C]/20">
                       <span className="text-[#C9A84C] font-black text-xs">₹{p.price}</span>
-                      <button onClick={() => addToCart(p)}
+                      <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                         className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
                           isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#C9A84C]/20 hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-[#C9A84C]'
                         }`}>
@@ -351,7 +351,7 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
                       {p.mrp && <span className="text-[#F0DFA0]/40 text-[10px] line-through">₹{p.mrp}</span>}
                     </div>
 
-                    <button onClick={() => addToCart(p)}
+                    <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                       className={`w-full mt-2 text-[11px] font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1 ${
                         isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#8B5E7A] hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-white'
                       }`}>
@@ -419,7 +419,7 @@ function DigitalDesignsSection({ cat, products, addToCart, isInCart, navigate })
 
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#6B7FA3]/20">
                     <span className="text-xl font-black text-[#C9A84C]">₹{p.price}</span>
-                    <button onClick={() => addToCart(p)}
+                    <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                       className={`text-xs font-bold px-4 py-2 rounded-xl transition-all ${
                         isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#6B7FA3] hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-white'
                       }`}>
@@ -448,7 +448,7 @@ function DigitalDesignsSection({ cat, products, addToCart, isInCart, navigate })
 
                     <div className="flex items-center justify-between mt-3">
                       <span className="text-[#C9A84C] font-black text-sm">₹{p.price}</span>
-                      <button onClick={() => addToCart(p)}
+                      <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                         className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
                           isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#6B7FA3]/20 hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-[#6B7FA3]'
                         }`}>
@@ -519,7 +519,7 @@ function PersonalisedGiftsSection({ cat, products, addToCart, toggleWishlist, is
                       {p.mrp && <span className="text-stone-400 text-[10px] line-through">₹{p.mrp}</span>}
                     </div>
 
-                    <button onClick={() => addToCart(p)}
+                    <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                       className={`w-full mt-2 text-[11px] font-bold py-1.5 rounded-xl transition-all flex items-center justify-center gap-1 ${
                         isInCart(p.id) ? 'bg-emerald-700 text-white' : 'bg-[#C0737A] hover:bg-[#A85F65] text-white shadow-sm'
                       }`}>
@@ -618,7 +618,7 @@ function DecorArtSection({ cat, products, addToCart, isInCart, navigate }) {
 
                     <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#C9A84C]/20">
                       <span className="text-[#2C2C2C] font-black text-xs">₹{p.price}</span>
-                      <button onClick={() => addToCart(p)}
+                      <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                         className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
                           isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#2C2C2C] hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-[#F0DFA0]'
                         }`}>
@@ -689,7 +689,7 @@ function FestivePackagesSection({ cat, products, addToCart, toggleWishlist, isIn
                       {p.mrp && <span className="text-[#F0DFA0]/40 text-[10px] line-through">₹{p.mrp}</span>}
                     </div>
 
-                    <button onClick={() => addToCart(p)}
+                    <button aria-label="Add to Cart" onClick={() => addToCart(p)}
                       className={`w-full mt-2 text-[11px] font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1 ${
                         isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-gradient-to-r from-[#C9A84C] to-[#A8873A] hover:from-[#A8873A] hover:to-[#C9A84C] text-[#2C2C2C] shadow-md'
                       }`}>
@@ -762,7 +762,7 @@ function CategorySectionsGrid() {
                         <Link to={`/product/${p.id}`} className="text-[#2C2C2C] text-xs font-bold leading-tight line-clamp-2 hover:text-[#C9A84C]">{p.name}</Link>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-[#2C2C2C] font-black text-xs">₹{p.price}</span>
-                          <button onClick={() => addToCart(p)} className={`p-1 rounded-lg ${isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#C9A84C]/20 hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-[#C9A84C]'}`}>
+                          <button aria-label="Add to Cart" onClick={() => addToCart(p)} className={`p-1 rounded-lg ${isInCart(p.id) ? 'bg-emerald-600 text-white' : 'bg-[#C9A84C]/20 hover:bg-[#C9A84C] hover:text-[#2C2C2C] text-[#C9A84C]'}`}>
                             <ShoppingBag size={11} />
                           </button>
                         </div>

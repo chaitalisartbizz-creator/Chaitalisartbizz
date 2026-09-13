@@ -54,7 +54,14 @@ function getCloudinaryProps(src) {
     if (uploadSplit.length === 2) {
       const optimizedSrc = `${uploadSplit[0]}/upload/q_auto,f_auto/${uploadSplit[1]}`;
       
-      return { src: optimizedSrc };
+      const widths = [320, 600, 960, 1280, 1920];
+      const srcSet = widths.map(w => `${uploadSplit[0]}/upload/w_${w},c_scale,q_auto,f_auto/${uploadSplit[1]} ${w}w`).join(', ');
+
+      return { 
+        src: optimizedSrc,
+        srcSet,
+        sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      };
     }
   } catch (e) {
     console.error("Error building Cloudinary optimized URL:", e);
