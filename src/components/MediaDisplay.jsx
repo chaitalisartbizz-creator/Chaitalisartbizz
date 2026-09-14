@@ -109,8 +109,7 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
     return (
       <VideoCard 
         videoUrl={src} 
-        posterUrl={posterUrl} 
-        title={alt}
+        posterUrl={posterUrl}
         className={`relative group ${className}`}
       />
     );
