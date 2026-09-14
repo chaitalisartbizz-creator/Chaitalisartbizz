@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Play, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function VideoCard({ videoUrl, posterUrl, title = '' }) {
+export function VideoCard({ videoUrl, posterUrl, title = '', className = "relative w-full aspect-[9/16] md:aspect-video rounded-xl overflow-hidden bg-[#111] border border-white/5 group" }) {
   const hasPoster = Boolean(posterUrl);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
@@ -28,7 +28,7 @@ export function VideoCard({ videoUrl, posterUrl, title = '' }) {
   };
 
   return (
-    <div className="relative w-full aspect-[9/16] md:aspect-video rounded-xl overflow-hidden bg-[#111] border border-white/5 group">
+    <div className={className}>
       <AnimatePresence>
         {(!isPlaying || isBuffering) && hasPoster && !isLoaded && (
           <motion.img 
