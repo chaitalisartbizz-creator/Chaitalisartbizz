@@ -98,7 +98,7 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
     if (src.includes('res.cloudinary.com') && src.includes('/video/upload/')) {
       const uploadSplit = src.split('/upload/');
       if (uploadSplit.length === 2) {
-        posterUrl = `${uploadSplit[0]}/video/upload/q_auto,f_auto/${uploadSplit[1]}`;
+        posterUrl = `${uploadSplit[0]}/upload/q_auto,f_auto/${uploadSplit[1]}`;
       } else {
         posterUrl = src;
       }
