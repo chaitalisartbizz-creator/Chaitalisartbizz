@@ -154,9 +154,7 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
             /* ── ENTRY GATE ── */
             <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full">
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                initial={{ scale: 1, opacity: 1 }}
                 className="mb-8"
               >
                 <div className="w-40 h-40 md:w-56 md:h-56 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#C9A84C]/50 shadow-2xl mb-6 mx-auto">
