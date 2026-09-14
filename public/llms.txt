@@ -1,0 +1,7 @@
+# Chaitali's Artbizz
+
+Welcome to Chaitali's Artbizz. This site provides handcrafted custom portraits, resin art, and personalized gifts.
+
+- [Home](https://chaitalisartbizzz.vercel.app/)
+- [Shop](https://chaitalisartbizzz.vercel.app/category)
+

@@ -83,7 +83,9 @@ function HeroCarousel() {
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {slides.map((_, i) => (
               <button key={i} aria-label={`Go to slide ${i + 1}`} onClick={() => setCur(i)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${i === cur ? 'bg-[#C9A84C] w-8' : 'bg-white/60 w-2.5'}`} />
+                className="p-2 min-w-[32px] min-h-[32px] flex items-center justify-center -m-1">
+                <span className={`h-2.5 block rounded-full transition-all duration-300 ${i === cur ? 'bg-[#C9A84C] w-8' : 'bg-white/60 w-2.5'}`} />
+              </button>
             ))}
           </div>
       </div>
@@ -252,7 +254,7 @@ function CustomPortraitsSection({ cat, products, addToCart, toggleWishlist, isIn
 
                 <div className="flex items-baseline gap-2 mt-3">
                   <span className="text-2xl font-black text-[#C9A84C]">₹{hero.price}</span>
-                  {hero.mrp && <span className="text-[#F0DFA0]/40 text-sm line-through">₹{hero.mrp}</span>}
+                  {hero.mrp && <span className="text-[#F0DFA0]/70 text-sm line-through">₹{hero.mrp}</span>}
                 </div>
 
                 <button onClick={() => addToCart(hero)}
@@ -348,7 +350,7 @@ function ResinArtSection({ cat, products, addToCart, toggleWishlist, isInCart, i
                   <div className="mt-3">
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-[#C9A84C] font-black text-sm">₹{p.price}</span>
-                      {p.mrp && <span className="text-[#F0DFA0]/40 text-[10px] line-through">₹{p.mrp}</span>}
+                      {p.mrp && <span className="text-[#F0DFA0]/70 text-[10px] line-through">₹{p.mrp}</span>}
                     </div>
 
                     <button aria-label="Add to Cart" onClick={() => addToCart(p)}
@@ -586,7 +588,7 @@ function DecorArtSection({ cat, products, addToCart, isInCart, navigate }) {
 
                 <div className="flex items-baseline gap-2 mt-4">
                   <span className="text-2xl font-black text-[#C9A84C]">₹{hero.price}</span>
-                  {hero.mrp && <span className="text-[#F0DFA0]/50 text-sm line-through">₹{hero.mrp}</span>}
+                  {hero.mrp && <span className="text-[#F0DFA0]/70 text-sm line-through">₹{hero.mrp}</span>}
                 </div>
 
                 <button onClick={() => addToCart(hero)}
@@ -686,7 +688,7 @@ function FestivePackagesSection({ cat, products, addToCart, toggleWishlist, isIn
                   <div className="mt-3">
                     <div className="flex items-baseline gap-1">
                       <span className="text-[#C9A84C] font-black text-sm">₹{p.price}</span>
-                      {p.mrp && <span className="text-[#F0DFA0]/40 text-[10px] line-through">₹{p.mrp}</span>}
+                      {p.mrp && <span className="text-[#F0DFA0]/70 text-[10px] line-through">₹{p.mrp}</span>}
                     </div>
 
                     <button aria-label="Add to Cart" onClick={() => addToCart(p)}
@@ -886,7 +888,7 @@ export default function HomePage() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Quick Links</h4>
+              <h3 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Quick Links</h3>
               <ul className="space-y-2 text-sm">
                 {['Home', 'Art Catalogue', 'Deals & Offers', 'Training Program', 'About Us', 'My Account'].map(l => (
                   <li key={l}><button onClick={() => navigate(l === 'Home' ? '/' : l === 'About Us' ? '/about-us' : l === 'Art Catalogue' ? '/category' : l === 'Deals & Offers' ? '/offers' : l === 'Training Program' ? '/hub' : '/account')} className="text-stone-400 hover:text-[#C9A84C] transition-colors">{l}</button></li>
@@ -896,7 +898,7 @@ export default function HomePage() {
 
             {/* Art Categories */}
             <div>
-              <h4 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Art Categories</h4>
+              <h3 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Art Categories</h3>
               <ul className="space-y-2 text-sm">
                 {(categories || []).slice(0,6).map(c => (
                   <li key={c.label}><button onClick={() => navigate('/category', { state: { category: c.label } })} className="text-stone-400 hover:text-[#C9A84C] transition-colors line-clamp-1 text-left">{c.label}</button></li>
@@ -906,7 +908,7 @@ export default function HomePage() {
 
             {/* Contact */}
             <div>
-              <h4 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Get In Touch</h4>
+              <h3 className="font-cinzel font-bold text-[#C9A84C] mb-4 uppercase tracking-wider text-sm">Get In Touch</h3>
               <ul className="space-y-2 text-sm text-stone-400">
                 <li>📱 +91 98765 43210</li>
                 <li>📧 hello@chaitaliartbizz.com</li>

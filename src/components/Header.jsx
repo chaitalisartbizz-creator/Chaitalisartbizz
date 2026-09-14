@@ -384,7 +384,7 @@ export default function Header() {
               </nav>
 
               <div className="pt-4 border-t border-stone-200">
-                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 px-2">Art Collections</h4>
+                <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 px-2">Art Collections</h3>
                 <div className="space-y-2">
                   {SHOP_DROPS.map((drop, idx) => (
                     <button

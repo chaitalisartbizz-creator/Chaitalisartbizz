@@ -126,6 +126,7 @@ export default function MediaDisplay({ src, alt = "Media", className = "", loadi
       loading={loading}
       onError={() => setHasError(true)}
       {...unsplashProps}
+      {...cloudinaryProps}
       {...props}
     />
   );
