@@ -228,6 +228,7 @@ export default function ProductPage() {
                           className="w-full h-full object-cover bg-[#F2EDE4]" 
                           loading="eager" 
                           fetchpriority="high" 
+                          sizes="100px"
                         />
                     </button>
                   ))}
@@ -255,6 +256,7 @@ export default function ProductPage() {
                     className="w-full h-full object-cover p-2" 
                     loading="eager"
                     fetchpriority="high"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
               </div>

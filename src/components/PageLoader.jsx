@@ -130,6 +130,18 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
 
   if (skip) return null;
 
+  useEffect(() => {
+    // Hide the HTML skeleton once we transition past the entry phase
+    if (phase !== 'entry' || skip) {
+      const loader = document.getElementById('initial-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => loader.style.display = 'none', 800);
+      }
+    }
+  }, [phase, skip]);
+
   return (
     <AnimatePresence>
       {visible && phase !== 'done' && (
@@ -137,36 +149,25 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
           key="page-loader"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.8 } }}
-          className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 30%, #3D2E1E 60%, #1A1A1A 100%)'
-          }}
+          className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden pointer-events-auto"
+          style={
+            phase === 'entry' ? {} : { background: 'linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 30%, #3D2E1E 60%, #1A1A1A 100%)' }
+          }
         >
-          {/* Glowing Artistic Aura - Optimized for mobile GPU */}
-          <div className="absolute inset-0 opacity-20 z-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-[#C9A84C] rounded-full blur-[60px] md:blur-[120px] opacity-60" />
-            <div className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-80 md:h-80 bg-[#8B5E7A] rounded-full blur-[60px] md:blur-[120px] opacity-60" />
-          </div>
-
-          <GoldenArtDust />
+          {phase !== 'entry' && (
+            <>
+              {/* Glowing Artistic Aura - Optimized for mobile GPU */}
+              <div className="absolute inset-0 opacity-20 z-0 pointer-events-none">
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-[#C9A84C] rounded-full blur-[60px] md:blur-[120px] opacity-60" />
+                <div className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-80 md:h-80 bg-[#8B5E7A] rounded-full blur-[60px] md:blur-[120px] opacity-60" />
+              </div>
+              <GoldenArtDust />
+            </>
+          )}
 
           {phase === 'entry' ? (
             /* ── ENTRY GATE ── */
-            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full">
-              <motion.div
-                initial={{ scale: 1, opacity: 1 }}
-                className="mb-8"
-              >
-                <div className="w-40 h-40 md:w-56 md:h-56 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#C9A84C]/50 shadow-2xl mb-6 mx-auto">
-                  <img src="/logo.jpg" alt="Chaitali's Artbizz Logo" className="w-full h-full object-cover rounded-full" width="224" height="224" fetchpriority="high" />
-                </div>
-                <h1 className="text-2xl md:text-4xl font-cinzel font-bold tracking-widest text-[#F0DFA0] mb-2 drop-shadow-md">
-                  CHAITALI'S ARTBIZZ
-                </h1>
-                <p className="text-sm text-[#C9A84C] tracking-[0.2em] uppercase font-light">
-                  Fine Art Gallery
-                </p>
-              </motion.div>
+            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 h-full pt-[240px] md:pt-[300px]">
 
               <motion.button
                 initial={{ y: 20, opacity: 0 }}

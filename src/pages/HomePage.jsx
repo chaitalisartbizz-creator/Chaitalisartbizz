@@ -57,15 +57,15 @@ function HeroCarousel() {
             {s.mobileImage ? (
               <>
                 <div className="block md:hidden w-full">
-                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-auto block" loading="eager" />
+                  <MediaDisplay src={s.mobileImage} alt="Hero Banner Mobile" className="w-full h-auto block" loading="eager" sizes="100vw" />
                 </div>
                 <div className="hidden md:block w-full">
-                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-auto block" loading="eager" />
+                  <MediaDisplay src={s.heroImage} alt="Hero Banner Desktop" className="w-full h-auto block" loading="eager" sizes="100vw" />
                 </div>
               </>
             ) : s.heroImage ? (
               <div className="w-full">
-                <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-auto block" loading="eager" />
+                <MediaDisplay src={s.heroImage} alt="Hero Banner" className="w-full h-auto block" loading="eager" sizes="100vw" />
               </div>
             ) : null}
           </motion.div>

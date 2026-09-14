@@ -28,7 +28,7 @@ function getUnsplashProps(src) {
 
     return {
       srcSet,
-      sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      sizes: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
     };
   } catch (e) {
     console.error("Error building responsive Unsplash srcSet:", e);
@@ -60,7 +60,7 @@ function getCloudinaryProps(src) {
       return { 
         src: optimizedSrc,
         srcSet,
-        sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+        sizes: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
       };
     }
   } catch (e) {
