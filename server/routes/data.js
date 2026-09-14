@@ -52,6 +52,7 @@ router.get('/', async (req, res) => {
     let promoCodes = [];
     try { promoCodes = await prisma.promoCode.findMany(); } catch(e) { /* table may not exist in prod yet */ }
 
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=86400');
     res.json({
       slides,
       banners,
