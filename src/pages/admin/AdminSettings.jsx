@@ -10,6 +10,10 @@ import { Link } from 'react-router-dom';
 export default function AdminSettings() {
   const { frontendSettings, setFrontendSettings, refreshData } = useData();
   const [formData, setFormData] = useState(frontendSettings || {});
+  
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, ...frontendSettings }));
+  }, [frontendSettings]);
   const [activeTab, setActiveTab] = useState('general');
   const [isClearing, setIsClearing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);

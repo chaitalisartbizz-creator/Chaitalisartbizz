@@ -128,8 +128,6 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     }, 300);
   };
 
-  if (skip) return null;
-
   useEffect(() => {
     // Hide the HTML skeleton once we transition past the entry phase
     if (phase !== 'entry' || skip) {
@@ -141,6 +139,8 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
       }
     }
   }, [phase, skip]);
+
+  if (skip) return null;
 
   return (
     <AnimatePresence>

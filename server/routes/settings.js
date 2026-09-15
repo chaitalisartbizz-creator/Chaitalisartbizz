@@ -37,22 +37,22 @@ router.put('/', async (req, res) => {
     let settings = await prisma.frontendSetting.findFirst();
 
     const data = {
-      storeName: storeName || '',
-      tagline: tagline || '',
-      logoChar: logoChar || '',
-      footerDescription: footerDescription || '',
-      facebookUrl: facebookUrl || '',
-      instagramUrl: instagramUrl || '',
-      youtubeUrl: youtubeUrl || '',
-      whatsappNumber: whatsappNumber || '',
-      razorpayKeyId: razorpayKeyId !== undefined ? razorpayKeyId : null,
-      whatsappOrderNumber: whatsappOrderNumber !== undefined ? whatsappOrderNumber : null,
-      siteAudioUrl: uploadedAudioUrl !== undefined ? uploadedAudioUrl : null,
-      contactEmail: contactEmail !== undefined ? contactEmail : null,
-      contactPhone: contactPhone !== undefined ? contactPhone : null,
-      aboutUsData: aboutUsData !== undefined ? aboutUsData : null,
-      upiId: upiId !== undefined ? upiId : null,
-      upiQrImage: upiQrImage !== undefined ? upiQrImage : null,
+      storeName: storeName !== undefined ? storeName : (settings?.storeName || ''),
+      tagline: tagline !== undefined ? tagline : (settings?.tagline || ''),
+      logoChar: logoChar !== undefined ? logoChar : (settings?.logoChar || ''),
+      footerDescription: footerDescription !== undefined ? footerDescription : (settings?.footerDescription || ''),
+      facebookUrl: facebookUrl !== undefined ? facebookUrl : (settings?.facebookUrl || ''),
+      instagramUrl: instagramUrl !== undefined ? instagramUrl : (settings?.instagramUrl || ''),
+      youtubeUrl: youtubeUrl !== undefined ? youtubeUrl : (settings?.youtubeUrl || ''),
+      whatsappNumber: whatsappNumber !== undefined ? whatsappNumber : (settings?.whatsappNumber || ''),
+      razorpayKeyId: razorpayKeyId !== undefined ? razorpayKeyId : (settings ? settings.razorpayKeyId : null),
+      whatsappOrderNumber: whatsappOrderNumber !== undefined ? whatsappOrderNumber : (settings ? settings.whatsappOrderNumber : null),
+      siteAudioUrl: uploadedAudioUrl !== undefined ? uploadedAudioUrl : (settings ? settings.siteAudioUrl : null),
+      contactEmail: contactEmail !== undefined ? contactEmail : (settings ? settings.contactEmail : null),
+      contactPhone: contactPhone !== undefined ? contactPhone : (settings ? settings.contactPhone : null),
+      aboutUsData: aboutUsData !== undefined ? aboutUsData : (settings ? settings.aboutUsData : null),
+      upiId: upiId !== undefined ? upiId : (settings ? settings.upiId : null),
+      upiQrImage: upiQrImage !== undefined ? upiQrImage : (settings ? settings.upiQrImage : null),
     };
 
     if (settings) {
