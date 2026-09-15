@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import CheckoutModal from './CheckoutModal';
 import MediaDisplay from './MediaDisplay';
+import { deliveryFee, grandTotal } from '../utils/checkoutMath';
 
 export default function CartDrawer() {
   const {
@@ -15,8 +16,6 @@ export default function CartDrawer() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const savings = cartItems.reduce((s, i) => s + (i.mrp - i.price) * i.qty, 0);
-  const freeShippingTarget = 999;
-  const isFreeDelivery = cartTotal >= freeShippingTarget;
 
   if (!cartOpen && !checkoutOpen) return null;
 
@@ -67,21 +66,12 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            {/* Free Shipping Progress Indicator */}
+            {/* Free Shipping Progress Indicator Removed */}
             <div className="bg-[#F2EDE4] border-b border-[#C9A84C]/40 px-5 py-3">
-              <div className="flex justify-between items-center text-xs font-bold mb-1.5">
+              <div className="flex justify-between items-center text-xs font-bold">
                 <span className="text-stone-900 flex items-center gap-1">
-                  <ShieldCheck size={14} className="text-[#A8873A]" /> Priority Shipping
+                  <ShieldCheck size={14} className="text-[#A8873A]" /> Secure Checkout Guaranteed
                 </span>
-                <span className={isFreeDelivery ? 'text-emerald-700' : 'text-stone-600'}>
-                  {isFreeDelivery ? '🎉 FREE SHIPPING UNLOCKED!' : `Add ₹${freeShippingTarget - cartTotal} more`}
-                </span>
-              </div>
-              <div className="h-2 w-full bg-[#C9A84C]/20 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-[#8B5E7A] to-emerald-600 transition-all duration-300"
-                  style={{ width: `${Math.min(100, (cartTotal / freeShippingTarget) * 100)}%` }}
-                />
               </div>
             </div>
 
@@ -170,14 +160,14 @@ export default function CartDrawer() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-stone-600">Priority Delivery</span>
-                    <span className={isFreeDelivery ? 'text-emerald-700 font-bold' : 'text-stone-800 font-semibold'}>
-                      {isFreeDelivery ? 'FREE 🎉' : '₹79'}
+                    <span className="text-stone-800 font-semibold">
+                      ₹{deliveryFee(cartTotal)}
                     </span>
                   </div>
                   <div className="border-t border-[#C9A84C]/30 pt-2 flex justify-between">
                     <span className="text-stone-900 font-bold font-cinzel">Grand Total</span>
                     <span className="text-[#2C2C2C] font-black text-xl">
-                      ₹{cartTotal + (isFreeDelivery ? 0 : 79)}
+                      ₹{grandTotal(cartTotal)}
                     </span>
                   </div>
                 </div>
@@ -202,7 +192,7 @@ export default function CartDrawer() {
         isOpen={checkoutOpen}
         onClose={() => setCheckoutOpen(false)}
         cartItems={cartItems}
-        cartTotal={cartTotal + (isFreeDelivery ? 0 : 79)}
+        cartTotal={cartTotal}
         onOrderSuccess={handleOrderSuccess}
       />
 

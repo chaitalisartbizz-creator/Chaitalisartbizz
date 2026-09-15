@@ -755,15 +755,15 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                         </div>
 
                         {/* WhatsApp screenshot note */}
-                        <div className="mt-1 w-full bg-[#25D366]/10 border border-[#25D366]/40 rounded-xl px-3 py-2.5 flex items-start gap-2">
-                          <span className="text-base flex-shrink-0">📸</span>
-                          <p className="text-[11px] text-stone-700 font-semibold leading-snug">
-                            After payment, please <span className="font-black text-[#25D366]">share the screenshot</span> on WhatsApp:{' '}
+                        <div className="mt-2 w-full bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 border-2 border-[#25D366] rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm shadow-[#25D366]/20">
+                          <span className="text-2xl flex-shrink-0 animate-bounce">📸</span>
+                          <p className="text-sm text-stone-900 font-bold leading-snug">
+                            After payment, please <span className="font-black text-emerald-700 underline decoration-2 underline-offset-2">share the screenshot</span> on WhatsApp:{' '}
                             <a
                               href={`https://wa.me/${frontendSettings?.whatsappOrderNumber || frontendSettings?.whatsappNumber || '917020821578'}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="font-black text-[#25D366] underline"
+                              className="font-black text-[#25D366] underline decoration-2 underline-offset-2 text-base whitespace-nowrap block mt-1"
                             >
                               +{frontendSettings?.whatsappOrderNumber || frontendSettings?.whatsappNumber || '91 70208 21578'}
                             </a>
@@ -850,18 +850,18 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
 
                 {/* UPI screenshot reminder */}
                 {confirmedOrder.paymentMethod === 'UPI / QR Payment' && (
-                  <div className="w-full bg-[#25D366]/10 border border-[#25D366]/40 rounded-2xl px-4 py-3 flex items-start gap-3">
-                    <span className="text-xl flex-shrink-0">📸</span>
+                  <div className="w-full bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 border-2 border-[#25D366] rounded-2xl px-4 py-3 flex items-start gap-3 shadow-sm shadow-[#25D366]/20">
+                    <span className="text-2xl flex-shrink-0 animate-bounce">📸</span>
                     <div>
-                      <p className="text-xs font-black text-stone-800">Payment Pending — Action Required!</p>
-                      <p className="text-[11px] text-stone-600 mt-0.5 leading-snug">
-                        Please complete the UPI payment and <span className="font-black text-[#25D366]">share the payment screenshot</span> on WhatsApp to confirm your order:
+                      <p className="text-xs font-black text-stone-800 uppercase tracking-wide">Payment Action Required!</p>
+                      <p className="text-[11px] text-stone-900 mt-1 leading-snug font-bold">
+                        Please complete the UPI payment and <span className="font-black text-emerald-700 underline decoration-2 underline-offset-2">share the payment screenshot</span> on WhatsApp to confirm your order:
                       </p>
                       <a
                         href={`https://wa.me/${(frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block mt-1.5 font-black text-[#25D366] text-xs underline"
+                        className="inline-block mt-1.5 font-black text-[#25D366] text-sm underline decoration-2 underline-offset-2"
                       >
                         +91 70208 21578 →
                       </a>
