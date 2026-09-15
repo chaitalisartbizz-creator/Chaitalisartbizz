@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+// GET Razorpay key ID (Server-Side Secret Management)
+router.get('/key', (req, res) => {
+  if (!process.env.RAZORPAY_KEY_ID) {
+    return res.status(500).json({ error: 'Razorpay key not configured in backend' });
+  }
+  res.json({ key: process.env.RAZORPAY_KEY_ID });
+});
+
 // POST create Razorpay order
 router.post('/create-order', async (req, res) => {
   try {

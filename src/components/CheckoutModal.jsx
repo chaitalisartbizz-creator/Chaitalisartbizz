@@ -295,10 +295,12 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   }
 
   async function placeOnline() {
-    const keyId = frontendSettings?.razorpayKeyId;
-    if (!keyId) { showToast('Razorpay online gateway is pending config. Please use Cash on Delivery.'); return; }
     setLoading(true);
     try {
+      const keyRes = await axios.get('/api/payment/key');
+      const keyId = keyRes.data.key;
+      if (!keyId) { showToast('Razorpay online gateway is pending config. Please use Cash on Delivery.'); setLoading(false); return; }
+      
       const orderRes = await axios.post('/api/payment/create-order', { amount: grandTotal(cartTotal) * 100 });
       const rpOrder  = orderRes.data;
       const loaded   = await loadRazorpayScript();

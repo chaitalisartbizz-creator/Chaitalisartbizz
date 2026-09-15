@@ -78,7 +78,6 @@ export default function AdminPayment() {
   const { frontendSettings, refreshData } = useData();
 
   const [onlinePaymentEnabled, setOnlinePaymentEnabled] = useState(false);
-  const [razorpayKeyId, setRazorpayKeyId] = useState('');
   const [testMode, setTestMode] = useState(true);
   const [codEnabled, setCodEnabled] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState({
@@ -89,17 +88,20 @@ export default function AdminPayment() {
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  // Seed form from frontendSettings once available
+  // Check if Razorpay is configured in the backend
   useEffect(() => {
-    if (frontendSettings) {
-      const key = frontendSettings.razorpayKeyId ?? '';
-      setRazorpayKeyId(key);
-      if (key) {
-        setOnlinePaymentEnabled(true);
-        setTestMode(!key.startsWith('rzp_live'));
-      }
-    }
-  }, [frontendSettings]);
+    axios.get('/api/payment/key')
+      .then(res => {
+        const key = res.data.key;
+        if (key) {
+          setOnlinePaymentEnabled(true);
+          setTestMode(!key.startsWith('rzp_live'));
+        }
+      })
+      .catch(() => {
+        setOnlinePaymentEnabled(false);
+      });
+  }, []);
 
   const togglePaymentMethod = (method) => {
     setPaymentMethods(prev => ({ ...prev, [method]: !prev[method] }));
@@ -110,7 +112,6 @@ export default function AdminPayment() {
     try {
       await axios.put('/api/settings', {
         ...(frontendSettings ?? {}),
-        razorpayKeyId: onlinePaymentEnabled ? razorpayKeyId : '',
       });
       await refreshData();
       window.dispatchEvent(
@@ -125,10 +126,6 @@ export default function AdminPayment() {
       setIsSaving(false);
     }
   };
-
-  const isLiveKey = razorpayKeyId.startsWith('rzp_live');
-  const isTestKey = razorpayKeyId.startsWith('rzp_test');
-  const keyIsValid = isLiveKey || isTestKey || razorpayKeyId === '';
 
   return (
     <div className="max-w-3xl animate-fade-in">
@@ -212,64 +209,12 @@ export default function AdminPayment() {
               {onlinePaymentEnabled && (
                 <>
                   <hr className="border-gray-100" />
-
-                  {/* Key ID */}
-                  <div>
-                    <label
-                      htmlFor="razorpay-key-id"
-                      className="block text-sm font-semibold text-gray-700 mb-2"
-                    >
-                      Razorpay Key ID
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="razorpay-key-id"
-                        type="text"
-                        value={razorpayKeyId}
-                        onChange={e => setRazorpayKeyId(e.target.value)}
-                        placeholder="rzp_test_..."
-                        className={`w-full px-4 py-3 pr-12 bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 transition-all font-mono text-sm ${
-                          !keyIsValid
-                            ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
-                            : 'border-gray-200 focus:border-[#C9A84C] focus:ring-[#F2EDE4]'
-                        }`}
-                      />
-                      {razorpayKeyId && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2">
-                          {keyIsValid ? (
-                            <CheckCircle size={18} className="text-green-500" />
-                          ) : (
-                            <AlertTriangle size={18} className="text-red-400" />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    {isLiveKey && (
-                      <p className="mt-1.5 text-xs font-semibold text-green-600">
-                        ✓ Live key detected — real payments will be processed.
-                      </p>
-                    )}
-                    {isTestKey && (
-                      <p className="mt-1.5 text-xs font-semibold text-gray-200">
-                        ✓ Test key detected — no real money will be charged.
-                      </p>
-                    )}
-                    {!keyIsValid && razorpayKeyId && (
-                      <p className="mt-1.5 text-xs font-semibold text-red-500">
-                        Key must start with <code>rzp_test_</code> or <code>rzp_live_</code>.
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Secret key info box */}
-                  <InfoBanner icon={Shield} color="red">
-                    Add{' '}
-                    <code className="bg-red-100 px-1 py-0.5 rounded text-xs">
-                      RAZORPAY_KEY_SECRET
-                    </code>{' '}
-                    to your{' '}
-                    <code className="bg-red-100 px-1 py-0.5 rounded text-xs">server/.env</code>{' '}
-                    file. Never expose the secret key here — it must stay server-side only.
+                  {/* Server-Side Secret Management Info */}
+                  <InfoBanner icon={Shield} color="green">
+                    <strong>Secure API Proxy Pattern Enabled</strong>
+                    <p className="mt-1">
+                      Razorpay keys (<code>RAZORPAY_KEY_ID</code> and <code>RAZORPAY_KEY_SECRET</code>) are now securely managed via Server-Side Secret Management in your backend <code>.env</code> file. The frontend fetches the public key dynamically via the <code>/api/payment/key</code> endpoint.
+                    </p>
                   </InfoBanner>
                 </>
               )}

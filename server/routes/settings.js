@@ -20,7 +20,7 @@ router.put('/', async (req, res) => {
     const {
       storeName, tagline, logoChar, footerDescription,
       facebookUrl, instagramUrl, youtubeUrl, whatsappNumber,
-      logoBase64, razorpayKeyId, whatsappOrderNumber,
+      logoBase64, whatsappOrderNumber,
       siteAudioUrl, contactEmail, contactPhone, aboutUsData,
       upiId, upiQrImage
     } = req.body;
@@ -45,7 +45,6 @@ router.put('/', async (req, res) => {
       instagramUrl: instagramUrl !== undefined ? instagramUrl : (settings?.instagramUrl || ''),
       youtubeUrl: youtubeUrl !== undefined ? youtubeUrl : (settings?.youtubeUrl || ''),
       whatsappNumber: whatsappNumber !== undefined ? whatsappNumber : (settings?.whatsappNumber || ''),
-      razorpayKeyId: razorpayKeyId !== undefined ? razorpayKeyId : (settings ? settings.razorpayKeyId : null),
       whatsappOrderNumber: whatsappOrderNumber !== undefined ? whatsappOrderNumber : (settings ? settings.whatsappOrderNumber : null),
       siteAudioUrl: uploadedAudioUrl !== undefined ? uploadedAudioUrl : (settings ? settings.siteAudioUrl : null),
       contactEmail: contactEmail !== undefined ? contactEmail : (settings ? settings.contactEmail : null),
