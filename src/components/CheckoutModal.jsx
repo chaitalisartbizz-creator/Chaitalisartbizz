@@ -387,7 +387,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
 
   const openWhatsApp = useCallback(() => {
     if (!confirmedOrder) return;
-    const phone   = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
+    const phone = '917020821578';
     const message = buildWhatsAppMessage(confirmedOrder.orderId, form, confirmedOrder.items || cartItems, confirmedOrder.total || grandTotal(cartTotal), confirmedOrder.paymentMethod);
     openWhatsAppSafe(`https://wa.me/${phone}?text=${message}`);
   }, [confirmedOrder, form, cartItems, cartTotal, frontendSettings]);
@@ -762,12 +762,12 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                           <p className="text-sm text-stone-900 font-bold leading-snug">
                             After payment, please <span className="font-black text-emerald-700 underline decoration-2 underline-offset-2">share the screenshot</span> on WhatsApp:{' '}
                             <a
-                              href={`https://wa.me/${frontendSettings?.whatsappOrderNumber || frontendSettings?.whatsappNumber || '917020821578'}`}
+                              href="https://wa.me/917020821578"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="font-black text-[#25D366] underline decoration-2 underline-offset-2 text-base whitespace-nowrap block mt-1"
                             >
-                              +{frontendSettings?.whatsappOrderNumber || frontendSettings?.whatsappNumber || '91 70208 21578'}
+                              +917020821578
                             </a>
                           </p>
                         </div>
@@ -860,12 +860,12 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                         Please complete the UPI payment and <span className="font-black text-emerald-700 underline decoration-2 underline-offset-2">share the payment screenshot</span> on WhatsApp to confirm your order:
                       </p>
                       <a
-                        href={`https://wa.me/${(frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '')}`}
+                        href="https://wa.me/917020821578"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block mt-1.5 font-black text-[#25D366] text-sm underline decoration-2 underline-offset-2"
                       >
-                        +91 70208 21578 →
+                        +917020821578 →
                       </a>
                     </div>
                   </div>
