@@ -74,7 +74,7 @@ const AdminMasterclass = lazyWithRetry(() => import('./pages/admin/AdminMastercl
 // Protected Admin Route Component
 const ProtectedAdminRoute = ({ children }) => {
   const { isAdmin } = useAuth();
-  if (!isAdmin) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/login?admin=true" replace />;
   return children;
 };
 

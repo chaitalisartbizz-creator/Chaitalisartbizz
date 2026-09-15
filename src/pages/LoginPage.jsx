@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { ChevronLeft, ArrowRight, Lock, ShieldCheck, Mail } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 
 export default function LoginPage() {
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [showAdminLogin, setShowAdminLogin] = useState(searchParams.get('admin') === 'true');
   const [email, setEmail] = useState('chaitalisartbizz@gmail.com');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,12 @@ export default function LoginPage() {
   
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (searchParams.get('admin') === 'true') {
+      setShowAdminLogin(true);
+    }
+  }, [searchParams]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -88,15 +95,6 @@ export default function LoginPage() {
                   <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" className="w-5 h-5" />
                   {loading ? 'Signing in...' : 'Continue with Google'}
                 </button>
-
-                <div className="mt-4 pt-4 border-t border-[#C9A84C]/20">
-                  <button 
-                    onClick={() => setShowAdminLogin(true)}
-                    className="w-full bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#1A1A1A] font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <ShieldCheck size={16} /> Admin Portal Access ⚡
-                  </button>
-                </div>
               </div>
             ) : (
               <form onSubmit={handleAdminEmailLogin} className="relative z-10 flex flex-col gap-4">
