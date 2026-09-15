@@ -26,11 +26,10 @@ function buildWhatsAppMessage(orderId, customerInfo, cartItems, total, paymentMe
   let msg = `Hi Chaitali! I just placed an order through your website (Order #${orderId}). ✨\n\n`;
   msg += `Here are my order details:\n`;
   msg += `${itemLines}\n\n`;
-  msg += `*Total Amount:* ₹${total}\n`;
-  msg += `*Payment Method:* ${paymentMethod}\n\n`;
+  msg += `*Total Amount:* ₹${total}\n\n`;
   msg += `*My Details:*\nName: ${customerInfo.name}\nPhone: ${customerInfo.phone}\nAddress: ${[customerInfo.address, customerInfo.city, customerInfo.pincode].filter(Boolean).join(', ')}\n\n`;
   
-  if (paymentMethod === 'UPI / QR Payment' || paymentMethod === 'Online Payment') {
+  if (paymentMethod === 'UPI / QR Payment') {
     msg += `I have attached the payment screenshot above. Could you please confirm my order? Thank you! 🙏`;
   } else {
     msg += `Could you please confirm my order? Thank you! 🙏`;
