@@ -280,7 +280,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
       setOrderStep('confirmed');
       await new Promise(r => setTimeout(r, 700));
       const orderId = res.data?.orderId || res.data?.order?.id || res.data?.id || `ARTBIZZ${Date.now()}`;
-      const order = { orderId, paymentMethod: 'Cash on Delivery (COD)' };
+      const order = { orderId, paymentMethod: 'Cash on Delivery (COD)', total: grandTotal(cartTotal), items: [...cartItems] };
       setConfirmedOrder(order);
       setOrderStep('whatsapp');
       await new Promise(r => setTimeout(r, 500));
@@ -325,7 +325,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
               razorpayOrderId: rpOrder.id, razorpayPaymentId: response.razorpay_payment_id,
             });
             const orderId = saveRes.data?.orderId || saveRes.data?.order?.id || saveRes.data?.id || `ARTBIZZ${Date.now()}`;
-            setConfirmedOrder({ orderId, paymentMethod: 'Online Payment' });
+            setConfirmedOrder({ orderId, paymentMethod: 'Online Payment', total: grandTotal(cartTotal), items: [...cartItems] });
             goTo(2);
             if (onOrderSuccess) onOrderSuccess(orderId);
           } catch (verifyErr) {
@@ -361,7 +361,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
           paymentMethod:   'UPI',
         });
         const orderId = res.data?.orderId || res.data?.order?.id || res.data?.id || `ARTBIZZ${Date.now()}`;
-        setConfirmedOrder({ orderId, paymentMethod: 'UPI / QR Payment' });
+        setConfirmedOrder({ orderId, paymentMethod: 'UPI / QR Payment', total: grandTotal(cartTotal), items: [...cartItems] });
         goTo(2);
         if (onOrderSuccess) onOrderSuccess(orderId);
               } catch (err) {
@@ -386,7 +386,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
   const openWhatsApp = useCallback(() => {
     if (!confirmedOrder) return;
     const phone   = (frontendSettings?.whatsappOrderNumber || '917020821578').replace(/\D/g, '');
-    const message = buildWhatsAppMessage(confirmedOrder.orderId, form, cartItems, grandTotal(cartTotal), confirmedOrder.paymentMethod);
+    const message = buildWhatsAppMessage(confirmedOrder.orderId, form, confirmedOrder.items || cartItems, confirmedOrder.total || grandTotal(cartTotal), confirmedOrder.paymentMethod);
     openWhatsAppSafe(`https://wa.me/${phone}?text=${message}`);
   }, [confirmedOrder, form, cartItems, cartTotal, frontendSettings]);
 
@@ -840,7 +840,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, cartTotal, o
                   ))}
                   <div className="border-t border-[#C9A84C]/30 pt-2 flex justify-between text-sm font-black text-stone-900">
                     <span>Total Amount</span>
-                    <span className="text-[#2C2C2C] font-extrabold">₹{grandTotal(cartTotal)}</span>
+                    <span className="text-[#2C2C2C] font-extrabold">₹{confirmedOrder.total}</span>
                   </div>
                 </div>
 
