@@ -245,7 +245,7 @@ function AppInner() {
         id="site-bg-audio"
         src={frontendSettings?.siteAudioUrl || '/background.mp3'}
         loop
-        preload="none"
+        preload="auto"
         className="hidden"
       />
       

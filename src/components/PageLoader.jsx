@@ -107,8 +107,16 @@ export default function PageLoader({ onFinish, skip, dataReady }) {
     // Play audio on user gesture
     try {
       const audio = document.getElementById('site-bg-audio');
-      if (audio?.play) { audio.volume = 0.3; audio.play().catch(() => {}); }
-    } catch (_) {}
+      if (audio) {
+        audio.volume = 0.3;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((e) => console.warn('Audio play failed:', e));
+        }
+      }
+    } catch (e) {
+      console.warn('Error accessing audio element:', e);
+    }
 
     setPhase('loading');
 
