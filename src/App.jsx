@@ -70,6 +70,7 @@ const AdminRetention = lazyWithRetry(() => import('./pages/admin/AdminRetention'
 const AdminNotifications = lazyWithRetry(() => import('./pages/admin/AdminNotifications'));
 const AdminFeaturedCollections = lazyWithRetry(() => import('./pages/admin/AdminFeaturedCollections'));
 const AdminMasterclass = lazyWithRetry(() => import('./pages/admin/AdminMasterclass'));
+const AdminChat = lazyWithRetry(() => import('./pages/admin/AdminChat'));
 
 // Protected Admin Route Component
 const ProtectedAdminRoute = ({ children }) => {
@@ -225,6 +226,7 @@ function AppInner() {
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="retention" element={<AdminRetention />} />
                 <Route path="notifications" element={<AdminNotifications />} />
+                <Route path="chat" element={<AdminChat />} />
               </Route>
             </Routes>
           </AnimatePresence>

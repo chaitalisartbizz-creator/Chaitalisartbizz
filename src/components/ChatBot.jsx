@@ -2,141 +2,240 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, X, Send, ShieldCheck } from 'lucide-react';
+import { MessageSquare, X, Send, ShieldCheck, ChevronDown, RefreshCw, Check, CheckCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Quick function to get visitor ID from localStorage
+const getVisitorId = () => {
+  let vid = localStorage.getItem('visitorId');
+  if (!vid) {
+    vid = 'v_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('visitorId', vid);
+  }
+  return vid;
+};
+
+// --- Helper for grouping and dates ---
+const groupMessages = (messages) => {
+  const grouped = [];
+  let currentGroup = null;
+  let currentDate = null;
+
+  messages.forEach((msg, index) => {
+    const msgDate = new Date(msg.timestamp || Date.now());
+    const dateString = msgDate.toLocaleDateString();
+
+    if (dateString !== currentDate) {
+      grouped.push({ type: 'date', date: dateString });
+      currentDate = dateString;
+      currentGroup = null; // force new group on new day
+    }
+
+    if (!currentGroup || currentGroup.sender !== msg.sender || (msgDate - new Date(currentGroup.messages[currentGroup.messages.length - 1].timestamp)) > 60000) {
+      currentGroup = {
+        type: 'messageGroup',
+        sender: msg.sender,
+        messages: []
+      };
+      grouped.push(currentGroup);
+    }
+    currentGroup.messages.push({ ...msg, index });
+  });
+
+  return grouped;
+};
+
+const formatTime = (isoString) => {
+  if (!isoString) return '';
+  return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
 
 export default function ChatBot() {
-  const { user, login, register, checkUserExists, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { frontendSettings } = useData();
   const navigate = useNavigate();
   
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [step, setStep] = useState('INITIAL');
+  const [isTyping, setIsTyping] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
   
-  const [capturedName, setCapturedName] = useState('');
-  const [capturedContact, setCapturedContact] = useState('');
-  const [authMode, setAuthMode] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const messagesEndRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const inputRef = useRef(null);
+  const visitorId = getVisitorId();
+
+  // Load chat history from backend on open
+  useEffect(() => {
+    const loadSession = async () => {
+      try {
+        const storedSessionId = localStorage.getItem('chatSessionId');
+        if (storedSessionId) {
+          const res = await axios.get(`${API_URL}/chat/session/${storedSessionId}`);
+          setSessionId(res.data.id);
+          setMessages(res.data.messages);
+        }
+      } catch (e) {
+        console.error("Failed to load session", e);
+      }
+    };
+    if (isOpen && !sessionId) {
+      loadSession();
+    }
+  }, [isOpen, sessionId]);
+
+  // Initial greeting
+  useEffect(() => {
+    if (isOpen && messages.length === 0 && !isTyping) {
+      const greeting = isAuthenticated 
+        ? `Welcome back to Chaitali's Artbizz, ${user?.name?.split(' ')[0] || 'friend'}! ✨ How can I assist you with your creative art projects today?`
+        : `Greetings! I am your Artbizz Assistant. How can I help you discover our unique resin artworks today?`;
+      
+      handleBotResponse(greeting, true);
+    }
+  }, [isOpen, messages.length, isAuthenticated, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setUnreadCount(0);
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOpen]);
-
-  // Auto-open chatbot assistant after 20 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen((prev) => prev || true);
-    }, 20000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Initialize greeting
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      if (isAuthenticated) {
-        setStep('MAIN_MENU');
-        setMessages([
-          { sender: 'bot', text: `Welcome back to Chaitali's Artbizz, ${user?.name?.split(' ')[0]}! ✨ How can I assist you with your creative art projects today?`, isMenu: true }
-        ]);
-      } else {
-        setStep('ASK_NAME');
-        setMessages([
-          { sender: 'bot', text: `Greetings! I am your Artbizz Assistant. May I know your name to recommend our unique resin artworks and custom pieces?` }
-        ]);
+    if (!showScrollButton) {
+      scrollToBottom();
+    } else {
+      if (messages.length > 0 && messages[messages.length - 1].sender === 'bot') {
+        setUnreadCount(prev => prev + 1);
       }
     }
-  }, [isOpen, isAuthenticated, user, messages.length]);
+  }, [messages]);
 
-  const addMessage = (text, sender, isMenu = false) => {
-    setMessages(prev => [...prev, { text, sender, isMenu }]);
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isScrolledUp = scrollHeight - scrollTop - clientHeight > 100;
+    setShowScrollButton(isScrolledUp);
+    if (!isScrolledUp) setUnreadCount(0);
+  };
+
+  const handleInput = (e) => {
+    setInputValue(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+  };
+
+  const saveMessageToBackend = async (text, sender, currentSessionId = sessionId) => {
+    try {
+      const res = await axios.post(`${API_URL}/chat/message`, {
+        visitorId,
+        text,
+        sender,
+        sessionId: currentSessionId
+      });
+      if (res.data.sessionId && !currentSessionId) {
+        setSessionId(res.data.sessionId);
+        localStorage.setItem('chatSessionId', res.data.sessionId);
+      }
+      return res.data.message;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   };
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
-    const input = inputValue.trim();
+    const text = inputValue.trim();
     setInputValue('');
-
-    if (step === 'VERIFY_AUTH') {
-      addMessage('••••••••', 'user');
-    } else {
-      addMessage(input, 'user');
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
     }
 
-    if (step === 'ASK_NAME') {
-      setCapturedName(input);
-      setStep('ASK_CONTACT');
-      setTimeout(() => {
-        addMessage(`Pleasure to meet you, ${input}! Please share your phone or email so we can save your art preferences.`, 'bot');
-      }, 500);
-      return;
+    const tempId = Date.now().toString();
+    const newUserMsg = { id: tempId, text, sender: 'user', timestamp: new Date().toISOString(), status: 'sending' };
+    setMessages(prev => [...prev, newUserMsg]);
+
+    const savedMsg = await saveMessageToBackend(text, 'user');
+    
+    setMessages(prev => prev.map(m => m.id === tempId ? { ...m, status: savedMsg ? 'sent' : 'error' } : m));
+
+    // Simulate intent detection and bot response
+    setIsTyping(true);
+    setTimeout(() => {
+      processIntentAndRespond(text);
+    }, 1500);
+  };
+
+  const processIntentAndRespond = async (text) => {
+    const lower = text.toLowerCase();
+    let reply = "I'm still learning! Would you like to explore our collections or speak to Chaitali?";
+    let isRich = false;
+    let richType = null;
+
+    if (lower.includes('track') || lower.includes('order')) {
+      reply = "I can help you track your order. Please visit your account page to see live status.";
+      isRich = true;
+      richType = 'track';
+    } else if (lower.includes('refund') || lower.includes('return') || lower.includes('cancel')) {
+      reply = "I understand you have questions about returns or refunds. For this, it's best to speak directly with us on WhatsApp.";
+      isRich = true;
+      richType = 'human';
+    } else if (lower.includes('human') || lower.includes('agent') || lower.includes('owner') || lower.includes('chaitali')) {
+      reply = "I'll connect you directly with Chaitali on WhatsApp for personalized assistance.";
+      isRich = true;
+      richType = 'human';
+    } else if (lower.includes('custom') || lower.includes('portrait')) {
+      reply = "We love doing custom work! You can request a custom portrait or resin art piece directly from our Hub.";
+      isRich = true;
+      richType = 'custom';
     }
 
-    if (step === 'ASK_CONTACT') {
-      setCapturedContact(input);
-      setLoading(true);
-      
-      try {
-        const exists = await checkUserExists(input);
-        if (exists) {
-          setAuthMode('login');
-          setStep('VERIFY_AUTH');
-          addMessage('Welcome back! Please enter your password to access your VIP Artbizz account.', 'bot');
-        } else {
-          setAuthMode('register');
-          setStep('VERIFY_AUTH');
-          addMessage("Welcome to the Chaitali's Artbizz family! Create a password to claim your welcome discount.", 'bot');
-        }
-      } catch (err) {
-        console.error(err);
-        addMessage("Something went wrong. Please try again.", 'bot');
-      } finally {
-        setLoading(false);
-      }
-      return;
+    await handleBotResponse(reply, false, isRich ? richType : null);
+  };
+
+  const handleBotResponse = async (text, isInitial = false, richType = null) => {
+    setIsTyping(true);
+    
+    // Simulate streaming by adding a placeholder that we will update
+    const tempId = 'bot_' + Date.now().toString();
+    setMessages(prev => [...prev, { id: tempId, text: '', sender: 'bot', timestamp: new Date().toISOString(), richType }]);
+    setIsTyping(false);
+
+    let currentText = '';
+    const speed = 20; // ms per char
+    
+    for (let i = 0; i < text.length; i++) {
+      currentText += text[i];
+      setMessages(prev => prev.map(m => m.id === tempId ? { ...m, text: currentText } : m));
+      await new Promise(r => setTimeout(r, speed));
     }
 
-    if (step === 'VERIFY_AUTH') {
-      setLoading(true);
-      try {
-        if (authMode === 'login') {
-          await login(capturedContact, input);
-        } else {
-          await register(capturedName, capturedContact, input);
-        }
-        setStep('MAIN_MENU');
-        addMessage("You are successfully logged in! How can I serve you today?", 'bot', true);
-      } catch (err) {
-        addMessage(err.message + ". Please try again.", 'bot');
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
+    // Save to backend after fully "streamed"
+    await saveMessageToBackend(text, 'bot');
+    
+    // Mark previous user messages as 'read' (delivered state simulation)
+    setMessages(prev => prev.map(m => m.sender === 'user' && m.status === 'sent' ? { ...m, status: 'read' } : m));
   };
 
   const handleMenuAction = (action) => {
     if (action === 'shop') {
       navigate('/category');
       setIsOpen(false);
-    } else if (action === 'purity') {
+    } else if (action === 'custom') {
       navigate('/hub');
-      setIsOpen(false);
-    } else if (action === 'offers') {
-      navigate('/offers');
       setIsOpen(false);
     } else if (action === 'track') {
       navigate('/account');
       setIsOpen(false);
     }
   };
+
+  const groupedElements = groupMessages(messages);
 
   return (
     <>
@@ -149,10 +248,10 @@ export default function ChatBot() {
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
                 className="absolute bottom-16 right-0 w-[calc(100vw-2.5rem)] sm:w-96 bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#C9A84C]/30 flex flex-col"
-                style={{ height: '520px', maxHeight: '82vh' }}
+                style={{ height: '600px', maxHeight: '82vh' }}
               >
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#2C2C2C] via-[#1A1A1A] to-[#2C2C2C] p-4 flex items-center justify-between shadow-md">
+              <div className="bg-gradient-to-r from-[#2C2C2C] via-[#1A1A1A] to-[#2C2C2C] p-4 flex items-center justify-between shadow-md relative z-20">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full border-2 border-[#C9A84C] bg-white p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0">
                     <img src="/logo.jpg" alt="Artbizz Logo" className="w-full h-full object-contain" />
@@ -160,7 +259,7 @@ export default function ChatBot() {
                   <div>
                     <h3 className="text-[#F2EDE4] font-bold leading-tight font-cinzel text-sm">Artbizz Assistant</h3>
                     <p className="text-[#C9A84C] text-[10px] uppercase font-bold tracking-wider flex items-center gap-1">
-                      <ShieldCheck size={11} className="text-emerald-400" /> Premium Quality
+                      <ShieldCheck size={11} className="text-emerald-400" /> Online
                     </p>
                   </div>
                 </div>
@@ -170,83 +269,159 @@ export default function ChatBot() {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-4 bg-[#F2EDE4]/30 flex flex-col gap-3.5">
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] p-3.5 rounded-2xl text-sm shadow-sm ${msg.sender === 'user' ? 'bg-[#2C2C2C] text-[#C9A84C] rounded-tr-xs font-medium' : 'bg-white border border-[#C9A84C]/40 text-stone-800 rounded-tl-xs'}`}>
-                      {msg.text}
-                      {msg.isMenu && (
-                        <div className="mt-3 flex flex-col gap-2">
-                          <button onClick={() => handleMenuAction('shop')} className="w-full bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#2C2C2C] border border-[#C9A84C]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
-                            <span>🎨</span> Explore Art Collections
-                          </button>
-                          <button onClick={() => handleMenuAction('purity')} className="w-full bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#2C2C2C] border border-[#C9A84C]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
-                            <span>✨</span> Custom Portrait Request
-                          </button>
-                          <button onClick={() => handleMenuAction('offers')} className="w-full bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#2C2C2C] border border-[#C9A84C]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
-                            <span>🎁</span> Exclusive Offers
-                          </button>
-                          <button onClick={() => handleMenuAction('track')} className="w-full bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#2C2C2C] border border-[#C9A84C]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
-                            <span>📦</span> Track My Request
-                          </button>
+              <div 
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto p-4 bg-[#F2EDE4]/30 flex flex-col gap-4 relative"
+              >
+                {groupedElements.map((group, idx) => {
+                  if (group.type === 'date') {
+                    return (
+                      <div key={`date-${idx}`} className="flex justify-center my-2">
+                        <span className="text-[10px] font-bold text-stone-400 bg-stone-100 px-3 py-1 rounded-full uppercase tracking-wider">{group.date}</span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={`group-${idx}`} className={`flex ${group.sender === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
+                      {group.sender === 'bot' && (
+                        <div className="w-7 h-7 rounded-full border border-[#C9A84C] bg-white p-0.5 mr-2 flex-shrink-0 self-end mb-1">
+                          <img src="/logo.jpg" alt="Bot" className="w-full h-full object-contain rounded-full" />
                         </div>
                       )}
+                      
+                      <div className={`flex flex-col gap-1 max-w-[75%]`}>
+                        {group.messages.map((msg, mIdx) => {
+                          const isLast = mIdx === group.messages.length - 1;
+                          return (
+                            <div key={msg.id || mIdx} className="group relative flex flex-col">
+                              <div className={`p-3 text-sm shadow-sm relative ${
+                                msg.sender === 'user' 
+                                  ? 'bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] text-[#F0DFA0] rounded-2xl rounded-tr-sm' 
+                                  : 'bg-white border border-[#C9A84C]/40 text-stone-800 rounded-2xl rounded-tl-sm'
+                              }`}>
+                                {msg.text}
+                                
+                                {/* Hover Timestamp */}
+                                <div className={`absolute top-1/2 -translate-y-1/2 ${msg.sender === 'user' ? '-left-12' : '-right-12'} opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-stone-400 font-medium whitespace-nowrap`}>
+                                  {formatTime(msg.timestamp)}
+                                </div>
+                              </div>
+                              
+                              {/* Status Indicators for User */}
+                              {msg.sender === 'user' && (
+                                <div className="self-end mt-0.5 flex items-center gap-1">
+                                  {msg.status === 'sending' && <span className="text-[10px] text-stone-400">Sending...</span>}
+                                  {msg.status === 'sent' && <Check size={12} className="text-stone-400" />}
+                                  {msg.status === 'read' && <CheckCheck size={12} className="text-blue-500" />}
+                                  {msg.status === 'error' && (
+                                    <button className="text-[10px] text-red-500 flex items-center gap-1" onClick={() => {
+                                      // simple retry logic visual only for now
+                                      setMessages(prev => prev.map(m => m.id === msg.id ? {...m, status: 'sending'} : m));
+                                      setTimeout(() => setMessages(prev => prev.map(m => m.id === msg.id ? {...m, status: 'sent'} : m)), 1000);
+                                    }}>
+                                      <RefreshCw size={10} /> Retry
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Rich Action Cards */}
+                              {msg.richType === 'track' && (
+                                <div className="mt-2 flex flex-col gap-2">
+                                  <button onClick={() => handleMenuAction('track')} className="w-full bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#2C2C2C] border border-[#C9A84C]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
+                                    <span>📦</span> Open My Orders
+                                  </button>
+                                </div>
+                              )}
+                              {msg.richType === 'custom' && (
+                                <div className="mt-2 flex flex-col gap-2">
+                                  <button onClick={() => handleMenuAction('custom')} className="w-full bg-[#F2EDE4]/50 hover:bg-[#F2EDE4] text-[#2C2C2C] border border-[#C9A84C]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
+                                    <span>✨</span> Go to Creator Hub
+                                  </button>
+                                </div>
+                              )}
+                              {msg.richType === 'human' && (
+                                <div className="mt-2 flex flex-col gap-2">
+                                  <a href={`https://wa.me/${(frontendSettings?.whatsappNumber || '917020821578').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-full bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/40 py-2 px-3 rounded-xl text-xs font-bold transition-colors text-left flex items-center gap-2">
+                                    <span>💬</span> Connect on WhatsApp
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="bg-white border border-[#C9A84C]/40 p-3 rounded-2xl rounded-tl-xs shadow-sm flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#C9A84C] rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-[#C9A84C] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
-                      <div className="w-2 h-2 bg-[#C9A84C] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
+                  );
+                })}
+
+                {/* Inline Typing Indicator */}
+                {isTyping && (
+                  <div className="flex justify-start w-full">
+                    <div className="w-7 h-7 rounded-full border border-[#C9A84C] bg-white p-0.5 mr-2 flex-shrink-0 self-end mb-1">
+                      <img src="/logo.jpg" alt="Bot" className="w-full h-full object-contain rounded-full" />
+                    </div>
+                    <div className="bg-white border border-[#C9A84C]/40 p-3 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-1.5 self-end h-[38px]">
+                      <div className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full animate-bounce" />
+                      <div className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+                      <div className="w-1.5 h-1.5 bg-[#C9A84C] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
                     </div>
                   </div>
                 )}
-                <div ref={messagesEndRef} />
+                
+                <div ref={messagesEndRef} className="h-1" />
               </div>
 
-              {/* Input */}
-              {step !== 'MAIN_MENU' && (
-                <div className="p-3.5 bg-white border-t border-[#C9A84C]/30">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type={step === 'VERIFY_AUTH' ? 'password' : 'text'}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                      disabled={loading}
-                      placeholder={step === 'VERIFY_AUTH' ? "Enter password..." : "Type your message..."}
-                      className="flex-1 bg-[#F2EDE4]/30 border border-[#C9A84C]/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C] transition-all disabled:opacity-50"
-                    />
-                    <button
-                      onClick={handleSend}
-                      disabled={!inputValue.trim() || loading}
-                      className="bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] hover:shadow-lg text-[#C9A84C] p-2.5 rounded-xl transition-all disabled:opacity-50 shadow-md"
-                    >
-                      <Send size={18} />
-                    </button>
-                  </div>
+              {/* Scroll to bottom button */}
+              <AnimatePresence>
+                {showScrollButton && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    onClick={scrollToBottom}
+                    className="absolute bottom-[80px] left-1/2 -translate-x-1/2 bg-stone-900/80 backdrop-blur-md text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 hover:bg-stone-900 transition-colors z-30"
+                  >
+                    <ChevronDown size={14} />
+                    {unreadCount > 0 ? `${unreadCount} new message${unreadCount > 1 ? 's' : ''}` : 'Scroll to bottom'}
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* Smart Composer */}
+              <div className="p-3.5 bg-white border-t border-[#C9A84C]/30 relative z-20">
+                <div className="flex items-end gap-2 bg-[#F2EDE4]/50 border border-[#C9A84C]/40 rounded-2xl p-1.5 focus-within:border-[#C9A84C] focus-within:ring-1 focus-within:ring-[#C9A84C]/20 transition-all">
+                  <textarea
+                    ref={inputRef}
+                    value={inputValue}
+                    onChange={handleInput}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                    placeholder="Type your message..."
+                    className="flex-1 bg-transparent max-h-[120px] min-h-[40px] resize-none px-3 py-2.5 text-sm focus:outline-none scrollbar-thin scrollbar-thumb-[#C9A84C]/30 scrollbar-track-transparent text-stone-800"
+                    rows={1}
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={!inputValue.trim()}
+                    className="mb-1 mr-1 bg-gradient-to-r from-[#2C2C2C] to-[#1A1A1A] hover:shadow-lg text-[#C9A84C] p-2.5 rounded-xl transition-all disabled:opacity-50 disabled:shadow-none shrink-0"
+                  >
+                    <Send size={16} />
+                  </button>
                 </div>
-              )}
+                <div className="text-[10px] text-stone-400 font-medium text-center mt-2 flex items-center justify-center gap-1">
+                  <ShieldCheck size={10} /> Secure Chat
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* WhatsApp direct line */}
-        {!isOpen && (
-          <a
-            href="https://wa.me/919876543210?text=Hi%20Artbizz%2C%20I%20would%20like%20to%20inquire%20about%20a%20custom%20artwork"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute bottom-[72px] right-1 w-12 h-12 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform"
-            aria-label="Chat on WhatsApp"
-          >
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-              <path d="M12.031 0C5.38 0 0 5.383 0 12.037c0 2.128.552 4.195 1.6 6.02L.15 23.4l5.485-1.439a11.967 11.967 0 006.396 1.836h.005c6.648 0 12.032-5.385 12.032-12.04C24 5.378 18.681 0 12.031 0zm0 21.8c-1.8 0-3.565-.483-5.11-1.397l-.367-.217-3.8.995 1.016-3.7-.238-.38A9.97 9.97 0 012.035 12.04c0-5.508 4.484-9.995 9.996-9.995 5.512 0 9.994 4.487 9.994 9.995 0 5.51-4.482 9.995-9.994 9.995v.001l-.001-.236zm5.486-7.502c-.302-.151-1.785-.882-2.062-.982-.278-.1-.48-.152-.682.15-.202.302-.783.982-.96 1.182-.176.202-.353.228-.655.076-1.503-.761-2.614-1.424-3.626-2.923-.255-.378-.026-.583.125-.733.136-.135.302-.352.453-.527.151-.177.202-.303.303-.504.1-.202.05-.378-.025-.528-.076-.151-.682-1.641-.934-2.247-.246-.593-.497-.512-.682-.522-.176-.008-.378-.008-.58-.008s-.53.076-.807.378c-.278.303-1.06 1.034-1.06 2.52s1.085 2.923 1.236 3.125c.15.202 2.13 3.25 5.158 4.557 2.052.887 2.872 1.004 3.93 1.004.832 0 2.552-.983 2.898-1.921.346-.94.346-1.745.245-1.921-.1-.176-.378-.278-.68-.428z" />
-            </svg>
-          </a>
-        )}
 
         {/* Toggle Floating Action Button */}
         <button
